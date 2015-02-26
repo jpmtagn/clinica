@@ -1,0 +1,75 @@
+<?php
+return array(
+    'sun_l' => 'Domingo',
+    'mon_l' => 'Lunes',
+    'tue_l' => 'Martes',
+    'wed_l' => 'Miércoles',
+    'thu_l' => 'Jueves',
+    'fri_l' => 'Viernes',
+    'sat_l' => 'Sábado',
+    'sun_s' => 'Dom',
+    'mon_s' => 'Lun',
+    'tue_s' => 'Mar',
+    'wed_s' => 'Mié',
+    'thu_s' => 'Jue',
+    'fri_s' => 'Vie',
+    'sat_s' => 'Sáb',
+
+    'jan_l' => 'Enero',
+    'feb_l' => 'Febrero',
+    'mar_l' => 'Marzo',
+    'apr_l' => 'Abril',
+    'may_l' => 'Mayo',
+    'jun_l' => 'Junio',
+    'jul_l' => 'Julio',
+    'aug_l' => 'Agosto',
+    'sep_l' => 'Septiembre',
+    'oct_l' => 'Octubre',
+    'nov_l' => 'Noviembre',
+    'dec_l' => 'Diciembre',
+    'jan_s' => 'Ene',
+    'feb_s' => 'Feb',
+    'mar_s' => 'Mar',
+    'apr_s' => 'Abr',
+    'may_s' => 'May',
+    'jun_s' => 'Jun',
+    'jul_s' => 'Jul',
+    'aug_s' => 'Ago',
+    'sep_s' => 'Sep',
+    'oct_s' => 'Oct',
+    'nov_s' => 'Nov',
+    'dec_s' => 'Dic',
+
+    'long_date' => ':semana, :dia de :mes de :ano',
+    'short_date' => ':dia :mes :ano',
+    'short_date_week' => ':semana, :dia :mes',
+
+    'yes' => 'sí',
+    'no' => 'no',
+
+    'search' => 'Buscar',
+    'no_results_found' => 'No se encontraron resultados.',
+    'inf_for' => 'Información de ',
+    'edit_for' => 'Modificar ',
+
+    'select' => '(seleccione)',
+    'selected' => 'seleccionado',
+
+    'ok' => 'OK',
+    'save' => 'Guardar',
+    'cancel' => 'Cancelar',
+    'close' => 'Cerrar',
+
+    'loading' => 'cargando...',
+    'saving' => 'guardando...',
+
+    'home' => 'Inicio',
+
+    'modified_date_lbl' => 'actualizado el ',
+
+    'saved_msg' => 'Datos guardados.',
+    'del_msg' => 'Registro eliminado.',
+    'not_found' => 'No encontrado.',
+    'wrong_action' => 'Solicitud no reconicida.',
+    'error_request' => 'Error de conexión.'
+);
