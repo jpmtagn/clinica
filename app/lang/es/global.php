@@ -48,9 +48,14 @@ return array(
     'no' => 'no',
 
     'search' => 'Buscar',
+    'insert_search' => 'Ingrese su búsqueda',
     'no_results_found' => 'No se encontraron resultados.',
+    'inf' => 'Información',
     'inf_for' => 'Información de ',
     'edit_for' => 'Modificar ',
+    'new' => 'Nuevo',
+    'modify' => 'Modificar',
+    'total' => 'Total',
 
     'select' => '(seleccione)',
     'selected' => 'seleccionado',

@@ -2,17 +2,17 @@
 /**
  * Created by PhpStorm.
  * User: Alfredo
- * Date: 26/02/15
- * Time: 03:50 PM
+ * Date: 2/26/2015
+ * Time: 10:35 PM
  */
 
-class AreaController extends BaseController {
+class ConsultorioController extends BaseController {
 
     const PAGE_LIMIT = 5;
 
-    const MODEL = 'Area';
+    const MODEL = 'Consultorio';
 
-    const LANG_FILE = 'area';
+    const LANG_FILE = 'consultorio';
 
     const TITLE_FIELD = 'nombre';
 
@@ -25,11 +25,13 @@ class AreaController extends BaseController {
     public function paginaAdmin() {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
+            $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
             $total = $this->getTotalItems();
-            return View::make('admin.area')->with(
+            return View::make('admin.consultorio')->with(
                 array(
                     'active_menu' => 'area',
-                    'total' => $total
+                    'total' => $total,
+                    'areas' => $areas
                 )
             );
         }
@@ -37,10 +39,10 @@ class AreaController extends BaseController {
     }
 
     /**
-    * This function will be called after the model validation has passed successfully
-    * @param $inputs
-    * @return boolean
-    */
+     * This function will be called after the model validation has passed successfully
+     * @param $inputs
+     * @return boolean
+     */
     public function afterValidation($inputs) {
         return true;
     }
@@ -59,7 +61,7 @@ class AreaController extends BaseController {
      * @param $item
      */
     public function additionalData($item) {
-        
+
     }
 
     /**
@@ -75,14 +77,15 @@ class AreaController extends BaseController {
 
         //left panel
         //$output .= $frm->halfPanelOpen(true);
-            $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
-            $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
-            $output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
+        $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
+        $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
+        $output .= $frm->view('consultorio', Lang::get('area.title'), $item->area->nombre);
+        //$output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
         //$output .= $frm->halfPanelClose();
-        
+
         //right panel
         //$output .= $frm->halfPanelOpen(false, 6, 'text-center');
-            
+
         //$output .= $frm->halfPanelClose(true);
 
         $output .= $frm->controlButtons();

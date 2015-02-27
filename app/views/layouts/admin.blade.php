@@ -18,7 +18,7 @@
     	$username = Functions::firstNameLastName($username->nombre, $username->apellido);
     }
     else {
-    	$username = explode('@', Auth::user()->correo);
+    	$username = explode(chr(64), Auth::user()->correo);
     	$username = $username[0];
     }
 ?>
@@ -46,13 +46,13 @@
     <!-- DATE RANGE PICKER -->
     {{-- HTML::style('js/bootstrap-daterangepicker/daterangepicker-bs3.css') --}}
     <!-- TODO -->
-    {{ HTML::style('js/jquery-todo/css/styles.css') }}
+    {{-- HTML::style('js/jquery-todo/css/styles.css') --}}
     <!-- FULL CALENDAR -->
-    {{ HTML::style('js/fullcalendar/fullcalendar.min.css') }}
+    {{-- HTML::style('js/fullcalendar/fullcalendar.min.css') --}}
     <!-- GRITTER -->
-    {{ HTML::style('js/gritter/css/jquery.gritter.css') }}
+    {{-- HTML::style('js/gritter/css/jquery.gritter.css') --}}
     <!-- FONTS -->
-    {{ HTML::style('http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700') }}
+    {{-- HTML::style('http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700') --}}
     @yield('cabecera')
 </head>
 <body>
@@ -187,7 +187,7 @@
                     $doctores = Doctor::getAll();
                 ?>
                 @foreach ($doctores as $doctor)
-				    {{ AForm::userStatus($doctor->nombre, $doctor->apellido, $doctor->atendidos + 2, $doctor->pendientes + 3) }}
+				    {{ AForm::userStatus($doctor->nombre, $doctor->apellido, $doctor->atendidos + 2, $doctor->pendientes + 3, URL::asset('img/avatars/s/' . (!empty($doctor->avatar) ? $doctor->avatar : 'default.jpg'))) }}
                 @endforeach
 			</ul>
 		</div>
@@ -243,7 +243,7 @@
                     </a>
                     <ul class="sub">
                         <li><a href="{{ URL::route('admin_areas') }}"><span class="sub-menu-text">Áreas</span></a></li>
-                        <li><a href="{{ URL::route('admin_calendario') }}"><span class="sub-menu-text">Consultorios</span></a></li>
+                        <li><a href="{{ URL::route('admin_consultorios') }}"><span class="sub-menu-text">Consultorios</span></a></li>
                     </ul>
                 </li>
 			</ul>

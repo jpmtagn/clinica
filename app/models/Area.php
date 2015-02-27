@@ -46,7 +46,7 @@ class Area extends Eloquent {
     }
 
     //RELACIONES:
-    public function consultorio() {
+    public function consultorios() {
         return $this->hasMany('Consultorio', 'area_id', 'id');
     }
 

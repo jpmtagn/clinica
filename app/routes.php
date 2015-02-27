@@ -113,6 +113,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'AreaController@paginaAdmin'
     ));
 
+    Route::get('admin/consultorios', array(
+        'as' => 'admin_consultorios',
+        'uses' => 'ConsultorioController@paginaAdmin'
+    ));
+
     //total registros
     Route::get('admin/usuarios/total', array(
         'as' => 'admin_usuarios_count_get',
@@ -134,10 +139,14 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'CitaController@totalGet'
     ));
 
-
     Route::get('admin/areas/total', array(
         'as' => 'admin_areas_count_get',
         'uses' => 'AreaController@totalGet'
+    ));
+
+    Route::get('admin/consultorio/total', array(
+        'as' => 'admin_consultorio_count_get',
+        'uses' => 'ConsultorioController@totalGet'
     ));
 
     //select searchs
@@ -333,7 +342,7 @@ Route::group(array('before' => 'auth'), function() {
         //buscar
         Route::get('admin/areas/buscar', array(
             'as' => 'admin_areas_buscar_get',
-            'uses' => 'AreaController@buscarGetAlt'
+            'uses' => 'AreaController@buscarGet'
         ));
 
         //info
@@ -364,6 +373,45 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/areas/registrar', array(
             'as' => 'admin_areas_registrar_post',
             'uses' => 'AreaController@registrarPost'
+        ));
+
+        
+        // PAGINA CONSULTORIOS
+
+        //buscar
+        Route::get('admin/consultorio/buscar', array(
+            'as' => 'admin_consultorio_buscar_get',
+            'uses' => 'ConsultorioController@buscarGet'
+        ));
+
+        //info
+        Route::get('admin/consultorio/info', array(
+            'as' => 'admin_consultorio_info_get',
+            'uses' => 'ConsultorioController@infoGet'
+        ));
+
+        //datos para editar
+        Route::get('admin/consultorio/datos', array(
+            'as' => 'admin_consultorio_datos_get',
+            'uses' => 'ConsultorioController@datosGet'
+        ));
+
+        //acciones (eliminar)
+        Route::post('admin/consultorio/accion', array(
+            'as' => 'admin_consultorio_accion_post',
+            'uses' => 'ConsultorioController@accionPost'
+        ));
+
+        //editar
+        Route::post('admin/consultorio/editar', array(
+            'as' => 'admin_consultorio_editar_post',
+            'uses' => 'ConsultorioController@editarPost'
+        ));
+
+        //registrar
+        Route::post('admin/consultorio/registrar', array(
+            'as' => 'admin_consultorio_registrar_post',
+            'uses' => 'ConsultorioController@registrarPost'
         ));
 
     });

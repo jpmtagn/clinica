@@ -79,6 +79,7 @@ class PacienteController extends BaseController {
     /**
      * Proceso adicional al editar / crear un nuevo registro
      * @param $item
+     * @return bool|\Illuminate\Http\RedirectResponse
      */
     public function editarRelational($item) {
         if (Input::get('telefonos_check') != Input::get('telefonos') || Input::get('correos_check') != Input::get('correos')) {

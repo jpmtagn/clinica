@@ -86,6 +86,7 @@ class CitaController extends BaseController {
     /**
      * Proceso adicional al editar / crear un nuevo registro
      * @param $item
+     * @return bool
      */
     public function editarRelational($item) {
         $paciente = $item->paciente;

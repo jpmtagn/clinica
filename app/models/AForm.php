@@ -7,7 +7,7 @@ class AForm {
 
     public function __construct() {
         $this->script = "";
-        $values = array();
+        $this->values = array();
     }
 
     public function setEdit($edit) {
@@ -314,7 +314,8 @@ EOT;
 EOT;
     }
 
-    public function submit($label, $class = 'btn-primary') {
+    public function submit($label = null, $class = 'btn-primary') {
+        if ($label == null) $label = Lang::get('global.save');
         return <<<EOT
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
@@ -477,7 +478,7 @@ EOT;
 EOT;
     }
 
-    public static function userStatus($nombre, $apellido, $atendidos, $pendientes) {
+    public static function userStatus($nombre, $apellido, $atendidos, $pendientes, $avatar) {
         $title = Functions::firstNameLastName($nombre, $apellido);
         $t = $atendidos + $pendientes;
         if ($t > 0) {
@@ -490,12 +491,11 @@ EOT;
         }
         $atendidos_lbl = Functions::singlePlural(Lang::get('pacientes.done_singular'), Lang::get('pacientes.done_plural'), $atendidos);
         $pendientes_lbl = Functions::singlePlural(Lang::get('pacientes.pending_singular'), Lang::get('pacientes.pending_plural'), $pendientes);
-        $picture = URL::asset('img/avatars/avatar3.jpg');
         return <<<EOT
         <li><!-- class="current"-->
             <a href="javascript:void(0);">
                 <span class="image">
-                    <img src="{$picture}" alt="" />
+                    <img src="{$avatar}" alt="" />
                 </span>
                 <span class="title">
                     {$title}

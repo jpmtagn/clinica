@@ -1,6 +1,6 @@
 <?php
 return array(
-	'area' => 'Área',
+	'title' => 'Área',
     'name' => 'Nombre',
     'description' => 'Descripción',
 
