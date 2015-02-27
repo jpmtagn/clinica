@@ -1,6 +1,7 @@
 <?php
 return array(
-	'title' => 'Área',
+	'title_single' => 'Área',
+	'title_plural' => 'Áreas',
     'name' => 'Nombre',
     'description' => 'Descripción',
 

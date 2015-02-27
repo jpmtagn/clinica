@@ -12,13 +12,15 @@ class Servicio extends Eloquent {
 
     protected $fillable = array(
         'nombre',
+        'descripcion',
         'duracion'
     );
 
     protected $table = 'servicio';
 
     protected $searchable = array(
-        'nombre'
+        'nombre',
+        'descripcion'
     );
 
     protected $booleans = array();
@@ -34,9 +36,10 @@ class Servicio extends Eloquent {
      */
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
-            'id'        => 'integer|min:1',
-            'nombre'    => 'required|max:45',
-            'duracion'  => 'integer|min:0'
+            'id'            => 'integer|min:1',
+            'nombre'        => 'required|max:45',
+            'descripcion'   => 'max:255',
+            'duracion'      => 'integer|min:0|max:1440'
         );
         if ($field === null) {
             return $rules;

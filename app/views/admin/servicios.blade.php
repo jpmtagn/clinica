@@ -6,12 +6,16 @@ Panel de Administración
 
 @section('cabecera')
 {{ HTML::style('js/select2/select2.min.custom.css') }}
+{{ HTML::style('js/bootstrap-slider/bootstrap-slider.css') }}
 @stop
 
 @section('contenido')
 <?php
     $frm = new AForm;
-    $key = 'consultorio';
+    $key = 'servicio';
+
+    $slider_create_script = '';
+    $slider_edit_script = '';
 ?>
 <!-- PAGE HEADER-->
 <div class="row">
@@ -27,7 +31,7 @@ Panel de Administración
             </ul>
             <!-- /BREADCRUMBS -->
             <!-- HEAD -->
-            {{ $frm->header(Lang::get($key . '.title_plural'), $total, 'fa-cubes') }}
+            {{ $frm->header(Lang::get($key . '.title_plural'), $total, 'fa-check-square-o') }}
             <!-- /HEAD -->
         </div>
     </div>
@@ -75,10 +79,10 @@ Panel de Administración
         <!-- CREATE NEW -->
         {{ $frm->panelOpen('create', Lang::get('global.new'), 'fa-plus', 'primary hidden', array('collapse','remove')) }}
         <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_' . $key . '_registrar_post') }}">
-            {{ $frm->text('nombre', null, Lang::get('consultorio.name'), '', true) }}
-            {{ $frm->text('descripcion', null, Lang::get('consultorio.description')) }}
-            {{ $frm->number('capacidad', null, Lang::get('consultorio.capacity')) }}
-            {{ $frm->select('area_id', null, Lang::get('area.title'), $areas) }}
+            {{ $frm->text('nombre', null, Lang::get('servicio.name'), '', true) }}
+            {{ $frm->text('descripcion', null, Lang::get('servicio.description')) }}
+            {{ $frm->slider('duracion', null, Lang::get('servicio.duration'), $duraciones, $slider_create_script) }}
+            {{ $frm->select('consultorios', null, Lang::get('consultorio.title_plural'), $consultorios) }}
             <br>
             {{ Form::token() }}
             {{ $frm->submit() }}
@@ -90,10 +94,10 @@ Panel de Administración
         {{ $frm->panelOpen('edit', Lang::get('global.modify'), 'fa-pencil', 'orange hidden', array('collapse','remove')) }}
         <form id="frm_data_edit" class="form-horizontal" role="form" action="{{ URL::route('admin_' . $key . '_editar_post') }}">
             {{ $frm->id() }}
-            {{ $frm->text('nombre', null, Lang::get('consultorio.name'), '', true) }}
-            {{ $frm->text('descripcion', null, Lang::get('consultorio.description')) }}
-            {{ $frm->number('capacidad', null, Lang::get('consultorio.capacity')) }}
-            {{ $frm->select('area_id', null, Lang::get('area.title'), $areas) }}
+            {{ $frm->text('nombre', null, Lang::get('servicio.name'), '', true) }}
+            {{ $frm->text('descripcion', null, Lang::get('servicio.description')) }}
+            {{ $frm->slider('duracion', null, Lang::get('servicio.duration'), $duraciones, $slider_edit_script) }}
+            {{ $frm->select('consultorios', null, Lang::get('consultorio.title_plural'), $consultorios) }}
 
             {{ Form::token() }}
             {{ $frm->submit(null, 'btn-warning') }}
@@ -106,26 +110,6 @@ Panel de Administración
     </div>
 </div>
 
-<!-- SAMPLE BOX CONFIGURATION MODAL FORM-->
-<div class="modal fade" id="box-config-search" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Configuración de búsqueda</h4>
-            </div>
-            <div class="modal-body">
-                Here goes box setting content.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">OK</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- /SAMPLE BOX CONFIGURATION MODAL FORM-->
-
 <!-- /MAIN CONTENT -->
 @stop
 
@@ -134,8 +118,21 @@ Panel de Administración
 <?php if (Config::get('app.locale') != 'en') : ?>
     {{ HTML::script('js/select2/select2_locale_' . Config::get('app.locale') . '.js') }}
 <?php endif; ?>
+{{ HTML::script('js/bootstrap-slider/bootstrap-slider.js') }}
 {{ HTML::script('js/panel.js') }}
 <script>
+    function beforePanelCreate() {
+        setTimeout(function() {
+            {{ $slider_create_script }}
+        }, 100);
+    }
+
+    function beforePanelEdit() {
+        setTimeout(function() {
+            {{ $slider_edit_script }}
+        }, 100);
+    }
+
     var url_update_counter = "{{ URL::route('admin_' . $key . '_count_get') }}";
 
     $(document).ready(function() {

@@ -2,17 +2,17 @@
 /**
  * Created by PhpStorm.
  * User: Alfredo
- * Date: 2/26/2015
- * Time: 10:35 PM
+ * Date: 2/27/2015
+ * Time: 09:54 AM
  */
 
-class ConsultorioController extends BaseController {
+class ServicioController extends BaseController {
 
     const PAGE_LIMIT = 5;
 
-    const MODEL = 'Consultorio';
+    const MODEL = 'Servicio';
 
-    const LANG_FILE = 'consultorio';
+    const LANG_FILE = 'servicio';
 
     const TITLE_FIELD = 'nombre';
 
@@ -25,13 +25,35 @@ class ConsultorioController extends BaseController {
     public function paginaAdmin() {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
-            $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
+            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+            $duraciones = array(
+                '0' => '',
+                '10' => '10m',
+                '20' => '20m',
+                '30' => '30m',
+                '40' => '40m',
+                '50' => '50m',
+                '60' => '1h',
+                '70' => '',
+                '80' => '1h 20m',
+                '90' => '',
+                '100' => '1h 40m',
+                '110' => '',
+                '120' => '2h',
+                '130' => '',
+                '140' => '2h 20m',
+                '150' => '',
+                '160' => '2h 40m',
+                '170' => '',
+                '180' => '3h'
+            );
             $total = $this->getTotalItems();
-            return View::make('admin.consultorio')->with(
+            return View::make('admin.servicios')->with(
                 array(
-                    'active_menu' => 'area',
+                    'active_menu' => 'servicio',
                     'total' => $total,
-                    'areas' => $areas
+                    'consultorios' => $consultorios,
+                    'duraciones' => $duraciones
                 )
             );
         }
@@ -75,12 +97,13 @@ class ConsultorioController extends BaseController {
         $output .= $frm->id( $item->id );
         $output .= $frm->hidden('action');
 
+        $consultorios = $item->consultorios->lists('nombre');
+
         //left panel
         //$output .= $frm->halfPanelOpen(true);
         $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
         $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
-        $output .= $frm->view('capacidad', Lang::get(self::LANG_FILE . '.capacity'), $item->capacidad);
-        $output .= $frm->view('area', Lang::get('area.title'), $item->area->nombre);
+        $output .= $frm->view('consultorio', Lang::get('consultorio.title_' . Functions::singlePlural('single', 'plural', count($consultorios))), implode(', ', $consultorios));
         //$output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
         //$output .= $frm->halfPanelClose();
 

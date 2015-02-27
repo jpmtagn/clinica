@@ -41,29 +41,52 @@ class AForm {
 EOT;
     }
 
-    public function email($name = 'correo', $id = null, $label = null, $classes = "") {
+    public function email($name = 'correo', $id = null, $label = null, $classes = "", $required = true) {
         if ($id == null) $id = $name;
         if ($label == null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
+        $required = $required ? ' required' : '';
+        $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
         return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
-                <div class="col-sm-10">
-                    <input type="email" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}" required>
+                <div class="col-md-10">
+                    <input type="email" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$value}{$required}>
                 </div>
             </div>
 EOT;
     }
 
-    public function password($name = 'password', $id = null, $label = null, $classes = "") {
+    public function password($name = 'password', $id = null, $label = null, $classes = "", $required = true) {
+        if ($id == null) $id = $name;
+        if ($label == null) $label = ucfirst($name);
+        if ($this->edit) $id = $id . '_edit';
+        $required = $required ? ' required' : '';
+        return <<<EOT
+            <div class="form-group {$classes}">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    <input type="password" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$required}>
+                </div>
+            </div>
+EOT;
+    }
+
+    public function number($name, $id = null, $label = null, $classes = "") {
         if ($id == null) $id = $name;
         if ($label == null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
-                <div class="col-sm-10">
-                    <input type="password" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}" required>
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default number-more" type="button"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-default number-less" type="button"><i class="fa fa-minus"></i></button>
+                        </div>
+                        <input type="text" id="{$id}" name="{$name}" class="form-control number-input">
+                    </div>
                 </div>
             </div>
 EOT;
@@ -136,6 +159,35 @@ EOT;
                         <i class="fa fa-search"></i>
                     </button>
                 </span>
+            </div>
+EOT;
+    }
+
+    public function slider($name = 'correo', $id = null, $label = null, $ticks = array(), &$script) {
+        if ($id == null) $id = $name;
+        if ($label == null) $label = ucfirst($name);
+        if ($this->edit) $id = $id . '_edit';
+        $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
+
+        $ticks_vals = array_keys($ticks);
+        $ticks_snap = $ticks_vals[1] - $ticks_vals[0];
+        $ticks_vals = implode(', ', array_keys($ticks));
+        $ticks_lbls = '"' . implode('", "', $ticks) . '"';
+
+        $script = <<<EOT
+            $('#{$id}').slider({
+                ticks: [{$ticks_vals}],
+                ticks_labels: [$ticks_lbls],
+                step: {$ticks_snap} /*ticks_snap_bounds: {$ticks_snap}*/
+            });
+EOT;
+
+        return <<<EOT
+            <div class="form-group">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    <input type="text" id="{$id}" name="{$name}" style="width:95%" placeholder="{$label}"{$value}>
+                </div>
             </div>
 EOT;
     }

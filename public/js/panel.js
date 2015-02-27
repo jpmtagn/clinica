@@ -664,6 +664,9 @@ var Panel = {
 
         //displays the panel in an expanded way
         show: function() {
+            if (typeof beforePanelEdit == 'function') {
+                beforePanelEdit();
+            }
             var panel = $('#edit_panel');
             var exp = panel.find('.expand').eq(0);
             panel.removeClass('hidden');
@@ -867,6 +870,20 @@ $('.box .box-title h4').click(function(e) {
     e.stopPropagation();
     return false;
 });
+
+function bindNumberInputs() {
+    $('.number-more').click(function() {
+        var $number = $(this).closest('.input-group').find('.number-input');
+        $number.val( (parseInt($number.val()) || 0) + 1 );
+    });
+
+    $('.number-less').click(function() {
+        var $number = $(this).closest('.input-group').find('.number-input');
+        var num = parseInt($number.val());
+        $number.val( num > 0 ? (num - 1) : 0 );
+    });
+}
+bindNumberInputs();
 
 //setting time and date inputs
 function setDatePicker(o, value) {

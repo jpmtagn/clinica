@@ -24,7 +24,7 @@ Panel de Administración
             </ul>
             <!-- /BREADCRUMBS -->
             <!-- HEAD -->
-            {{ $frm->header(Lang::get('area.title'), $total, 'fa-cube') }}
+            {{ $frm->header(Lang::get('area.title_plural'), $total, 'fa-cube') }}
             <!-- /HEAD -->
         </div>
     </div>

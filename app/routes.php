@@ -118,6 +118,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ConsultorioController@paginaAdmin'
     ));
 
+    Route::get('admin/servicios', array(
+        'as' => 'admin_servicios',
+        'uses' => 'ServicioController@paginaAdmin'
+    ));
+
     //total registros
     Route::get('admin/usuarios/total', array(
         'as' => 'admin_usuarios_count_get',
@@ -147,6 +152,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('admin/consultorio/total', array(
         'as' => 'admin_consultorio_count_get',
         'uses' => 'ConsultorioController@totalGet'
+    ));
+
+    Route::get('admin/servicio/total', array(
+        'as' => 'admin_servicio_count_get',
+        'uses' => 'ServicioController@totalGet'
     ));
 
     //select searchs
@@ -412,6 +422,46 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/consultorio/registrar', array(
             'as' => 'admin_consultorio_registrar_post',
             'uses' => 'ConsultorioController@registrarPost'
+        ));
+
+
+        
+        // PAGINA SERVIVIOS
+
+        //buscar
+        Route::get('admin/servicio/buscar', array(
+            'as' => 'admin_servicio_buscar_get',
+            'uses' => 'ServicioController@buscarGet'
+        ));
+
+        //info
+        Route::get('admin/servicio/info', array(
+            'as' => 'admin_servicio_info_get',
+            'uses' => 'ServicioController@infoGet'
+        ));
+
+        //datos para editar
+        Route::get('admin/servicio/datos', array(
+            'as' => 'admin_servicio_datos_get',
+            'uses' => 'ServicioController@datosGet'
+        ));
+
+        //acciones (eliminar)
+        Route::post('admin/servicio/accion', array(
+            'as' => 'admin_servicio_accion_post',
+            'uses' => 'ServicioController@accionPost'
+        ));
+
+        //editar
+        Route::post('admin/servicio/editar', array(
+            'as' => 'admin_servicio_editar_post',
+            'uses' => 'ServicioController@editarPost'
+        ));
+
+        //registrar
+        Route::post('admin/servicio/registrar', array(
+            'as' => 'admin_servicio_registrar_post',
+            'uses' => 'ServicioController@registrarPost'
         ));
 
     });

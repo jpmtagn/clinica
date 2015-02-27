@@ -4,6 +4,7 @@ return array(
     'title_plural' => 'Cabinas',
     'name' => 'Nombre',
     'description' => 'Descripción',
+    'capacity' => 'Capacidad',
 
     'new_event' => 'Nueva Cabina'
 

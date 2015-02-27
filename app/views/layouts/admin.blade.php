@@ -201,12 +201,15 @@
 	<div id="sidebar" class="sidebar">
 		<div class="sidebar-menu nav-collapse">
 			<ul>
+				<!-- inicio -->
 				<li{{ activeClassIf('inicio', $active_menu) }}>
 					<a href="index.html">
 					    <i class="fa fa-fw fa-home"></i> <span class="menu-text">Inicio</span>
 					    <span class="selected"></span>
 					</a>
 				</li>
+
+				<!-- personas -->
 				<li class="has-sub{{ activeClassIf('pacientes', $active_menu, false) }}">
                     <a href="javascript:;">
                         <i class="fa fa-fw fa-wheelchair"></i>
@@ -218,12 +221,16 @@
                         <li><a href="{{ URL::route('admin_parentescos') }}"><span class="sub-menu-text">Parentescos</span></a></li>
                     </ul>
                 </li>
+
+				<!-- usuarios -->
 				<li{{ activeClassIf('usuarios', $active_menu) }}>
                     <a href="{{ URL::route('admin_usuarios') }}">
                         <i class="fa fa-fw fa-users"></i>
                         <span class="menu-text">Usuarios</span>
                     </a>
                 </li>
+
+				<!-- citas -->
 				<li class="has-sub{{ activeClassIf('citas', $active_menu, false) }}">
                     <a href="javascript:;">
                         <i class="fa fa-fw fa-calendar-o"></i>
@@ -235,6 +242,8 @@
                         <li><a href="{{ URL::route('admin_calendario') }}"><span class="sub-menu-text">Calendario</span></a></li>
                     </ul>
                 </li>
+
+				<!-- areas / consultorios -->
 				<li class="has-sub{{ activeClassIf('area', $active_menu, false) }}">
                     <a href="javascript:;">
                         <i class="fa fa-fw fa-cube"></i>
@@ -242,9 +251,17 @@
                         <span class="arrow"></span>
                     </a>
                     <ul class="sub">
-                        <li><a href="{{ URL::route('admin_areas') }}"><span class="sub-menu-text">Áreas</span></a></li>
-                        <li><a href="{{ URL::route('admin_consultorios') }}"><span class="sub-menu-text">Consultorios</span></a></li>
+                        <li><a href="{{ URL::route('admin_areas') }}"><span class="sub-menu-text">{{ Lang::get('area.title_plural') }}</span></a></li>
+                        <li><a href="{{ URL::route('admin_consultorios') }}"><span class="sub-menu-text">{{ Lang::get('consultorio.title_plural') }}</span></a></li>
                     </ul>
+                </li>
+
+                <!-- servicios -->
+                <li{{ activeClassIf('servicio', $active_menu) }}>
+                    <a href="{{ URL::route('admin_servicios') }}">
+                        <i class="fa fa-fw fa-check-square-o"></i>
+                        <span class="menu-text">{{ Lang::get('servicio.title_plural') }}</span>
+                    </a>
                 </li>
 			</ul>
 			<!-- /SIDEBAR MENU -->
@@ -269,7 +286,7 @@
 <!-- JQUERY -->
 {{ HTML::script('js/jquery/jquery-2.0.3.min.js') }}
 <!-- JQUERY UI-->
-{{ HTML::script('js/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js') }}
+{{ HTML::script('js/jquery-ui/js/jquery-ui-1.11.3.custom.js') }}
 <!-- BOOTSTRAP -->
 {{ HTML::script('bootstrap-dist/js/bootstrap.min.js') }}
 

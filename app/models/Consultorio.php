@@ -40,7 +40,7 @@ class Consultorio extends Eloquent {
             'id'            => 'integer|min:1',
             'nombre'        => 'required|max:45',
             'descripcion'   => 'max:255',
-            'capacidad'     => 'integer|min:1',
+            'capacidad'     => 'integer|min:1|max:9999',
             'area_id'       => 'required|integer|exists:area,id'
         );
         if ($field === null) {
