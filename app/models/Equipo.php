@@ -13,7 +13,8 @@ class Equipo extends Eloquent {
     protected $fillable = array(
         'nombre',
         'cantidad',
-        'descripcion'
+        'descripcion',
+        'inamovible'
     );
 
     protected $table = 'equipo';
@@ -23,7 +24,9 @@ class Equipo extends Eloquent {
         'descripcion'
     );
 
-    protected $booleans = array();
+    protected $booleans = array(
+        'inamovible'
+    );
 
     protected $deletable_models = array();
 
@@ -39,7 +42,8 @@ class Equipo extends Eloquent {
             'id'            => 'integer|min:1',
             'nombre'        => 'required|max:45',
             'cantidad'      => 'integer|min:0',
-            'descripcion'   => 'max:255'
+            'descripcion'   => 'max:255',
+            'inamovible'    => 'in:0,1'
         );
         if ($field === null) {
             return $rules;

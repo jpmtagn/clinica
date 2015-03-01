@@ -75,6 +75,11 @@ class ServicioController extends BaseController {
      * @return bool
      */
     public function editarRelational($item) {
+        //CONSULTORIOS
+        $items = isset($_POST['consultorios']) ? array_map('intval', Input::get('consultorios')) : false;
+        if ($items) {
+            $item->consultorios()->sync( $items );
+        }
         return true; //needs to return true to output json
     }
 
@@ -83,7 +88,7 @@ class ServicioController extends BaseController {
      * @param $item
      */
     public function additionalData($item) {
-
+        $this->setReturn('consultorios', Functions::arrayIt($item->consultorios, 'id', 'nombre'));
     }
 
     /**
@@ -102,7 +107,10 @@ class ServicioController extends BaseController {
         //left panel
         //$output .= $frm->halfPanelOpen(true);
         $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
-        $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
+        if (!empty($item->descripcion)) {
+            $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
+        }
+        $output .= $frm->view('duracion', Lang::get(self::LANG_FILE . '.duration'), Functions::minToHours($item->duracion));
         $output .= $frm->view('consultorio', Lang::get('consultorio.title_' . Functions::singlePlural('single', 'plural', count($consultorios))), implode(', ', $consultorios));
         //$output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
         //$output .= $frm->halfPanelClose();

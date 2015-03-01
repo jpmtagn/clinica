@@ -39,7 +39,8 @@ class Servicio extends Eloquent {
             'id'            => 'integer|min:1',
             'nombre'        => 'required|max:45',
             'descripcion'   => 'max:255',
-            'duracion'      => 'integer|min:0|max:1440'
+            'duracion'      => 'integer|min:0|max:1440',
+            'consultorios'  => 'array'
         );
         if ($field === null) {
             return $rules;

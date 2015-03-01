@@ -213,7 +213,7 @@ class UserController extends BaseController {
         //ROLES
         $roles = isset($_POST['roles']) ? array_map('intval', Input::get('roles')) : false;
         if ($roles) {
-            $item->roles()->sync( Input::get('roles') );
+            $item->roles()->sync( $roles ); //sync( Input::get('roles') )
         }
         return true; //needs to return true to output json
     }

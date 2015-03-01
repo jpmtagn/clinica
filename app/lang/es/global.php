@@ -44,6 +44,20 @@ return array(
     'short_date' => ':dia :mes :ano',
     'short_date_week' => ':semana, :dia :mes',
 
+    'years' => 'años',
+    'months' => 'meses',
+    'days' => 'días',
+    'hours' => 'horas',
+    'minutes' => 'minutos',
+    'seconds' => 'segundos',
+
+    'year' => 'año',
+    'month' => 'mes',
+    'day' => 'día',
+    'hour' => 'hora',
+    'minute' => 'minuto',
+    'second' => 'segundo',
+
     'yes' => 'sí',
     'no' => 'no',
 

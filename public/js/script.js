@@ -16,7 +16,7 @@ var App = function () {
             var each = responsiveFunctions[i];
             each.call();
         }
-    }
+    };
 	/*-----------------------------------------------------------------------------------*/
 	/*	To get the correct viewport width
 	/*-----------------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ var App = function () {
             width: e[a + 'Width'],
             height: e[a + 'Height']
         }
-    }
+    };
 	/*-----------------------------------------------------------------------------------*/
 	/*	Check layout size
 	/*-----------------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ var App = function () {
 		is_mini_menu = $('#sidebar').hasClass('mini-menu');
 		//Check if fixed header is activated
 		is_fixed_header = $('#header').hasClass('navbar-fixed-top');
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Sidebar & Main Content size match
 	/*-----------------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ var App = function () {
         if (height >= content.height()) {
             content.attr('style', 'min-height:' + height + 'px !important');
         }
-    }
+    };
 	/*-----------------------------------------------------------------------------------*/
 	/*	Sidebar
 	/*-----------------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ var App = function () {
                 sub.slideDown(200);
             }
         });
-	}
+	};
 	
 	/*-----------------------------------------------------------------------------------*/
 	/*	Collapse Sidebar Programatically
@@ -133,7 +133,7 @@ var App = function () {
 		collapsed = true;
 		/* Set a cookie so that mini-sidebar persists */
 		$.cookie('mini_sidebar', '1');
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Responsive Sidebar Collapse
 	/*-----------------------------------------------------------------------------------*/
@@ -158,7 +158,7 @@ var App = function () {
 				$('#sidebar').removeAttr('style');
 			}
 		}
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Sidebar Collapse
 	/*-----------------------------------------------------------------------------------*/
@@ -237,7 +237,7 @@ var App = function () {
 				});
 			}
         });
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Handle Fixed Sidebar on Mobile devices
 	/*-----------------------------------------------------------------------------------*/
@@ -258,7 +258,7 @@ var App = function () {
             allowPageScroll: false,
             disableFadeOut: false
         });
-    }
+    };
 	/*-----------------------------------------------------------------------------------*/
 	/*	Handle Fixed Sidebar
 	/*-----------------------------------------------------------------------------------*/
@@ -292,7 +292,7 @@ var App = function () {
             });
             handleSidebarAndContentHeight();
         }
-    }
+    };
 	/*-----------------------------------------------------------------------------------*/
 	/*	Windows Resize function
 	/*-----------------------------------------------------------------------------------*/
@@ -364,7 +364,7 @@ var App = function () {
             }
             return z
         }
-	}
+	};
 	var c = function () {
         $(".team-status").each(function () {
             var x = $(this);
@@ -402,7 +402,7 @@ var App = function () {
 		$('.tip-focus').tooltip({
 			trigger: 'focus'
 		});
-	}
+	};
 	
 	/*-----------------------------------------------------------------------------------*/
 	/* Box tools
@@ -445,7 +445,7 @@ var App = function () {
                 reloadPanel(el);
             }
         });
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	SlimScroll
 	/*-----------------------------------------------------------------------------------*/
@@ -465,7 +465,7 @@ var App = function () {
                 disableFadeOut: true
             });
         });
-    }
+    };
 	
 	/*-----------------------------------------------------------------------------------*/
 	/*	Popovers
@@ -489,7 +489,7 @@ var App = function () {
 		$('.pop-hover').popover({
 			trigger: 'hover'
 		});
-	}
+	};
 	
 	/*-----------------------------------------------------------------------------------*/
 	/*	Hubspot messenger
@@ -504,7 +504,7 @@ var App = function () {
 			Messenger.options = {
 				extraClasses: 'messenger-fixed '+mypos,
 				theme: mytheme
-			}
+			};
 			//Call
 			Messenger().post({
 				message:"This is a normal notification!",
@@ -519,7 +519,7 @@ var App = function () {
 			Messenger.options = {
 				extraClasses: 'messenger-fixed '+mypos,
 				theme: mytheme
-			}
+			};
 			var msg;
 			msg = Messenger().post({
 			  message: 'Launching thermonuclear war...',
@@ -547,7 +547,7 @@ var App = function () {
 			Messenger.options = {
 				extraClasses: 'messenger-fixed '+mypos,
 				theme: mytheme
-			}
+			};
 			var i;
 			i = 0;
 			Messenger().run({
@@ -575,23 +575,23 @@ var App = function () {
 			Messenger.options = {
 				extraClasses: 'messenger-fixed '+mypos,
 				theme: mytheme
-			}
+			};
 			Messenger().run({
 			  successMessage: 'Data saved.',
 			  errorMessage: 'Error saving data',
 			  progressMessage: 'Saving data',
-			  showCloseButton: true,
+			  showCloseButton: true
 			}, {
 			  url: 'http://www.example.com/data'
 			});
 		});
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Alerts
 	/*-----------------------------------------------------------------------------------*/
 	var handleAlerts = function () {
 		$(".alert").alert();
-	}
+	};
 	
 	/*-----------------------------------------------------------------------------------*/
 	/*	Custom tabs
@@ -614,14 +614,14 @@ var App = function () {
 				var w = location.hash.substr(1);
 				$('a[href="#' + w + '"]').click()
 			}
-	}
+	};
 
 	/*-----------------------------------------------------------------------------------*/
 	/*	All Checkboxes
 	/*-----------------------------------------------------------------------------------*/
 	var handleAllUniform = function () {
 		$("select, input[type='checkbox']").uniform();
-	}
+	};
 
 	/*-----------------------------------------------------------------------------------*/
 	/*	Isotope
@@ -663,7 +663,7 @@ var App = function () {
 		jQuery(window).resize(function() {
 			handleIsotopeStretch();
 		});
-	}
+	};
 	
 	/*-----------------------------------------------------------------------------------*/
 	/*	Handles the go to top button at the footer
@@ -673,7 +673,7 @@ var App = function () {
 			App.scrollTo();
 			e.preventDefault();
 		});
-	} 
+	} ;
 	/*-----------------------------------------------------------------------------------*/
 	/*	Handles navbar fixed top
 	/*-----------------------------------------------------------------------------------*/
@@ -686,7 +686,7 @@ var App = function () {
 			//Manage margin top
 			$('#main-content').removeClass('margin-top-100').addClass('margin-top-50');
 		}
-	} 
+	} ;
 	/*-----------------------------------------------------------------------------------*/
 	/*	Handles theme skin switches
 	/*-----------------------------------------------------------------------------------*/
@@ -695,7 +695,7 @@ var App = function () {
         var setSkin = function (color) {
             $('#skin-switcher').attr("href", "css/themes/" + color + ".css");
             $.cookie('skin_color', color);
-        }
+        };
 		$('ul.skins > li a').click(function () {
             var color = $(this).data("skin");
             setSkin(color);
@@ -705,7 +705,7 @@ var App = function () {
 		 if ($.cookie('skin_color')) {
             setSkin($.cookie('skin_color'));
         }
-	}
+	};
 	/*-----------------------------------------------------------------------------------*/
 	/*	Fullcalendar
 	/*-----------------------------------------------------------------------------------*/
@@ -732,16 +732,16 @@ var App = function () {
 				revertDuration: 0  //  original position after the drag
 			});
 			
-		}
+		};
 		
 		var addEvent = function (title) {
             title = title.length == 0 ? "Untitled Event" : title;
             var html = $('<div class="external-event">' + title + '</div>');
             jQuery('#event-box').append(html);
             initDrag(html);
-        }
+        };
 
-        $('#external-events div.external-event').each(function () {
+        $('#external-events').find('div.external-event').each(function () {
             initDrag($(this))
         });
 
@@ -752,7 +752,7 @@ var App = function () {
 	
 		/* initialize the calendar
 		-----------------------------------------------------------------*/
-		var calendar = $('#calendar').fullCalendar({
+		var calendar = $('.full-calendar').fullCalendar({
 			'lang': lang,
 			header: {
 				left: 'prev,next today',
@@ -797,7 +797,6 @@ var App = function () {
 				}
 			},
 			editable: true,
-			editable: true,
 			droppable: true, // this allows things to be dropped onto the calendar !!!
 			drop: function(date, allDay) { // this function is called when something is dropped
 			
@@ -821,31 +820,33 @@ var App = function () {
 					$(this).remove();
 				}
 				
-			},
-			events: (typeof getCalendarEvents == 'function' ? getCalendarEvents() : [])
+			}/*,
+			events: (typeof getCalendarEvents == 'function' ? getCalendarEvents() : [])*/
 		});
 		
-	}
-    var handleSelect2 = function() {
+	};
+    var handleSelect2 = function(lang) {
         if (typeof Select2 != 'undefined') {
             $('.multi-select').select2({
-                placeholder: "Seleccione",
+                placeholder: lang == 'es' ? "Seleccione" : "Select",
                 minimumSelectionSize: 1
             });
 
             $('.single-select').select2();
 
-            $('.select2tags').select2({
+            var $select2tags = $('.select2tags');
+
+            $select2tags.select2({
                 tags:[""]
             });
-            $('.select2tags').keydown(function(event) {
+            $select2tags.keydown(function(event) {
                 if (event.which == 188 || event.which == 44) { //event.which = ,
                     event.preventDefault();
                     return false;
                 }
             });
         }
-    }
+    };
     var handleDatePicker = function(lang) {
     	if (typeof $.fn.pickadate != 'function') return false;
         /*$('.input-calendar-year').datepicker(
@@ -885,7 +886,7 @@ var App = function () {
   			selectMonths: true,
   			container: 'body'
   		});
-    }
+    };
     var handleTimePicker = function(lang) {
     	if (typeof $.fn.pickatime != 'function') return false;
         $('.input-time').pickatime({
@@ -895,15 +896,22 @@ var App = function () {
   				container: 'body',
                 clear: (lang == 'es' ? 'Borrar' : 'Clear')
         });
-    }
+    };
     var handleBootstrapAlertClose = function() {
 		$('[data-hide]').on('click', function() {
     		$(this).closest("." + $(this).attr('data-hide')).hide();
     	});
-    }
+    };
+    var handleBootstrapSwitch = function(lang) {
+        if (typeof $.fn.bootstrapSwitch == 'function') {
+            $('input.switch').bootstrapSwitch({
+                onText: lang == 'es' ? 'SÍ' : 'ON',
+                offText: lang == 'es' ? 'NO' : 'OFF'
+            });
+        }
+    };
 
 	return {
-
         //Initialise theme pages
         init: function (lang) {
 		    checkLayout();	//Function to check if mini menu/fixed header is activated
@@ -922,11 +930,12 @@ var App = function () {
 			handleGoToTop(); 	//Funtion to handle goto top buttons
 			handleNavbarFixedTop();		//Function to check & handle if navbar is fixed top
 			//handleThemeSkins();		//Function to handle theme skins
-            handleSelect2();
+            handleSelect2(lang);
             handleDatePicker(lang);
             handleTimePicker(lang);
             handleCalendar(lang);
             handleBootstrapAlertClose();
+            handleBootstrapSwitch(lang);
         },
 
         //Set page

@@ -69,8 +69,8 @@ Panel de Administración
                     </p>
                 </div>
             </div-->
-            <div class="col-md-12">
-                <div id='calendar'></div>
+            <div class="col-md-12 calendar-holder">
+                <div class='full-calendar'></div>
             </div>
         </div>
         {{ $frm->panelClose() }}
@@ -139,57 +139,17 @@ Panel de Administración
     {{ HTML::script('js/fullcalendar/lang/' . Config::get('app.locale') . '.js') }}
 <?php endif; ?>
 {{ HTML::script('js/panel.js') }}
-<script>
+<script type="text/javascript">
     var url_update_counter = "{{ URL::route('admin_citas_count_get') }}";
 
     function getCalendarEvents() {
-        /*var date = new Date();
+        var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
-        var y = date.getFullYear();*/
+        var y = date.getFullYear();
 
         return [
-            @foreach ($events as $event)
-                <?php
-                    $paciente = $event->paciente;
-                    $title = str_replace('\'', '', Functions::firstNameLastName($paciente->nombre, $paciente->apellido));
-                    //fecha
-                    $date = explode('-', $event->fecha);
-                    $date = array_map('intval', $date);
-                    //hora inicio
-                    if (!empty($event->hora_inicio)) {
-                        $start = explode(':', Functions::justTime($event->hora_inicio, false));
-                        $start = array_map('intval', $start);
-                    }
-                    else $start = false;
-                    //hora fin
-                    if (!empty($event->hora_fin)) {
-                        $end = explode(':', Functions::justTime($event->hora_fin, false));
-                        $end = array_map('intval', $end);
-                    }
-                    else $end = false;
-                ?>
                 {
-                    id: '{{ $event->id }}',
-
-                    title: '{{ $title }}',
-
-                    @if ($start)
-                    start: new Date({{ $date[0] }}, {{ $date[1] - 1 }}, {{ $date[2] }}, {{ $start[0] }}, {{ $start[1] }}, 0),
-                    @else
-                    start: new Date({{ $date[0] }}, {{ $date[1] - 1 }}, {{ $date[2] }}),
-                    @endif
-
-                    @if ($end)
-                    end: new Date({{ $date[0] }}, {{ $date[1] - 1 }}, {{ $date[2] }}, {{ $end[0] }}, {{ $end[1] }}, 0),
-                    @endif
-
-                    allDay: {{ $end ? 'false' : 'true' }},
-
-                    backgroundColor: Theme.colors.{{ $event->estado == 1 ? 'blue' : 'gray' }}
-                },
-            @endforeach
-                /*{
                     title: 'All Day Event',
                     start: new Date(y, m, 1),
                     backgroundColor: Theme.colors.blue,
@@ -240,7 +200,7 @@ Panel de Administración
                     end: new Date(y, m, 29),
                     url: 'http://google.com/',
                     backgroundColor: Theme.colors.green,
-                }*/
+                }
                ];
     }
 
@@ -293,7 +253,7 @@ Panel de Administración
             }
             $('#calendar').fullCalendar( 'renderEvent', event, true );*/
             var $cal = $('#calendar');
-            $cal.fullCalendar('renderEvent',
+            /*$cal.fullCalendar('renderEvent',
                 {
                     title: data['titulo'],
                     start: new Date(data['inicio']['year'], data['inicio']['month'] - 1, data['inicio']['day'], isset(data['inicio']['hour']) ? data['inicio']['hour'] : 0, isset(data['inicio']['minutes']) ? data['inicio']['minutes'] : 0),
@@ -302,7 +262,8 @@ Panel de Administración
                 },
                 true // make the event "stick"
             );
-            $cal.fullCalendar('unselect');
+            $cal.fullCalendar('unselect');*/
+            $cal.fullCalendar( 'refetchEvents' );
         }
     }
 
@@ -313,6 +274,13 @@ Panel de Administración
 
         $('#new_event_ok').click(function() {
             submitForm( $('#frm_data_new_event'), submitFormDone );
+        });
+
+        $.each($('.full-calendar'), function(i, o) {
+            $(o).fullCalendar( 'addEventSource', {
+                 url: '{{ URL::route('calendar_source') }}'
+                 //events: getCalendarEvents()
+            });
         });
 
     });

@@ -76,7 +76,9 @@ class AreaController extends BaseController {
         //left panel
         //$output .= $frm->halfPanelOpen(true);
             $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
-            $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
+            if (!empty($item->descripcion)) {
+                $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
+            }
             $output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
         //$output .= $frm->halfPanelClose();
         

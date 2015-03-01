@@ -9,20 +9,6 @@ return array(
     'patient' => 'Paciente',
     'record_date' => 'Fecha de registro',
 
-    'years' => 'años',
-    'months' => 'meses',
-    'days' => 'días',
-    'hours' => 'horas',
-    'minutes' => 'minutos',
-    'seconds' => 'segundos',
-
-    'year' => 'año',
-    'month' => 'mes',
-    'day' => 'día',
-    'hour' => 'hora',
-    'minute' => 'minuto',
-    'second' => 'segundo',
-
     'new_event' => 'Nueva cita',
 
     'no_time' => 'Sin hora definida',

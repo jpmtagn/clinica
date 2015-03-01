@@ -6,16 +6,13 @@ Panel de Administración
 
 @section('cabecera')
 {{ HTML::style('js/select2/select2.min.custom.css') }}
-{{ HTML::style('js/bootstrap-slider/bootstrap-slider.css') }}
+{{ HTML::style('js/bootstrap-switch/bootstrap-switch.min.css') }}
 @stop
 
 @section('contenido')
 <?php
     $frm = new AForm;
-    $key = 'servicio';
-
-    $slider_create_script = '';
-    $slider_edit_script = '';
+    $key = 'equipo';
 ?>
 <!-- PAGE HEADER-->
 <div class="row">
@@ -31,7 +28,7 @@ Panel de Administración
             </ul>
             <!-- /BREADCRUMBS -->
             <!-- HEAD -->
-            {{ $frm->header(Lang::get($key . '.title_plural'), $total, 'fa-check-square-o') }}
+            {{ $frm->header(Lang::get($key . '.title_plural'), $total, 'fa-plug') }}
             <!-- /HEAD -->
         </div>
     </div>
@@ -79,11 +76,11 @@ Panel de Administración
         <!-- CREATE NEW -->
         {{ $frm->panelOpen('create', Lang::get('global.new'), 'fa-plus', 'primary hidden', array('collapse','remove')) }}
         <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_' . $key . '_registrar_post') }}">
-            {{ $frm->text('nombre', null, Lang::get('servicio.name'), '', true) }}
-            {{ $frm->text('descripcion', null, Lang::get('servicio.description')) }}
-            {{ $frm->slider('duracion', null, Lang::get('servicio.duration'), $duraciones, $slider_create_script) }}
-            {{ $frm->multiselect('consultorios[]', 'consultorios', Lang::get('consultorio.title_plural'), $consultorios) }}
-            {{-- $frm->remoteSelect('consultorios[]', 'consultorios', Lang::get('consultorio.title_plural'), URL::route('admin_consultorios_list'), true) --}}
+            {{ $frm->text('nombre', null, Lang::get('equipo.name'), '', true) }}
+            {{ $frm->text('descripcion', null, Lang::get('equipo.description')) }}
+            {{ $frm->number('cantidad', null, Lang::get('equipo.quantity')) }}
+            {{ $frm->checkbox('inamovible', null, Lang::get('equipo.immovable')) }}
+            {{ $frm->multiselect('servicios[]', 'servicios', Lang::get('servicio.title_plural'), $servicios) }}
             <br>
             {{ Form::token() }}
             {{ $frm->submit() }}
@@ -95,10 +92,11 @@ Panel de Administración
         {{ $frm->panelOpen('edit', Lang::get('global.modify'), 'fa-pencil', 'orange hidden', array('collapse','remove')) }}
         <form id="frm_data_edit" class="form-horizontal" role="form" action="{{ URL::route('admin_' . $key . '_editar_post') }}">
             {{ $frm->id() }}
-            {{ $frm->text('nombre', null, Lang::get('servicio.name'), '', true) }}
-            {{ $frm->text('descripcion', null, Lang::get('servicio.description')) }}
-            {{ $frm->slider('duracion', null, Lang::get('servicio.duration'), $duraciones, $slider_edit_script) }}
-            {{ $frm->multiselect('consultorios[]', 'consultorios', Lang::get('consultorio.title_plural'), $consultorios) }}
+            {{ $frm->text('nombre', null, Lang::get('equipo.name'), '', true) }}
+            {{ $frm->text('descripcion', null, Lang::get('equipo.description')) }}
+            {{ $frm->number('cantidad', null, Lang::get('equipo.quantity')) }}
+            {{ $frm->checkbox('inamovible', null, Lang::get('equipo.immovable')) }}
+            {{ $frm->multiselect('servicios[]', 'servicios', Lang::get('servicio.title_plural'), $servicios) }}
 
             {{ Form::token() }}
             {{ $frm->submit(null, 'btn-warning') }}
@@ -119,21 +117,9 @@ Panel de Administración
 <?php if (Config::get('app.locale') != 'en') : ?>
     {{ HTML::script('js/select2/select2_locale_' . Config::get('app.locale') . '.js') }}
 <?php endif; ?>
-{{ HTML::script('js/bootstrap-slider/bootstrap-slider.js') }}
+{{ HTML::script('js/bootstrap-switch/bootstrap-switch.min.js') }}
 {{ HTML::script('js/panel.js') }}
 <script>
-    function beforePanelCreate() {
-        setTimeout(function() {
-            {{ $slider_create_script }}
-        }, 200);
-    }
-
-    function beforePanelEdit() {
-        setTimeout(function() {
-            {{ $slider_edit_script }}
-        }, 200);
-    }
-
     var url_update_counter = "{{ URL::route('admin_' . $key . '_count_get') }}";
 
     $(document).ready(function() {

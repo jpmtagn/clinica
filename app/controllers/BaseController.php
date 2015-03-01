@@ -235,6 +235,7 @@ class BaseController extends Controller {
      * @param &$search_fields
      * @param &$match_total
      * @param $fields
+     * @return array
      */
     public function buscar($query, $page, &$search_fields, &$match_total, $fields = null) {
         $model = static::MODEL;
@@ -284,11 +285,13 @@ class BaseController extends Controller {
 
     /**
      * Compara el valor de query con los datos en la base de datos y retorna un arreglo con los registros que coincidan
+     * @param $nombre_tabla
      * @param $query
      * @param $page
      * @param &$search_fields
      * @param &$match_total
      * @param $fields
+     * @return array|\Illuminate\Database\Query\Builder|static
      */
     public function buscarTabla($nombre_tabla, $query, $page, $search_fields, &$match_total, $fields = null) {
         $records = DB::table($nombre_tabla);

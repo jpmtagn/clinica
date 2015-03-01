@@ -263,6 +263,14 @@
                         <span class="menu-text">{{ Lang::get('servicio.title_plural') }}</span>
                     </a>
                 </li>
+
+                <!-- equipos -->
+                <li{{ activeClassIf('equipo', $active_menu) }}>
+                    <a href="{{ URL::route('admin_equipos') }}">
+                        <i class="fa fa-fw fa-plug"></i>
+                        <span class="menu-text">{{ Lang::get('equipo.title_plural') }}</span>
+                    </a>
+                </li>
 			</ul>
 			<!-- /SIDEBAR MENU -->
 		</div>

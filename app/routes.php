@@ -22,6 +22,8 @@
 });*/
 
 
+Route::pattern('doctor_id', '[0-9]+');
+
 
 Route::get('/', array(
     'as' => 'inicio',
@@ -123,6 +125,12 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ServicioController@paginaAdmin'
     ));
 
+    Route::get('admin/equipos', array(
+        'as' => 'admin_equipos',
+        'uses' => 'EquipoController@paginaAdmin'
+    ));
+
+
     //total registros
     Route::get('admin/usuarios/total', array(
         'as' => 'admin_usuarios_count_get',
@@ -159,6 +167,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ServicioController@totalGet'
     ));
 
+    Route::get('admin/equipo/total', array(
+        'as' => 'admin_equipo_count_get',
+        'uses' => 'EquipoController@totalGet'
+    ));
+
     //select searchs
     Route::get('admin/tipos_parentescos/list', array(
         'as' => 'admin_tipos_parentescos_list',
@@ -178,6 +191,17 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('admin/doctores/list', array(
         'as' => 'admin_doctores_list',
         'uses' => 'PacienteController@listSeekDoctor'
+    ));
+
+    Route::get('admin/consultorios/list', array(
+        'as' => 'admin_consultorios_list',
+        'uses' => 'ConsultorioController@listSeek'
+    ));
+
+    //calendar
+    Route::get('calendario/citas', array(
+        'as' => 'calendar_source',
+        'uses' => 'CitaController@getCitas'
     ));
 
     /**
@@ -425,7 +449,6 @@ Route::group(array('before' => 'auth'), function() {
         ));
 
 
-        
         // PAGINA SERVIVIOS
 
         //buscar
@@ -462,6 +485,45 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/servicio/registrar', array(
             'as' => 'admin_servicio_registrar_post',
             'uses' => 'ServicioController@registrarPost'
+        ));
+
+
+        // PAGINA EQUIPOS
+
+        //buscar
+        Route::get('admin/equipo/buscar', array(
+            'as' => 'admin_equipo_buscar_get',
+            'uses' => 'EquipoController@buscarGet'
+        ));
+
+        //info
+        Route::get('admin/equipo/info', array(
+            'as' => 'admin_equipo_info_get',
+            'uses' => 'EquipoController@infoGet'
+        ));
+
+        //datos para editar
+        Route::get('admin/equipo/datos', array(
+            'as' => 'admin_equipo_datos_get',
+            'uses' => 'EquipoController@datosGet'
+        ));
+
+        //acciones (eliminar)
+        Route::post('admin/equipo/accion', array(
+            'as' => 'admin_equipo_accion_post',
+            'uses' => 'EquipoController@accionPost'
+        ));
+
+        //editar
+        Route::post('admin/equipo/editar', array(
+            'as' => 'admin_equipo_editar_post',
+            'uses' => 'EquipoController@editarPost'
+        ));
+
+        //registrar
+        Route::post('admin/equipo/registrar', array(
+            'as' => 'admin_equipo_registrar_post',
+            'uses' => 'EquipoController@registrarPost'
         ));
 
     });

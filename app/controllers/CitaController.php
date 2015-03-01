@@ -43,12 +43,12 @@ class CitaController extends BaseController {
     public function paginaCalendario() {
         if (Auth::user()->admin || User::is('doctor')) {
             //$total = $this->getTotalItems();
-            $model = self::MODEL;
-            $events = $model::with('paciente')->latestOnes()->get();
+            //$model = self::MODEL;
+            //$events = $model::with('paciente')->latestOnes()->get();
             return View::make('admin.calendario')->with(
                 array(
-                    'active_menu' => 'citas',
-                    'events' => $events
+                    'active_menu' => 'citas'//,
+                    //'events' => $events
                     //'total' => $total
                 )
             );
@@ -146,11 +146,11 @@ class CitaController extends BaseController {
                         }
                     }
                     else {
-                        $output .=  ($remaining->y ? (Functions::singlePlural(Lang::get('citas.year'), Lang::get('citas.years'), $remaining->y, true) . ', ') : '') . 
-                                    ($remaining->m ? (Functions::singlePlural(Lang::get('citas.month'), Lang::get('citas.months'), $remaining->m, true) . ', ') : '') . 
-                                    ($remaining->d ? (Functions::singlePlural(Lang::get('citas.day'), Lang::get('citas.days'), $remaining->d, true) . ', ') : '') . 
-                                    ($remaining->h ? (Functions::singlePlural(Lang::get('citas.hour'), Lang::get('citas.hours'), $remaining->h, true) . ', ') : '') . 
-                                    ($remaining->i ? (Functions::singlePlural(Lang::get('citas.minute'), Lang::get('citas.minutes'), $remaining->i, true)) : '');
+                        $output .=  ($remaining->y ? (Functions::singlePlural(Lang::get('global.year'), Lang::get('global.years'), $remaining->y, true) . ', ') : '') .
+                                    ($remaining->m ? (Functions::singlePlural(Lang::get('global.month'), Lang::get('global.months'), $remaining->m, true) . ', ') : '') .
+                                    ($remaining->d ? (Functions::singlePlural(Lang::get('global.day'), Lang::get('global.days'), $remaining->d, true) . ', ') : '') .
+                                    ($remaining->h ? (Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $remaining->h, true) . ', ') : '') .
+                                    ($remaining->i ? (Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $remaining->i, true)) : '');
                     }
                 }
             }
@@ -258,6 +258,74 @@ EOT;
         }
 
         return $output;
+    }
+
+
+    public function getCitas() {
+        $cal_start = Input::get('start');
+        $cal_end = Input::get('end');
+        $citas_json = array();
+        $citas = Cita::fromDate($cal_start)->toDate($cal_end)->get();
+
+        foreach ($citas as $cita) {
+            $paciente = $cita->paciente;
+            $title = str_replace('\'', '', Functions::firstNameLastName($paciente->nombre, $paciente->apellido));
+            //fecha
+            $date = explode('-', $cita->fecha);
+            $date = array_map('intval', $date);
+            //hora inicio
+            if (!empty($cita->hora_inicio)) {
+                $start = explode(':', Functions::justTime($cita->hora_inicio, false));
+                $start = array_map('intval', $start);
+            }
+            else $start = false;
+            //hora fin
+            if (!empty($cita->hora_fin)) {
+                $end = explode(':', Functions::justTime($cita->hora_fin, false));
+                $end = array_map('intval', $end);
+            }
+            else $end = false;
+
+            $y = $date[0];
+            $m = $date[1] - 1;
+            $d = $date[2];
+
+            if ($start) {
+                $h = $start[0];
+                $i = $start[1];
+                $start = $cita->hora_inicio;
+            }
+            else {
+                $start = "new Date($y, $m, $d)";
+            }
+
+            if ($end) {
+                $h = $end[0];
+                $i = $end[1];
+                $end = "\"end\": \"$cita->hora_fin\",";
+            }
+            else {
+                $end = '';
+            }
+
+            $all_day = $end != '' ? 'false' : 'true';
+
+            //$color = $cita->estado == 1 ? 'blue' : 'gray';
+            $colors = array('#2983ae', 'blue', 'red', 'yellow');
+            $color = $colors[$cita->doctor_id - 1];
+
+            $citas_json[] = <<<EOT
+            {
+                "id": "{$cita->id}",
+                "title": "{$title}",
+                "start": "{$start}",{$end}
+                "allDay": {$all_day},
+                "backgroundColor": "{$color}"
+            }
+EOT;
+        }
+
+        return '[' . implode(',', $citas_json) . ']';
     }
 
 }

@@ -2,17 +2,17 @@
 /**
  * Created by PhpStorm.
  * User: Alfredo
- * Date: 2/26/2015
- * Time: 10:35 PM
+ * Date: 2/28/2015
+ * Time: 12:06 PM
  */
 
-class ConsultorioController extends BaseController {
+class EquipoController extends BaseController {
 
     const PAGE_LIMIT = 5;
 
-    const MODEL = 'Consultorio';
+    const MODEL = 'Equipo';
 
-    const LANG_FILE = 'consultorio';
+    const LANG_FILE = 'equipo';
 
     const TITLE_FIELD = 'nombre';
 
@@ -25,13 +25,13 @@ class ConsultorioController extends BaseController {
     public function paginaAdmin() {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
-            $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
+            $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
             $total = $this->getTotalItems();
-            return View::make('admin.consultorio')->with(
+            return View::make('admin.equipos')->with(
                 array(
-                    'active_menu' => 'area',
+                    'active_menu' => 'equipo',
                     'total' => $total,
-                    'areas' => $areas
+                    'servicios' => $servicios,
                 )
             );
         }
@@ -53,6 +53,11 @@ class ConsultorioController extends BaseController {
      * @return bool
      */
     public function editarRelational($item) {
+        //SERVICIOS
+        $items = isset($_POST['servicios']) ? array_map('intval', Input::get('servicios')) : false;
+        if ($items) {
+            $item->servicios()->sync( $items );
+        }
         return true; //needs to return true to output json
     }
 
@@ -61,7 +66,7 @@ class ConsultorioController extends BaseController {
      * @param $item
      */
     public function additionalData($item) {
-
+        $this->setReturn('servicios', Functions::arrayIt($item->servicios, 'id', 'nombre'));
     }
 
     /**
@@ -69,12 +74,13 @@ class ConsultorioController extends BaseController {
      * @param $item
      * @return string
      */
-    public function outputInf( $item )
-    {
+    public function outputInf( $item ) {
         $frm = new AForm;
         $output = "";
-        $output .= $frm->id($item->id);
+        $output .= $frm->id( $item->id );
         $output .= $frm->hidden('action');
+
+        $servicios = $item->servicios->lists('nombre');
 
         //left panel
         //$output .= $frm->halfPanelOpen(true);
@@ -82,10 +88,9 @@ class ConsultorioController extends BaseController {
         if (!empty($item->descripcion)) {
             $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
         }
-        $output .= $frm->view('capacidad', Lang::get(self::LANG_FILE . '.capacity'), $item->capacidad);
-        $output .= $frm->view('area', Lang::get('area.title_single'), $item->area->nombre);
-        $output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('servicio.title_plural'), $item->servicios->count());
-        //$output .= $frm->view('total', Lang::get('global.total') . ' ' . Lang::get('consultorio.title_plural'), $item->consultorios->count());
+        $output .= $frm->view('cantidad', Lang::get(self::LANG_FILE . '.quantity'), $item->cantidad);
+        $output .= $frm->view('inamovible', Lang::get(self::LANG_FILE . '.immovable'), ucfirst(Lang::get('global.' . ($item->inamovible ? 'yes' : 'no'))));
+        $output .= $frm->view('servicio', Lang::get('servicio.title_' . Functions::singlePlural('single', 'plural', count($servicios))), implode(', ', $servicios));
         //$output .= $frm->halfPanelClose();
 
         //right panel

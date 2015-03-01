@@ -84,7 +84,7 @@ Panel de Administración
         {{ $frm->panelOpen('create', 'Nuevo', 'fa-plus', 'primary hidden', array('collapse','remove')) }}
             <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_usuarios_registrar_post') }}">
                 {{ $frm->email() }}
-                {{ $frm->checkbox('admin', 'Administrador') }}
+                {{ $frm->checkbox('admin', null, 'Administrador') }}
                 <!--div class="form-group">
                     <label class="col-sm-2 control-label">Roles</label>
                     <select multiple="" id="rol" name="rol" class="multi-select col-sm-9 col-xs-10">
@@ -108,8 +108,8 @@ Panel de Administración
             <form id="frm_data_edit" class="form-horizontal" role="form" action="{{ URL::route('admin_usuarios_editar_post') }}">
                 {{ $frm->id() }}
                 {{ $frm->email() }}
-                {{ $frm->checkbox('admin', 'Administrador') }}
-                {{ $frm->checkbox('activo', 'Activo') }}
+                {{ $frm->checkbox('admin', null, 'Administrador') }}
+                {{ $frm->checkbox('activo', null, 'Activo') }}
                 {{ $frm->multiselect('roles[]', 'roles', 'Rol', $roles) }}
                 {{ Form::token() }}
                 {{ $frm->submit('Guardar', 'btn-warning') }}

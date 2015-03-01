@@ -57,6 +57,9 @@ var Panel = {
             $frm.find('input[type=hidden].select2ajax').select2('val','');
             $frm.find('input[type=hidden].select2tags').select2('val','');
         }
+        if (typeof $.fn.slider != 'undefined') {
+            $frm.find('.input-slider[data]').slider('setValue', 0);
+        }
     },
 
     //takes the json data and use it to fill a form
@@ -87,11 +90,18 @@ var Panel = {
                                         o.pickatime('picker').clear();
                                     }
                                 }
+                                //slider
+                                else if (o.hasClass('input-slider') && (typeof o.attr('data') != 'undefined')) {
+                                    o.slider('setValue', value);
+                                }
                                 else {
                                     o.val( value );
                                 }
                             }
                             else if (o.attr('type') == 'checkbox') {
+                                if (o.hasClass('switch') && typeof $.fn.bootstrapSwitch == 'function') {
+                                    o.bootstrapSwitch('state', value == 1, true);
+                                }
                                 o.prop('checked', value == 1);
                             }
                             else if (o.attr('type') == 'hidden') {
@@ -614,7 +624,7 @@ var Panel = {
                 Panel.create.collapse();
                 //binds an event to restore status if user enters new data
                 $('#frm_data_new').find('input').on('change.after_saved', function() {
-                    Panel.create.status.restore();
+                    Panel.create.status.restore(false);
                     //unbinds the event; no longer needed
                     $('#frm_data_new').find('input').off('change.after_saved');
                 });
@@ -630,11 +640,14 @@ var Panel = {
                 Panel.create.expand();
                 App.unblockUI( $('#create_panel') );
             },
-            restore: function() {
+            restore: function(expand) {
+                if (typeof expand != 'boolean') expand = true;
                 $('#create_icon').removeClass(Panel.allIcons()).addClass('fa-plus');
                 $('#create_lbl').html('Nuevo');
-                Panel.create.expand();
-                App.unblockUI( $('#create_panel') );
+                if (expand) {
+                    Panel.create.expand();
+                    App.unblockUI($('#create_panel'));
+                }
             }
         }
     },
@@ -904,7 +917,7 @@ function setTimePicker(o, value) {
         o.pickatime('picker').set('select', [value.getUTCHours(), value.getUTCMinutes()]);
         return true;
     }
-    t = value.split(' ');
+    var t = value.split(' ');
     //"2015-01-26 13:48:00"
     if (t.length == 2) {
       t = t[1].split(':');

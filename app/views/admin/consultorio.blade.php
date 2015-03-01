@@ -78,7 +78,7 @@ Panel de Administración
             {{ $frm->text('nombre', null, Lang::get('consultorio.name'), '', true) }}
             {{ $frm->text('descripcion', null, Lang::get('consultorio.description')) }}
             {{ $frm->number('capacidad', null, Lang::get('consultorio.capacity')) }}
-            {{ $frm->select('area_id', null, Lang::get('area.title'), $areas) }}
+            {{ $frm->select('area_id', null, Lang::get('area.title_single'), $areas) }}
             <br>
             {{ Form::token() }}
             {{ $frm->submit() }}
@@ -93,7 +93,7 @@ Panel de Administración
             {{ $frm->text('nombre', null, Lang::get('consultorio.name'), '', true) }}
             {{ $frm->text('descripcion', null, Lang::get('consultorio.description')) }}
             {{ $frm->number('capacidad', null, Lang::get('consultorio.capacity')) }}
-            {{ $frm->select('area_id', null, Lang::get('area.title'), $areas) }}
+            {{ $frm->select('area_id', null, Lang::get('area.title_single'), $areas) }}
 
             {{ Form::token() }}
             {{ $frm->submit(null, 'btn-warning') }}

@@ -81,7 +81,7 @@ class Functions {
     }
 
     public static function ampmto24($time) {
-        if (empty($time)) { return null; die(); }
+        if (empty($time)) return null;
         $time = explode(' ', $time);
         $ampm = $time[1];
         $time = explode(':', $time[0]);
@@ -89,24 +89,36 @@ class Functions {
         return ($time[0] < 10 ? '0' : '') . $time[0] . ':' . $time[1];
     }
 
-    public static function explodeDateTime($datetime) {
-      $ret = array();
-      //fecha
-      $date = explode('-', $datetime, 3);
-      $date = array_map('intval', $date);
-      $ret['year'] = $date[0];
-      $ret['month'] = $date[1];
-      $ret['day'] = $date[2];
-      
-      //hora
-      $start = explode(':', Functions::justTime($datetime, false, 3));
-      if (count($start) >= 2) {
-        $start = array_map('intval', $start);
-        $ret['hour'] = $start[0];
-        $ret['minutes'] = $start[1];
-      }
+    public static function explodeDateTime($datetime, $ignore_time = false) {
+        $ret = array();
+        //fecha
+        $date = explode('-', $datetime, 3);
+        $date = array_map('intval', $date);
+        $ret['year'] = $date[0];
+        $ret['month'] = $date[1];
+        $ret['day'] = $date[2];
 
-      return $ret;
+        //hora
+        if (!$ignore_time) {
+            $start = explode(':', Functions::justTime($datetime, false, 3));
+            if (count($start) >= 2) {
+                $start = array_map('intval', $start);
+                $ret['hour'] = $start[0];
+                $ret['minutes'] = $start[1];
+            }
+        }
+
+        return $ret;
+    }
+
+    public static function minToHours($min) {
+        $hours = 0;
+        if ($min > 59) {
+            $hours = intval($min / 60);
+            $min -= $hours * 60;
+        }
+        return ($hours ? (Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $hours, true)) : '') .
+                         (Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $min, true));
     }
 
     public static function wrapWithSpanIf($to_be_wrapped, $wrap, $class = '', $find_str = '', $find_wrap_open = '<b><i>', $find_wrap_close = '</i></b>') {
@@ -332,12 +344,12 @@ class Functions {
 
             case 'all':
                 return 
-                    Functions::singlePlural(Lang::get('citas.year'), Lang::get('citas.years'), $interval->y, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('citas.month'), Lang::get('citas.months'), $interval->m, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('citas.day'), Lang::get('citas.days'), $interval->d, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('citas.hour'), Lang::get('citas.hours'), $interval->h, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('citas.minute'), Lang::get('citas.minutes'), $interval->m, true) . ", " . 
-                    Functions::singlePlural(Lang::get('citas.second'), Lang::get('citas.seconds'), $interval->s, true);
+                    Functions::singlePlural(Lang::get('global.year'), Lang::get('global.years'), $interval->y, true) . ', ' . 
+                    Functions::singlePlural(Lang::get('global.month'), Lang::get('global.months'), $interval->m, true) . ', ' . 
+                    Functions::singlePlural(Lang::get('global.day'), Lang::get('global.days'), $interval->d, true) . ', ' . 
+                    Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $interval->h, true) . ', ' . 
+                    Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $interval->m, true) . ", " . 
+                    Functions::singlePlural(Lang::get('global.second'), Lang::get('global.seconds'), $interval->s, true);
                 break;
 
             default:

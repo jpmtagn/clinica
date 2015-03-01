@@ -1,6 +1,0 @@
-select * from `usuario` where `id` = ? limit 1[1](1.24)
-
-select count(*) as aggregate from `paciente` where (`nombre` LIKE ? or `apellido` LIKE ? or `dni` LIKE ? or `direccion` LIKE ?)[%fleming%|%fleming%|%fleming%|%fleming%](1.1)
-
-select * from `paciente` where (`nombre` LIKE ? or `apellido` LIKE ? or `dni` LIKE ? or `direccion` LIKE ?) limit 5 offset 0[%fleming%|%fleming%|%fleming%|%fleming%](2.56)
-

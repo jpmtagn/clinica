@@ -94,6 +94,22 @@ class Cita extends Eloquent {
         return $query->where('fecha', '>', date('Y-m-d', strtotime("-1 week")));
     }
 
+    public function scopeFromDate($query, $val) {
+        $date = Functions::explodeDateTime($val, true);
+        if (checkdate($date['month'], $date['day'], $date['year'])) {
+            return $query->where('fecha', '>=', $val);
+        }
+        return $query;
+    }
+
+    public function scopeToDate($query, $val) {
+        $date = Functions::explodeDateTime($val, true);
+        if (checkdate($date['month'], $date['day'], $date['year'])) {
+            return $query->where('fecha', '<=', $val);
+        }
+        return $query;
+    }
+
 
     //GETTERS:
     public function getSearchable() {

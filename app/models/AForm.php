@@ -130,18 +130,15 @@ EOT;
 EOT;
     }
 
-    public function checkbox($name, $label = null, $id = null, $classes = "") {
+    public function checkbox($name, $id = null, $label = null) {
         if ($id == null) $id = $name;
         if ($label == null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         return <<<EOT
-            <div class="form-group {$classes}">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="{$id}" name="{$name}"> {$label}
-                        </label>
-                    </div>
+            <div class="form-group">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    <input type="checkbox" class="switch" id="{$id}" name="{$name}" value="1">
                 </div>
             </div>
 EOT;
@@ -176,6 +173,7 @@ EOT;
 
         $script = <<<EOT
             $('#{$id}').slider({
+                value: 0,
                 ticks: [{$ticks_vals}],
                 ticks_labels: [$ticks_lbls],
                 step: {$ticks_snap} /*ticks_snap_bounds: {$ticks_snap}*/
@@ -186,7 +184,7 @@ EOT;
             <div class="form-group">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
-                    <input type="text" id="{$id}" name="{$name}" style="width:95%" placeholder="{$label}"{$value}>
+                    <input type="text" id="{$id}" name="{$name}" style="width:95%" class="input-slider" placeholder="{$label}"{$value}>
                 </div>
             </div>
 EOT;
@@ -262,7 +260,7 @@ EOT;
         return $output;
     }
 
-    public function remoteSelect($name, $id = null, $label = null, $route = "") {
+    public function remoteSelect($name, $id = null, $label = null, $route = "", $multiple = false) {
         if ($id == null) $id = $name;
         if ($label == null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
@@ -272,11 +270,12 @@ EOT;
                 <input type="hidden" id="{$id}" name="{$name}" class="select2ajax bigdrop col-md-9">
             </div>
 EOT;
+        $multiple = $multiple ? 'multiple: true,' : '';
         $this->script.= <<<EOT
             $("#{$id}").select2({
                 allowClear: true,
                 placeholder: "{$label}",
-                minimumInputLength: 1,
+                minimumInputLength: 1,{$multiple}
                 ajax: {
                     url: "{$route}",
                     dataType: 'json',
