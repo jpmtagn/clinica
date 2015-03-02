@@ -45,11 +45,13 @@ class CitaController extends BaseController {
             //$total = $this->getTotalItems();
             //$model = self::MODEL;
             //$events = $model::with('paciente')->latestOnes()->get();
+            $doctores = Doctor::getAll();
             return View::make('admin.calendario')->with(
                 array(
-                    'active_menu' => 'citas'//,
+                    'active_menu' => 'citas',
                     //'events' => $events
-                    //'total' => $total
+                    //'total' => $total,
+                    'doctores' => $doctores
                 )
             );
         }
@@ -320,7 +322,9 @@ EOT;
                 "title": "{$title}",
                 "start": "{$start}",{$end}
                 "allDay": {$all_day},
-                "backgroundColor": "{$color}"
+                "backgroundColor": "{$color}",
+                "doctor_id": "{$cita->doctor_id}",
+                "patient_id": "{$cita->paciente_id}"
             }
 EOT;
         }

@@ -63,7 +63,7 @@ return array(
     "required_with_all" => "El campo :attribute es obligatorio cuando :values está presente.",
     "required_without" => "El campo :attribute es obligatorio cuando :values no está presente.",
     "required_without_all" => "El campo :attribute es obligatorio cuando ninguno de :values estén presentes.",
-    "same"             => ":attribute y :other deben coincidir.",
+    "same"             => "Las contraseñas no coinciden.", //":attribute y :other deben coincidir." <-- not only for passwords but i use it only for it
     "size"             => array(
         "numeric" => "El tamaño de :attribute debe ser :size.",
         "file"    => "El tamaño de :attribute debe ser :size kilobytes.",

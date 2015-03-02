@@ -813,9 +813,9 @@ var Panel = {
             $panel.find('.panel_lbl').html('Guardando...');
             App.blockUI( $panel );
         },
-        saved: function( $panel ) {
+        saved: function( $panel, msg ) {
             $panel.find('.panel_icon').removeClass(Panel.allIcons()).addClass('fa-check');
-            $panel.find('.panel_lbl').html('Guardado.');
+            $panel.find('.panel_lbl').html(typeof msg == 'string' ? msg : 'Guardado.');
             Panel.collapse( $panel );
             App.unblockUI( $panel );
         },

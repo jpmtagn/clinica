@@ -76,7 +76,7 @@ Panel de Administración
     <div class="col-sm-12">
 
         <!-- EDIT -->
-        {{ $frm->panelOpen('edit', 'Modificar', 'fa-pencil', 'orange', array('collapse','remove')) }}
+        {{ $frm->panelOpen('edit', Lang::get('global.modify'), 'fa-pencil', 'orange', array('collapse')) }}
         <form id="frm_data_edit_profile" class="form-horizontal" role="form" enctype="multipart/form-data" method="post" action="{{ URL::route('admin_pacientes_editar_post') }}">
 	        <div class="row">
 	        	<div class="col-md-8">
@@ -93,6 +93,7 @@ Panel de Administración
 		            {{ $frm->tagSelect('correos', null, Lang::get('pacientes.email')) }}
 		            {{ $frm->hidden('telefonos_check', 'telefonos_check', "", $field_values['telefonos']) }}
 		            {{ $frm->hidden('correos_check', 'correos_check', "", $field_values['correos']) }}
+		            {{ $frm->hidden('usuario_id', null, "", Auth::user()->id) }}
 
 		            {{ Form::token() }}
 			    </div>
@@ -117,9 +118,19 @@ Panel de Administración
 				</div>
 			</div>
         </form>
-        <!--form id="frm_data_get" method="get" action="{{ URL::route('admin_pacientes_datos_get') }}">
-            {{-- Form::token() --}}
-        </form-->
+        {{ $frm->panelClose() }}
+
+
+        <!-- CHANGE PASSWORD -->
+        {{ $frm->panelOpen('change_pass', Lang::get('usuarios.change_password'), 'fa-key', 'red', array('collapse')) }}
+        <form id="frm_data_change_pass" class="form-horizontal" role="form" method="post" action="{{ URL::route('change_password_post') }}">
+            {{ $frm->password('password_current', null, Lang::get('usuarios.current_password'), "", true) }}
+            {{ $frm->password('password', null, Lang::get('usuarios.password_new'), "", true) }}
+            {{ $frm->password('password2', null, Lang::get('usuarios.password_again'), "", true) }}
+            {{ Form::token() }}
+            <br>
+            {{ $frm->submit('Guardar', 'btn-danger') }}
+        </form>
         {{ $frm->panelClose() }}
 
     </div>
@@ -152,19 +163,75 @@ Panel de Administración
 
     }
 
-    //Dropzone.autoDiscover = false;
+    function save() {
+        Panel.edit.status.saving();
+        var $frm = $('#frm_data_edit_profile');
+        var url = $frm.attr('action');
+
+        var form_data = new FormData($frm[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: form_data, // serialized form elements with multipart enctype allowed.
+            processData: false,
+            contentType: false
+        }).done(function(data) {
+            if (data['ok']) {
+                if (typeof data['created_id'] != 'undefined') {
+                    $frm.find('input[name=id]').val( data['created_id'] );
+                }
+                Panel.edit.status.saved();
+            }
+            else {
+                Panel.edit.status.error(data['err']);
+            }
+        }).fail(function(data) {
+            console.log(data); //failed
+            Panel.edit.status.error(data['responseText'].substr(0, 200));
+        });
+    }
+
+    function changePassword() {
+        var $panel = $('#change_pass_panel');
+        Panel.status.saving( $panel );
+        var $frm = $('#frm_data_change_pass');
+        var url = $frm.attr('action');
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: $frm.serialize()
+        }).done(function(data) {
+            if (data['ok']) {
+                Panel.status.saved($panel, data['msg']);
+                Panel.resetForm($frm);
+            }
+            else {
+                Panel.status.error($panel, data['err']);
+            }
+        }).fail(function(data) {
+            console.log(data); //failed
+            Panel.status.error($panel, data['responseText'].substr(0, 200));
+        });
+    }
 
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
-        /*$('#my_photo_dropzone').dropzone({
-        	url: '{{ URL::route('admin_pacientes_editar_post') }}',
-        	dictDefaultMessage: 'Arrastra aquí tu foto'
-        });*/
-	    /*var myDropzone = new Dropzone("#my_photo_dropzone");
-		myDropzone.on("addedfile", function(file) {
-			// Maybe display some more file information on your page
-		});*/
+		$('#frm_data_edit_profile').submit(function(e) {
+            setTimeout(save(), 100);
+            e.preventDefault();
+            return false;
+        });
+
+		$('#frm_data_change_pass').submit(function(e) {
+            setTimeout(changePassword(), 100);
+            e.preventDefault();
+            return false;
+        });
 
         {{ $frm->script() }}
 

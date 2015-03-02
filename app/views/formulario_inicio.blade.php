@@ -63,7 +63,7 @@ class="login"
                             <div class="form-actions">
                                 <!-- recordarme -->
                                 <label class="checkbox">
-                                    <input type="checkbox" id="rememberme" name="rememberme" class="uniform" value=""> {{ Lang::get('formulario_inicio.remember_me') }}
+                                    <input type="checkbox" id="rememberme" name="rememberme" class="uniform" value="1"> {{ Lang::get('formulario_inicio.remember_me') }}
                                 </label>
 
                                 {{ Form::token() }}

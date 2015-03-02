@@ -766,7 +766,7 @@ var App = function () {
 			defaultView: 'agendaWeek',
     		timeFormat: 'h(:mm)t',
     		axisFormat: 'h(:mm)t',
-    		slotDuration: '00:15:00',
+    		slotDuration: '00:10:00',
 			businessHours: {
 			    start: '08:00',
 			    end: '18:00',
@@ -796,6 +796,16 @@ var App = function () {
 					fn_drop_event(event);
 				}
 			},
+            eventRender: function( event, element, view ) {
+                if (typeof fn_render_event == 'function') {
+                    fn_render_event(event);
+                }
+            },
+            eventAfterAllRender: function( view ) {
+                if (typeof fn_render_all_events == 'function') {
+                    fn_render_all_events(view);
+                }
+            },
 			editable: true,
 			droppable: true, // this allows things to be dropped onto the calendar !!!
 			drop: function(date, allDay) { // this function is called when something is dropped
@@ -892,9 +902,24 @@ var App = function () {
         $('.input-time').pickatime({
         		format: 'hh:i A',
                 formatSubmit: 'HH:i',
+                interval: 10,
                 editable: true,
   				container: 'body',
-                clear: (lang == 'es' ? 'Borrar' : 'Clear')
+                clear: (lang == 'es' ? 'Borrar' : 'Clear'),
+                formatLabel: function(time) {
+                    var hour = Math.floor(Math.abs(time.pick/60));
+                    if (hour >= 8 && hour <= 20) {
+                        if (hour == (time.pick/60)) {
+                            return "<b>hh:i A</b>";
+                        }
+                        else {
+                            return "h:i A";
+                        }
+                    }
+                    else {
+                        return "<sm!all>h:i A</sm!all>";
+                    }
+                }
         });
     };
     var handleBootstrapAlertClose = function() {

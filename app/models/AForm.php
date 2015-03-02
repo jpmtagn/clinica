@@ -338,8 +338,10 @@ EOT;*/
             $value = '';
         }
 
+        if ($classes != '') $classes = ' class="' . $classes . '"';
+
         return <<<EOT
-        <input type="hidden" name="{$name}" id="{$id}" class="{$classes}"{$value}>
+        <input type="hidden" name="{$name}" id="{$id}"{$classes}{$value}>
 EOT;
     }
 

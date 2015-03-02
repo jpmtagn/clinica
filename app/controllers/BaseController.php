@@ -149,11 +149,11 @@ class BaseController extends Controller {
     public function editarPost() {
         $item = $this->editar(static::MODEL);
         if ($item != false) {
-            $view = $this->editarRelational($item);
+            /*$view = */$this->editarRelational($item);
             //if a file was uploaded (a view has been returned) then send the page instead of the ajax json
-            if ($view !== true) {
+            /*if ($view !== true) {
                 return $view;
-            }
+            }*/
         }
         return $this->returnJson();
     }
@@ -379,6 +379,7 @@ class BaseController extends Controller {
                 if (!$this->afterValidation( Input::all() )) return false;
             }
             $created = $model::create(Input::all());
+            $this->setReturn('created_id', $created->id);
             $this->setSuccess( Lang::get('global.saved_msg'), false );
             return $created;
         }
@@ -424,7 +425,8 @@ class BaseController extends Controller {
             }
         }
         else {
-            $this->setError( Lang::get('global.not_found') );
+            //$this->setError( Lang::get('global.not_found') );
+            return $this->registrarPost();
         }
         return false;
     }
@@ -450,6 +452,8 @@ class BaseController extends Controller {
 
     /**
      * @param $err
+     * @param $return
+     * @return string
      */
     protected function setError($err, $return = true) {
         $this->output['ok'] = 0;

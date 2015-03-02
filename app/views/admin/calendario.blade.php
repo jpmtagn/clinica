@@ -47,29 +47,34 @@ Panel de Administración
         <!-- CALENDAR -->
         {{ $frm->panelOpen('calendar', Lang::get('citas.calendar'), 'fa-calendar', '', array('collapse')) }}
         <div class="row">
-            <!--div class="col-md-3">
+            <div class="col-md-2">
                 <div class="input-group">
-                     <input type="text" value="" class="form-control" placeholder="Event Event Title..." id="event-title" />
+                     <input type="text" value="" class="form-control" placeholder="{{ Lang::get('global.insert_search') }}" id="search_event_query" />
                      <span class="input-group-btn">
-                        <a href="javascript:;" id="add-event" class="btn btn-success">Add Event</a>
+                        <a href="#" id="search_event_btn" class="btn btn-default"><i class="fa fa-search"></i></a>
                      </span>
                 </div>
                 <div class="divide-20"></div>
-                <div id='external-events'>
-                    <h4>Draggable Events</h4>
+                <div class="external-events">
+                    <h4>{{ Lang::get('usuarios.doctor') }}</h4>
                     <div id="event-box">
-                        <div class='external-event'>My Event 1</div>
-                        <div class='external-event'>My Event 2</div>
-                        <div class='external-event'>My Event 3</div>
-                        <div class='external-event'>My Event 4</div>
-                        <div class='external-event'>My Event 5</div>
+                        <div class="list-group">
+                            @foreach ($doctores as $doctor)
+                                <a href="#" class="list-group-item filter-doctor" attr-id="{{ $doctor->usuario_id }}"> <!-- active -->
+                                    @if (!empty($doctor->avatar))
+                                        <img class="avatar-thumb" src="{{ URL::asset('img/avatars/s/' . $doctor->avatar) }}" alt="">
+                                    @else
+                                        <img class="avatar-thumb" src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
+                                    @endif
+                                    {{ Functions::firstNameLastName($doctor->nombre, '') }}
+                                    <span class="badge hidden">0</span>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
-                    <p>
-                    <input type='checkbox' id='drop-remove' class="uniform"/> <label for='drop-remove'>remove after drop</label>
-                    </p>
                 </div>
-            </div-->
-            <div class="col-md-12 calendar-holder">
+            </div>
+            <div class="col-md-10 calendar-holder">
                 <div class='full-calendar'></div>
             </div>
         </div>
@@ -132,7 +137,7 @@ Panel de Administración
 {{ HTML::script('js/pickadate/picker.time.js') }}
 {{ HTML::script('js/bootstrap-inputmask/bootstrap-inputmask.min.js') }}
 {{ HTML::script('js/fullcalendar/lib/moment.min.js') }}
-{{ HTML::script('js/fullcalendar/fullcalendar.min.js') }}
+{{ HTML::script('js/fullcalendar/fullcalendar.js') }} <!-- customized -->
 <?php if (Config::get('app.locale') != 'en') : ?>
     {{ HTML::script('js/select2/select2_locale_' . Config::get('app.locale') . '.js') }}
     {{ HTML::script('js/pickadate/translations/' . Config::get('app.locale') . '.js') }}
@@ -236,23 +241,39 @@ Panel de Administración
         $frm.submit();
     }
 
+    function fn_render_event(event) {
+        console.log('rendered: ' + event.id);
+    }
+
+    function fn_render_all_events(view) {
+        //updates count of events per doctors
+        var $a = $('a.filter-doctor');
+        $.each($a, function(i, o) {
+            var id = $(o).attr('attr-id') || '0';
+            window['total_' + id] = 0;
+        });
+        var $events = $('a.fc-event');
+        $.each($events, function(i, o) {
+            var id = $(o).find('input.doctor_id').val();
+            window['total_' + id] = (parseInt(window['total_' + id]) || 0) + 1;
+        });
+        $.each($a, function(i, o) {
+            var $o = $(o);
+            var id = $o.attr('attr-id') || '0';
+            var total = window['total_' + id];
+            if (total > 0 && id > 0) {
+                $o.find('span.badge').html(total).removeClass('hidden');
+            }
+            else {
+                $o.find('span.badge').addClass('hidden')
+            }
+        });
+    }
+
     function submitFormDone($frm, data) {
         submitFormDoneDefault($frm, data);
         if (data['ok'] == 1) {
-            /*if (data['end'])
-            var event = {
-                id: data['id'],
-                title: data['titulo']
-                backgroundColor: data['estado'] == 1 ? Theme.colors.blue : Theme.colors.gray
-            }*/
-            /*
-                allDay:
-                start:
-                end: data['end'],
-
-            }
-            $('#calendar').fullCalendar( 'renderEvent', event, true );*/
-            var $cal = $('#calendar');
+            var $cal = $('.full-calendar');
             /*$cal.fullCalendar('renderEvent',
                 {
                     title: data['titulo'],
@@ -264,6 +285,26 @@ Panel de Administración
             );
             $cal.fullCalendar('unselect');*/
             $cal.fullCalendar( 'refetchEvents' );
+        }
+    }
+
+    function highlightActiveDoctors() {
+        var $actives = $('a.filter-doctor.active');
+        if ($actives.length == 0) {
+            $('a.fc-event').removeClass('event-faded');
+        }
+        else {
+            $('a.fc-event').addClass('event-faded');
+            $.each($actives, function(i, o) {
+                var $o = $(o);
+                var $events = $('a.fc-event');
+                $.each($events, function(j, e) {
+                    var $e = $(e);
+                    if ($e.find('input.doctor_id').val() == $o.attr('attr-id')) {
+                        $e.removeClass('event-faded');
+                    }
+                });
+            });
         }
     }
 
@@ -281,6 +322,15 @@ Panel de Administración
                  url: '{{ URL::route('calendar_source') }}'
                  //events: getCalendarEvents()
             });
+        });
+
+        $('a.filter-doctor').click(function(e) {
+            var $a = $(this);
+            var id = $a.attr('attr-id');
+            $a.toggleClass('active');
+            highlightActiveDoctors();
+            e.preventDefault();
+            return false;
         });
 
     });

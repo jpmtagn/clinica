@@ -45,6 +45,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         $rules = array(
             'id'        => 'integer|min:1',
             'correo'    => 'required|email|max:255|unique:usuario,correo,' . (int)$ignore_id,
+            'password'  => 'required',
+            'password2' => 'same:password',
             'activo'    => 'in:on,1,0',
             'admin'     => 'in:on,1,0'
         );
@@ -203,7 +205,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
             return $hasAvatar;
         }
         else {
-            $hasAvatar = Auth::user()->paciente->avatar;
+            $patient = Auth::user()->paciente;
+            $hasAvatar = $patient ? $patient->avatar : false;
             Session::set('user_avatar', !empty($hasAvatar) ? $hasAvatar : ($hasAvatar = '0'));
             return $hasAvatar;
         }

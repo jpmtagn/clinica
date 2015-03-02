@@ -80,7 +80,7 @@ class UserController extends BaseController {
             );
 
             //los datos son correctos
-            if (Auth::attempt($credentials, Input::get('rememberme')=='on')) {
+            if (Auth::attempt($credentials, Input::get('rememberme', 0) == 1)) {
                 return Redirect::route('admin_inicio');
             }
         }
@@ -94,121 +94,6 @@ class UserController extends BaseController {
     }
 
 
-    /*public function buscarGet() {
-        $validator = Validator::make(Input::all(),
-            array(
-                'search_query' => 'required',
-                'search_page'  => 'required|integer|min:1'
-            )
-        );
-        if ($validator->passes()) {
-            $query  = Input::get('search_query');
-            $page   = Input::get('search_page');
-            $search_fields = array();
-            $match_total = 0;
-
-            $records = $this->buscar( $query, $page, self::MODEL, $search_fields, $match_total );
-
-            $this->setReturn('total', $match_total);
-            $this->setReturn('total_page', count($records));
-            $this->setReturn('results', AForm::searchResults($records, $search_fields[0], null, 'Admin', 'admin', 1));
-            return $this->returnJson();
-        }
-        return $this->setError( Lang::get('global.wrong_action') );
-    }*/
-
-    /*public function infoGet() {
-        $validator = Validator::make(Input::all(),
-            array(
-                'id' => 'required|integer|min:1'
-            )
-        );
-
-        if ($validator->passes()) {
-            $id = Input::get('id');
-            $user = $this->fetchData( $id );
-
-            $this->setReturn('title', Lang::get(self::LANG_FILE . '.inf_for') . $user->correo);
-            $this->setReturn('results', $this->outputInf( $user ));
-        }
-        else {
-            return $this->setError(Lang::get('global.not_found'));
-        }
-
-        return $this->returnJson();
-    }*/
-
-    /*public function datosGet() {
-        $validator = Validator::make(Input::all(),
-            array(
-                'id' => 'required|integer|min:1'
-            )
-        );
-
-        if ($validator->passes()) {
-            $id = Input::get('id');
-            $user = $this->fetchData( $id );
-
-            $this->addToOutput( $user->toArray() );
-            $this->additionalData( $user );
-        }
-        else {
-            return $this->setError(Lang::get('global.not_found'));
-        }
-
-        return $this->returnJson();
-    }*/
-
-    /*public function accionPost() {
-        $validator = Validator::make(Input::all(),
-            array(
-                'id' => 'required|integer|min:1'/*,
-                'action'  => 'in:action_edit,action_delete'* /
-            )
-        );
-        if ($validator->passes()) {
-            $id = Input::get('id');
-            $action = Input::get('action');
-            switch ($action) {
-                case 'action_delete':
-                    $this->delete( $id );
-                    $this->setReturn('deleted', 1);
-                    return $this->setSuccess(Lang::get('global.del_msg'));
-                    break;
-
-                default:
-                    $this->setError(Lang::get('global.wrong_action'));
-            }
-        }
-        else {
-            return $this->setError(Lang::get('global.not_found'));
-        }
-
-        return $this->returnJson();
-    }*/
-
-    /*public function editarPost() {
-        $item = $this->editar(self::MODEL);
-        if ($item != false) {
-            $this->editarRelational($item);
-        }
-        return $this->returnJson();
-    }*/
-
-    /*public function registrarPost() {
-        $item = $this->registrar(self::MODEL);
-        if ($item != false) {
-            $this->editarRelational($item);
-        }
-        return $this->returnJson();
-    }*/
-
-    /*public function totalGet() {
-        $this->setReturn('total', $this->getTotalItems());
-        return $this->returnJson();
-    }*/
-
-
     public function editarRelational($item) {
         //ROLES
         $roles = isset($_POST['roles']) ? array_map('intval', Input::get('roles')) : false;
@@ -218,9 +103,11 @@ class UserController extends BaseController {
         return true; //needs to return true to output json
     }
 
+
     public function additionalData($item) {
         $this->setReturn('roles', Functions::langArray(self::LANG_FILE, $item->roles->toArray(), 'nombre', 'id'));
     }
+
 
     public function outputInf( $item ) {
         $roles = $item->roles->toArray();
@@ -243,72 +130,32 @@ class UserController extends BaseController {
         return AForm::searchResults($records, reset($search_fields), null, 'Admin', 'admin', 1);
     }
 
-    /*private function fetchData($id) {
-        $model = self::MODEL;
-        $item = $model::findOrFail($id);
-
-        //$this->addToOutput( $item->toArray() );
-
-        if ($item) {
-            return $item;//$this->outputInf( $item );
-        }
-
-        return false;
-    }*/
-
-    /*private function delete($id) {
-        /*$model = self::MODEL;
-        $item = $model::findOrFail($id);
-
-        //deleting related models
-        //$item->roles()->detach();
-        foreach($item->getDeletableModels() as $rel_model => $type) {
-            if ($type == 'many') {
-                $item->$rel_model()->detach();
+    public function changePasswordPost() {
+        $validator = Validator::make(Input::all(),
+            array(
+                'password_current'  => 'required',
+                'password'          => 'required',
+                'password2'         => 'same:password'
+            )
+        );
+        if ($validator->passes()) {
+            $user = Auth::user();
+            $credentials = array(
+                'correo'        => Auth::user()->correo,
+                'password'      => Input::get('password_current'),
+                'activo'        => 1
+            );
+            if (Auth::validate($credentials)) {
+                $user->password = Input::get('password');
+                $user->save();
+                return $this->setSuccess(Lang::get(self::LANG_FILE . '.password_changed'));
             }
             else {
-                $item->$rel_model()->delete(); // ???
+                return $this->setError(Lang::get(self::LANG_FILE . '.wrong_current_password'));
             }
         }
-        $item->delete();* /
-        //$model::destroy($id);
-    }*/
-
-    /*private function getTotalItems() {
-        $model = self::MODEL;
-        return $model::count();
-    }*/
-
-    /*public function listSeek() {
-        $q = Input::get('q');
-        $search_fields = '';
-        $total = 0;
-        $field = self::TITLE_FIELD;
-        $records = $this->buscar($q, 1, $search_fields, $total);
-
-        $list = array();
-        foreach($records as $record) {
-            $list[] = json_encode(array(
-                'name' => $record->$field,
-                '_id' => $record->id
-            ));
-        }
-
-        return '[' . implode(',', $list) . ']';
-
-        /*return <<<EOT
-
-        [{
-            "name": "SomeName",
-            "_id": "SomeId"
-        },
-        {
-            "name": "SomeName",
-            "_id": "SomeId"
-        }]
-EOT;* /
-    }*/
-
+        return $this->setError( $validator->messages()->first() );
+    }
 
     /**
      * Cierra la sesión para el usuario actual
@@ -316,9 +163,9 @@ EOT;* /
      */
     public function cerrarSesion() {
         Auth::logout();
+        Session::forget('user_avatar');
         return Redirect::route('inicio_sesion');
     }
-
 
     /**
      * Crea un usuario para poder ingresar al sistema durante la instalación

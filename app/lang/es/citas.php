@@ -5,7 +5,7 @@ return array(
     'time_start' => 'Hora inicio',
     'time_end' => 'Hora fin',
     'state' => 'Estado',
-    'doctor' => 'Doctor',
+    'doctor' => 'Terapeuta',
     'patient' => 'Paciente',
     'record_date' => 'Fecha de registro',
 

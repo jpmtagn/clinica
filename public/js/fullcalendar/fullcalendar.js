@@ -2,6 +2,7 @@
  * FullCalendar v2.2.7
  * Docs & License: http://arshaw.com/fullcalendar/
  * (c) 2013 Adam Shaw
+ * Customized by Alfredo
  */
 
 (function(factory) {
@@ -4661,7 +4662,7 @@ DayGrid.mixin({
 		var timeHtml = '';
 		var titleHtml;
 
-		classes.unshift('fc-day-grid-event');
+        classes.unshift('fc-day-grid-event');
 
 		// Only display a timed events time if it is the starting segment
 		if (!event.allDay && seg.isStart) {
@@ -5843,7 +5844,12 @@ TimeGrid.mixin({
 		var fullTimeText; // more verbose time text. for the print stylesheet
 		var startTimeText; // just the start time text
 
-		classes.unshift('fc-time-grid-event');
+        //added by alfredo
+        var id = event.id;
+        var doctor_id = event.doctor_id;
+        var patient_id = event.patient_id;
+
+        classes.unshift('fc-time-grid-event');
 
 		if (view.isMultiDayEvent(event)) { // if the event appears to span more than one day...
 			// Don't display time text on segments that run entirely through a day.
@@ -5887,6 +5893,9 @@ TimeGrid.mixin({
 						'</div>' :
 						''
 						) +
+                    '<input type="hidden" class="id" value="' + id + '">' +
+                    '<input type="hidden" class="doctor_id" value="' + doctor_id + '">' +
+                    '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
 				'</div>' +
 				'<div class="fc-bg"/>' +
 				(isResizable ?

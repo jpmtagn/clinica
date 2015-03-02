@@ -247,6 +247,13 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'UserController@registrarPost'
         ));
 
+        //cambiar contraseña
+        Route::post('admin/mi_cuenta/cambiar_password', array(
+            'as' => 'change_password_post',
+            'uses' => 'UserController@changePasswordPost'
+        ));
+
+
         
         // PAGINA TIPO PARIENTES
 

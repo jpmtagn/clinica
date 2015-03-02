@@ -77,6 +77,28 @@ class PacienteController extends BaseController {
     }
 
     /**
+     * This function will be called after the model validation has passed successfully
+     * @param $inputs
+     * @return boolean
+     */
+    public function afterValidation($inputs) {
+        $id = (int)Input::get('id');
+        if ($id > 0) {
+            //if the user to be modified is not the current one and the current one is not an admin then abort
+            if ($id != Auth::user()->paciente->id && !Auth::user()->admin) {
+                return false;
+            }
+        }
+        else {
+            //if creating a new profile it needs to be for the current one only
+            if (Input::get('usuario_id') != Auth::user()->id) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Proceso adicional al editar / crear un nuevo registro
      * @param $item
      * @return bool|\Illuminate\Http\RedirectResponse
@@ -122,20 +144,29 @@ class PacienteController extends BaseController {
                 //if (in_array($extension, array('jpg', 'jpeg', 'png'))) {
                     $destination_path = 'img/avatars';
                     $filename = uniqid() . '.' . $extension;//$file->getClientOriginalName();
+                    $esc = 0;
                     while (file_exists($destination_path . '/s/' . $filename)) {
                         $filename = uniqid() . '.' . $extension;
+                        $esc++;
+                        if ($esc >= 30) return true; //just a escape for too many failed attempts to get a unique name
                     }
                     $moved = $file->move($destination_path, $filename);
                     if ($moved) {
                         Functions::smart_resize_image($destination_path . '/' . $filename, null, 256, 256, false, $destination_path . '/s/' . $filename, false);
                         $item->avatar = $filename;
                         $item->save();
+
+                        //if the current user change its profile picture, clear the avatars name in order to reload the new one
+                        if ($item->usuario_id == Auth::user()->id) {
+                            Session::forget('user_avatar');
+                        }
                     }
                 //}
             }
             //return $this->paginaMiCuenta();
-            return Redirect::route('mi_cuenta');
+            //return Redirect::route('mi_cuenta');
         }
+
         return true;
     }
 
@@ -290,18 +321,6 @@ class PacienteController extends BaseController {
         }
 
         return $this->setError($validator->messages()->first());
-    }
-
-
-    public function afterValidation($values) {
-        $id = (int)Input::get('id');
-        if ($id > 0) {
-            //if the user to be modified is not the current one and the current one is not an admin then abort
-            if ($id != Auth::user()->paciente->id && !Auth::user()->admin) {
-                return false;
-            }
-        }
-        return true;
     }
 
 
