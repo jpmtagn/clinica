@@ -84,9 +84,11 @@ Panel de Administración
         <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_citas_registrar_post') }}">
             {{ $frm->date('fecha', null, Lang::get('citas.date'), 'day') }}
             {{ $frm->time('hora_inicio', null, Lang::get('citas.time_start')) }}
-            {{ $frm->time('hora_fin', null, Lang::get('citas.time_end')) }}
-            {{ $frm->remoteSelect('doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
-            {{ $frm->remoteSelect('paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
+            {{ $frm->time('hora_fin', null, Lang::get('citas.time_end'), 'hidden') }}
+            {{ $frm->remoteSelect('doctor_id', null, Lang::get('usuarios.doctor'), URL::route('admin_doctores_list')) }}
+            {{ $frm->remoteSelect('paciente_id', null, Lang::get('pacientes.title_single'), URL::route('admin_pacientes_list')) }}
+            {{ $frm->select('servicio_id', null, Lang::get('servicio.title_single'), $servicios) }}
+            {{ $frm->select('consultorio_id', null, Lang::get('consultorio.title_single'), $consultorios) }}
             <br><br><br>
             {{ Form::token() }}
             {{ $frm->submit('Guardar') }}
@@ -100,9 +102,11 @@ Panel de Administración
             {{ $frm->id() }}
             {{ $frm->date('fecha', null, Lang::get('citas.date'), 'day') }}
             {{ $frm->time('hora_inicio', null, Lang::get('citas.time_start')) }}
-            {{ $frm->time('hora_fin', null, Lang::get('citas.time_end')) }}
+            {{ $frm->time('hora_fin', null, Lang::get('citas.time_end'), 'hidden') }}
             {{ $frm->remoteSelect('doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
             {{ $frm->remoteSelect('paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
+            {{ $frm->select('servicio_id', null, Lang::get('servicio.title_single'), $servicios) }}
+            {{ $frm->select('consultorio_id', null, Lang::get('consultorio.title_single'), $consultorios) }}
 
             {{ Form::token() }}
             {{ $frm->submit('Guardar', 'btn-warning') }}

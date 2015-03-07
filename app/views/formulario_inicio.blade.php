@@ -19,7 +19,7 @@ class="login"
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
                     <div id="logo">
-                        <a href="index.html"><img src="img/logo/logo-alt.png" height="40" alt="logo name" /></a>
+                        <a href="{{ URL::route('inicio') }}"><img src="{{ URL::asset('img/logo/logo-alt.png') }}" height="40" alt="logo name" /></a>
                     </div>
                 </div>
             </div>
@@ -52,7 +52,7 @@ class="login"
                             <div class="form-group">
                                 <label for="correo">{{ Lang::get('formulario_inicio.email') }}</label>
                                 <i class="fa fa-envelope"></i>
-                                <input value="admin@defecto" type="email" id="correo" name="correo" class="form-control" value="{{ Functions::retrieve('correo') }}" required>
+                                <input value="admin@defecto" type="text" id="correo" name="correo" class="form-control" value="{{ Functions::retrieve('correo') }}" required autofocus>
                             </div>
                             <!-- contraseña -->
                             <div class="form-group">
@@ -62,8 +62,8 @@ class="login"
                             </div>
                             <div class="form-actions">
                                 <!-- recordarme -->
-                                <label class="checkbox">
-                                    <input type="checkbox" id="rememberme" name="rememberme" class="uniform" value="1"> {{ Lang::get('formulario_inicio.remember_me') }}
+                                <label class="checkbox hidden">
+                                    <input type="checkbox" id="rememberme" name="rememberme" class="uniform" value="1" checked> {{ Lang::get('formulario_inicio.remember_me') }}
                                 </label>
 
                                 {{ Form::token() }}
@@ -72,9 +72,9 @@ class="login"
                                 <button type="submit" class="btn btn-danger">{{ Lang::get('formulario_inicio.submit') }}</button>
                             </div>
                         </form>
-                        <div class="login-helpers">
+                        <!--div class="login-helpers">
                             <a href="#" onclick="swapScreen('forgot');return false;">{{ Lang::get('formulario_inicio.forgot_password') }}</a> <br>
-                        </div>
+                        </div-->
                     </div>
                 </div>
             </div>
@@ -82,6 +82,7 @@ class="login"
     </section>
     <!--/LOGIN -->
 
+    <?php if (false) : ?>
     <!-- FORGOT PASSWORD -->
     <section id="forgot">
         <div class="container">
@@ -111,6 +112,7 @@ class="login"
         </div>
     </section>
     <!-- FORGOT PASSWORD -->
+    <?php endif; ?>
 
 </section>
 <!--/PAGE -->
@@ -122,7 +124,6 @@ class="login"
     jQuery(document).ready(function() {
         App.setPage("login");  //Set current page
         App.init(); //Initialise plugins and elements
-        $('#correo').focus();
     });
 </script>
 @stop

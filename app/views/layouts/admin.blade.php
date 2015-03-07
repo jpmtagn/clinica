@@ -110,68 +110,6 @@
                 </ul>
             </li>
             <!-- END USER LOGIN DROPDOWN -->
-			<!-- BEGIN INBOX DROPDOWN -->
-			<li class="dropdown" id="header-message">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-				<i class="fa fa-envelope"></i>
-				<span class="badge">3</span>
-				</a>
-				<ul class="dropdown-menu inbox">
-					<li class="dropdown-title">
-						<span><i class="fa fa-envelope-o"></i> 3 Mensajes</span>
-						<span class="compose pull-right tip-right" title="Escribir mensaje"><i class="fa fa-pencil-square-o"></i></span>
-					</li>
-					<li>
-						<a href="#">
-						<img src="{{ URL::asset('img/avatars/avatar2.jpg') }}" alt="" />
-						<span class="body">
-						<span class="from">Jane Doe</span>
-						<span class="message">
-						Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse mole ...
-						</span>
-						<span class="time">
-						<i class="fa fa-clock-o"></i>
-						<span>Just Now</span>
-						</span>
-						</span>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-						<img src="{{ URL::asset('img/avatars/avatar1.jpg') }}" alt="" />
-						<span class="body">
-						<span class="from">Vince Pelt</span>
-						<span class="message">
-						Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse mole ...
-						</span>
-						<span class="time">
-						<i class="fa fa-clock-o"></i>
-						<span>15 min ago</span>
-						</span>
-						</span>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-						<img src="{{ URL::asset('img/avatars/avatar8.jpg') }}" alt="" />
-						<span class="body">
-						<span class="from">Debby Doe</span>
-						<span class="message">
-						Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse mole ...
-						</span>
-						<span class="time">
-						<i class="fa fa-clock-o"></i>
-						<span>2 hours ago</span>
-						</span>
-						</span>
-						</a>
-					</li>
-					<li class="footer">
-						<a href="#">Ver todos los mensajes <i class="fa fa-arrow-circle-right"></i></a>
-					</li>
-				</ul>
-			</li>
-			<!-- END INBOX DROPDOWN -->
 		</ul>
 		<!-- END TOP NAVIGATION MENU -->
 	</div>
@@ -210,9 +148,10 @@
 				</li>
 
 				<!-- personas -->
+				<?php if (false) : ?>
 				<li class="has-sub{{ activeClassIf('pacientes', $active_menu, false) }}">
                     <a href="javascript:;">
-                        <i class="fa fa-fw fa-wheelchair"></i>
+                        <i class="fa fa-fw fa-users"></i>
                         <span class="menu-text">Personas</span>
                         <span class="arrow"></span>
                     </a>
@@ -221,11 +160,19 @@
                         <li><a href="{{ URL::route('admin_parentescos') }}"><span class="sub-menu-text">Parentescos</span></a></li>
                     </ul>
                 </li>
+                <?php endif; ?>
+				<!-- personas (no parentescos) -->
+				<li{{ activeClassIf('pacientes', $active_menu) }}>
+                    <a href="{{ URL::route('admin_pacientes') }}">
+                        <i class="fa fa-fw fa-users"></i>
+                        <span class="menu-text">Personas</span>
+                    </a>
+                </li>
 
 				<!-- usuarios -->
 				<li{{ activeClassIf('usuarios', $active_menu) }}>
                     <a href="{{ URL::route('admin_usuarios') }}">
-                        <i class="fa fa-fw fa-users"></i>
+                        <i class="fa fa-fw fa-key"></i>
                         <span class="menu-text">Usuarios</span>
                     </a>
                 </li>

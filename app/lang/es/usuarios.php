@@ -4,6 +4,7 @@ return array(
     'title_plural' => 'Usuarios',
     'users' => 'Usuarios',
     'email' => 'Correo',
+    'username' => 'Nombre de usuario',
     'admin' => 'Administrador',
     'active' => 'Activo',
     'roles' => 'Roles',
@@ -22,6 +23,8 @@ return array(
     'enfermera' => 'Enfermera',
     'farmaceutico' => 'Farmacéutico',
     'paciente' => 'Paciente',
+    'recepcionista' => 'Recepcionista',
+    'secretaria' => 'Secretaria',
 
     'view_doctor' => 'Ver doctores',
 

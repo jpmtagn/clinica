@@ -1,5 +1,8 @@
 <?php
 return array(
+    'title_single' => 'Paciente',
+    'title_plural' => 'Pacientes',
+
     'relationship' => 'Parentesco',
     'relationship_m' => 'Parentesco (Masculino)',
     'relationship_f' => 'Parentesco (Femenino)',

@@ -84,9 +84,12 @@ class Functions {
         if (empty($time)) return null;
         $time = explode(' ', $time);
         $ampm = $time[1];
-        $time = explode(':', $time[0]);
-        $time[0] = (int)$time[0] + ($ampm == 'PM' ? 12 : 0);
-        return ($time[0] < 10 ? '0' : '') . $time[0] . ':' . $time[1];
+        $time = explode(':', $time[0], 3);
+        if (count($time) > 1) {
+            $time[0] = (int)$time[0] + ($ampm == 'PM' ? 12 : 0);
+            return ($time[0] < 10 ? '0' : '') . $time[0] . ':' . $time[1];
+        }
+        return '';
     }
 
     public static function explodeDateTime($datetime, $ignore_time = false) {
@@ -117,8 +120,20 @@ class Functions {
             $hours = intval($min / 60);
             $min -= $hours * 60;
         }
-        return ($hours ? (Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $hours, true)) : '') .
-                         (Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $min, true));
+        return ($hours ? (Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $hours, true) . ($min ? ' ' : '')) : '') .
+                 ($min ?  Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $min, true) : '');
+    }
+
+    public static function addMinutes($start, $minutes, $return_format = 'Y-m-d H:i:s')
+    {
+        if (strlen(preg_replace('/[0-9]/', '', $start)) > 0) {
+            $start = strtotime($start);
+        }
+        $time = strtotime('+' . $minutes . ' minutes', $start);
+        if ($return_format !== false) {
+            return date($return_format, $time);
+        }
+        return $time;
     }
 
     public static function wrapWithSpanIf($to_be_wrapped, $wrap, $class = '', $find_str = '', $find_wrap_open = '<b><i>', $find_wrap_close = '</i></b>') {
@@ -320,10 +335,10 @@ class Functions {
     public static function remainingTime($date_str, $type = null) {
         //date_default_timezone_set('UTC');
         //date_default_timezone_set('America/Caracas');
-        $now = new DateTime('now', new DateTimeZone('UTC'));
-        $future_date = new DateTime($date_str, new DateTimeZone('UTC'));
+        $now = new DateTime('now', new DateTimeZone( Config::get('app.timezone') ));
+        $future_date = new DateTime($date_str, new DateTimeZone( Config::get('app.timezone') ));
 
-        $interval = $future_date->diff($now);
+        $interval = $future_date->diff($now, true);
 
         switch ($type) {
             case 'days':
@@ -343,13 +358,20 @@ class Functions {
                 break;
 
             case 'all':
+                if ($now > $future_date) return '';
+                if ($interval->d > 6) {
+                    $week = intval($interval->d / 7);
+                    $interval->d -= $week * 7;
+                }
+                else $week = false;
                 return 
-                    Functions::singlePlural(Lang::get('global.year'), Lang::get('global.years'), $interval->y, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('global.month'), Lang::get('global.months'), $interval->m, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('global.day'), Lang::get('global.days'), $interval->d, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $interval->h, true) . ', ' . 
-                    Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $interval->m, true) . ", " . 
-                    Functions::singlePlural(Lang::get('global.second'), Lang::get('global.seconds'), $interval->s, true);
+                    ($interval->y ? (Functions::singlePlural(Lang::get('global.year'), Lang::get('global.years'), $interval->y, true) . ' ') : '') .
+                    ($interval->m ? (Functions::singlePlural(Lang::get('global.month'), Lang::get('global.months'), $interval->m, true) . ' ') : '') .
+                    ($week ? (Functions::singlePlural(Lang::get('global.week'), Lang::get('global.weeks'), $week, true) . ' ') : '') .
+                    ($interval->d ? (Functions::singlePlural(Lang::get('global.day'), Lang::get('global.days'), $interval->d, true) . ' ') : '') .
+                    ($interval->h ? (Functions::singlePlural(Lang::get('global.hour'), Lang::get('global.hours'), $interval->h, true) . ' ') : '') .
+                    Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $interval->i, true); //. " " .
+                    //Functions::singlePlural(Lang::get('global.second'), Lang::get('global.seconds'), $interval->s, true);
                 break;
 
             default:

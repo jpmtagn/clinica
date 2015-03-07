@@ -4,10 +4,12 @@ class AForm {
     protected $edit = false;
     protected $script;
     protected $values;
+    protected $show_labels;
 
     public function __construct() {
         $this->script = "";
         $this->values = array();
+        $this->show_labels = true;
     }
 
     public function setEdit($edit) {
@@ -22,16 +24,21 @@ class AForm {
         $this->values = array();
     }
 
+    public function displayLabels($show = true) {
+        $this->show_labels = $show;
+    }
+
     public function text($name, $id = null, $label = null, $classes = "", $required = false, $validation_pattern = null) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $required = $required ? ' required' : '';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
         if (is_array($validation_pattern)) {
             $vp = ' pattern="' . $validation_pattern[0] . '" title="' . $validation_pattern[1] . '"';
         } else $vp = '';
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -39,15 +46,26 @@ class AForm {
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$vp}{$value}{$required}>
+                </div>
+            </div>
+EOT;
+        }
     }
 
     public function email($name = 'correo', $id = null, $label = null, $classes = "", $required = true) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $required = $required ? ' required' : '';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -55,14 +73,25 @@ EOT;
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <input type="email" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$value}{$required}>
+                </div>
+            </div>
+EOT;
+        }
     }
 
     public function password($name = 'password', $id = null, $label = null, $classes = "", $required = true) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $required = $required ? ' required' : '';
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -70,13 +99,24 @@ EOT;
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <input type="password" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$required}>
+                </div>
+            </div>
+EOT;
+        }
     }
 
     public function number($name, $id = null, $label = null, $classes = "") {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group {$classes}">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -90,15 +130,32 @@ EOT;
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default number-more" type="button"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-default number-less" type="button"><i class="fa fa-minus"></i></button>
+                        </div>
+                        <input type="text" id="{$id}" name="{$name}" class="form-control number-input">
+                    </div>
+                </div>
+            </div>
+EOT;
+        }
     }
 
-    public function date($name, $id = null, $label = null, $type = 'year') {
+    public function date($name, $id = null, $label = null, $type = 'year', $classes = "") {
         if ($id == null) $id = $name;
         if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
-        return <<<EOT
-          <div class="form-group">
+        if ($this->show_labels) {
+            return <<<EOT
+          <div class="form-group {$classes}">
              <label for="{$id}" class="col-md-2 control-label">{$label}</label>
              <div class="col-md-10">
                 <div class="input-group">
@@ -112,14 +169,32 @@ EOT;
             </div>
           </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+          <div class="form-group {$classes}">
+             <div class="col-md-12">
+                <div class="input-group">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control input-calendar-{$type}" data-mask="9999-99-99" placeholder="{$label}"{$value}>
+                    <!--span class="input-group-btn">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fa fa-calendar"></i>
+                        </button>
+                    </span-->
+                </div>
+            </div>
+          </div>
+EOT;
+        }
     }
 
-    public function time($name, $id = null, $label = null) {
+    public function time($name, $id = null, $label = null, $classes = '') {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
-        return <<<EOT
-          <div class="form-group">
+        if ($this->show_labels) {
+            return <<<EOT
+          <div class="form-group {$classes}">
              <label for="{$id}" class="col-md-2 control-label">{$label}</label>
              <div class="col-md-10">
                 <div class="input-group">
@@ -128,13 +203,26 @@ EOT;
             </div>
           </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+          <div class="form-group {$classes}">
+             <div class="col-md-12">
+                <div class="input-group">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control input-time" data-mask="99:99 aa" placeholder="{$label}">
+                </div>
+            </div>
+          </div>
+EOT;
+        }
     }
 
     public function checkbox($name, $id = null, $label = null) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -142,11 +230,21 @@ EOT;
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input type="checkbox" class="switch" id="{$id}" name="{$name}" value="1">
+                </div>
+            </div>
+EOT;
+        }
     }
 
     public function search($name = 'search', $id = null, $label = null, $classes = "") {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         return <<<EOT
             <div class="input-group {$classes}">
@@ -162,7 +260,7 @@ EOT;
 
     public function slider($name = 'correo', $id = null, $label = null, $ticks = array(), &$script) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
 
@@ -176,11 +274,13 @@ EOT;
                 value: 0,
                 ticks: [{$ticks_vals}],
                 ticks_labels: [$ticks_lbls],
-                step: {$ticks_snap} /*ticks_snap_bounds: {$ticks_snap}*/
+                step: {$ticks_snap}
             });
 EOT;
+        /*ticks_snap_bounds: {$ticks_snap}*/
 
-        return <<<EOT
+        if ($this->show_labels) {
+            return <<<EOT
             <div class="form-group">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <div class="col-md-10">
@@ -188,18 +288,36 @@ EOT;
                 </div>
             </div>
 EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group">
+                <div class="col-md-12">
+                    <input type="text" id="{$id}" name="{$name}" style="width:95%" class="input-slider" placeholder="{$label}"{$value}>
+                </div>
+            </div>
+EOT;
+        }
     }
 
     public function multiselect($name, $id = null, $label = null, $options = array(), $options_key = null, $options_val = null, $options_selected = array()) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? $this->values[$name] : null;
-        $output = <<<EOT
+        if ($this->show_labels) {
+            $output = <<<EOT
             <div class="form-group">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <select multiple="" id="{$id}" name="{$name}" class="multi-select col-sm-9 col-xs-10">
 EOT;
+        }
+        else {
+            $output = <<<EOT
+            <div class="form-group">
+                <select multiple="" id="{$id}" name="{$name}" class="multi-select col-sm-11 col-xs-12">
+EOT;
+        }
         foreach($options as $id => $val) {
             if ($options_key != null) {
                 $id = $val[$options_key];
@@ -227,14 +345,22 @@ EOT;
 
     public function select($name, $id = null, $label = null, $options = array(), $options_key = null, $options_val = null, $option_selected = null) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? $this->values[$name] : null;
-        $output = <<<EOT
+        if ($this->show_labels) {
+            $output = <<<EOT
             <div class="form-group">
                 <label for="{$id}" class="col-md-2 control-label">{$label}</label>
                 <select id="{$id}" name="{$name}" class="single-select col-sm-9 col-xs-10">
 EOT;
+        }
+        else {
+            $output = <<<EOT
+            <div class="form-group">
+                <select id="{$id}" name="{$name}" class="single-select col-sm-11 col-xs-12">
+EOT;
+        }
         foreach($options as $id => $val) {
             if ($options_key != null) {
                 $id = $val[$options_key];
@@ -262,14 +388,9 @@ EOT;
 
     public function remoteSelect($name, $id = null, $label = null, $route = "", $multiple = false) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
-        $output = <<<EOT
-            <div class="form-group">
-                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
-                <input type="hidden" id="{$id}" name="{$name}" class="select2ajax bigdrop col-md-9">
-            </div>
-EOT;
+
         $multiple = $multiple ? 'multiple: true,' : '';
         $this->script.= <<<EOT
             $("#{$id}").select2({
@@ -302,26 +423,48 @@ EOT;
                 dropdownCssClass: "bigdrop"
             });
 EOT;
-        return $output;
+        if ($this->show_labels) {
+            return <<<EOT
+            <div class="form-group">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <input type="hidden" id="{$id}" name="{$name}" class="select2ajax bigdrop col-md-9">
+            </div>
+EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group">
+                <input type="hidden" id="{$id}" name="{$name}" class="select2ajax bigdrop col-md-11">
+            </div>
+EOT;
+        }
     }
 
     public function tagSelect($name, $id = null, $label = null) {
         if ($id == null) $id = $name;
-        if ($label == null) $label = ucfirst($name);
+        if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
-        $output = <<<EOT
-            <div class="form-group">
-                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
-                <input type="hidden" id="{$id}" name="{$name}" class="select2tags col-md-9"{$value}>
-            </div>
-EOT;
         /*$this->script.= <<<EOT
             $("#{$id}").select2({
 				tags:[""]
 			});
 EOT;*/
-        return $output;
+        if ($this->show_labels) {
+            return <<<EOT
+            <div class="form-group">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <input type="hidden" id="{$id}" name="{$name}" class="select2tags col-md-9"{$value}>
+            </div>
+EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group">
+                <input type="hidden" id="{$id}" name="{$name}" class="select2tags col-md-11"{$value}>
+            </div>
+EOT;
+        }
     }
 
     public function hidden($name, $id = null, $classes = "", $value = null) {
@@ -368,7 +511,7 @@ EOT;
     }
 
     public function submit($label = null, $class = 'btn-primary') {
-        if ($label == null) $label = Lang::get('global.save');
+        if ($label === null) $label = Lang::get('global.save');
         return <<<EOT
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
@@ -738,10 +881,12 @@ EOT;
 
     }
 
-    public function modalClose($ok = null, $close = null) {
+    public function modalClose($ok = null, $close = null, $footer = true) {
         if ($ok == null) $ok = Lang::get('global.ok');
         if ($close == null) $close = Lang::get('global.close');
-        return <<<EOT
+        $output = '';
+        if ($footer) {
+            $output = <<<EOT
                             <div class="alert alert-danger alert-dismissible modal-alert hidden" role="alert">
                               <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                               <i class="fa fa-exclamation-circle"></i>&nbsp; 
@@ -751,8 +896,11 @@ EOT;
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">{$close}</button>
-                            <button type="button" class="btn btn-primary" id="new_event_ok">{$ok}</button>
+                            <button type="button" class="btn btn-primary modal-btn-ok">{$ok}</button>
                         </div>
+EOT;
+        }
+        return $output . <<<EOT
                     </div>
                 </div>
             </div>

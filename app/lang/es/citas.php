@@ -1,5 +1,7 @@
 <?php
 return array(
+    'title_single' => 'Cita',
+    'title_plural' => 'Citas',
 	'calendar' => 'Calendario',
     'date' => 'Fecha',
     'time_start' => 'Hora inicio',
@@ -7,12 +9,37 @@ return array(
     'state' => 'Estado',
     'doctor' => 'Terapeuta',
     'patient' => 'Paciente',
+    'service' => 'Tratamiento',
     'record_date' => 'Fecha de registro',
+    'record_date_alt' => 'Registrado el',
 
-    'new_event' => 'Nueva cita',
+    //states
+    'realizada' => 'Realizada',
+    'por_confirmar' => 'Por confirmar',
+    'confirmada' => 'Confirmada',
+    'cancelada' => 'Cancelada',
+
+    'confirmed' => 'Confirmada',
+    'cancelled' => 'Cancelada',
+    'done' => 'Realizada',
+
+    'add_note' => 'Agregar nota',
+    'edit' => 'Editar',
+
+    'new_event' => 'Nueva Cita',
+    'new_patient' => 'Nuevo Registro',
+    'set_date_time' => 'Establecer fecha y hora',
+    'set' => 'Asignar',
+    'actions' => 'Acciones',
+    'in' => 'En',
+    'available' => 'Disponible',
+    'not_available' => 'No disponible',
 
     'no_time' => 'Sin hora definida',
+    'passed_time' => 'Fecha pasada',
 
     //errors
-    'time_mismatch' => 'El intervalo de tiempo elegido es inválido'
+    'time_mismatch' => 'El intervalo de tiempo elegido es inválido',
+    'overlap_doctor' => 'El terapeuta no está disponible para la hora y fecha seleccionada',
+    'overlap_office' => 'La cabina no está disponible para la hora y fecha seleccionada'
 );

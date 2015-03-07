@@ -8,7 +8,7 @@
 
 class Paciente extends Eloquent {
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = array(
         'nombre',

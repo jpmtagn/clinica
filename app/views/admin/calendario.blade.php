@@ -11,6 +11,16 @@ Panel de Administración
 {{ HTML::style('js/pickadate/themes/default.date.css') }}
 {{ HTML::style('js/pickadate/themes/default.time.css') }}
 {{ HTML::style('js/fullcalendar/fullcalendar.min.css') }}
+<style type="text/css">
+    #content {
+        /*background: #fff url({{ URL::asset('img/bg/squairy_light.png') }}) repeat;*/
+        background: #fff url({{ URL::asset('img/bg/gray_jean.png') }}) repeat;
+    }
+
+    .fc-view-container {
+        background-color: #fff;
+    }
+</style>
 @stop
 
 @section('contenido')
@@ -45,7 +55,7 @@ Panel de Administración
     <div class="col-sm-12">
 
         <!-- CALENDAR -->
-        {{ $frm->panelOpen('calendar', Lang::get('citas.calendar'), 'fa-calendar', '', array('collapse')) }}
+        {{-- $frm->panelOpen('calendar', Lang::get('citas.calendar'), 'fa-calendar', '', array('collapse')) --}}
         <div class="row">
             <div class="col-md-2">
                 <div class="input-group">
@@ -55,9 +65,9 @@ Panel de Administración
                      </span>
                 </div>
                 <div class="divide-20"></div>
-                <div class="external-events">
+                <!--div class="external-events">
                     <h4>{{ Lang::get('usuarios.doctor') }}</h4>
-                    <div id="event-box">
+                    <div id="event-box"-->
                         <div class="list-group">
                             @foreach ($doctores as $doctor)
                                 <a href="#" class="list-group-item filter-doctor" attr-id="{{ $doctor->usuario_id }}"> <!-- active -->
@@ -71,33 +81,217 @@ Panel de Administración
                                 </a>
                             @endforeach
                         </div>
-                    </div>
-                </div>
+                    <!--/div>
+                </div-->
             </div>
             <div class="col-md-10 calendar-holder">
                 <div class='full-calendar'></div>
             </div>
         </div>
-        {{ $frm->panelClose() }}
+        {{-- $frm->panelClose() --}}
 
     </div>
 </div>
 
 <!-- NEW EVENT FORM -->
 {{ $frm->modalOpen('new_event_form', Lang::get('citas.new_event')) }}
-   <form id="frm_data_new_event" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_citas_registrar_post') }}">
-        {{ $frm->date('fecha', null, Lang::get('citas.date'), 'day') }}
-        {{ $frm->time('hora_inicio', null, Lang::get('citas.time_start')) }}
-        {{ $frm->time('hora_fin', null, Lang::get('citas.time_end')) }}
-        {{ $frm->remoteSelect('doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
-        {{ $frm->remoteSelect('paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
+   <form id="frm_data_new_event" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_citas_registrar_post') }}">
+        <div class="list-group">
+            <!-- date & time -->
+            <a href="#" class="list-group-item" data-toggle="modal" data-target="#new_event_date_time_modal">
+                <div class="row form-item">
+                    <div class="col-sm-2 col-xs-2">
+                        <div class="status-icon" id="icon_time">
+                            <i class="fa fa-4x fa-clock-o"></i>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 col-xs-10">
+                        <h4 class="list-group-item-heading" id="cita_date_time">...</h4>
+                        <p class="list-group-item-text" id="cita_date_time_remaining"></p>
+                        {{ $frm->hidden('fecha', 'fecha_hidden') }}
+                        {{ $frm->hidden('hora_inicio', 'hora_inicio_hidden') }}
+                        {{ $frm->hidden('hora_fin', 'hora_fin_hidden') }}
+                    </div>
+                </div>
+            </a>
+
+            <!-- doctor -->
+            <a href="#" class="list-group-item" data-toggle="modal" data-target="#new_event_doctor_modal">
+                <div class="row form-item">
+                    <div class="col-sm-2 col-xs-2">
+                        <div class="status-icon" id="icon_doctor">
+                            <i class="fa fa-4x fa-user-md"></i>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 col-xs-10">
+                        <div class="row">
+                            <div class="col-sm-10">
+                                <h4 class="list-group-item-heading" id="cita_doctor_name">{{ Lang::get('global.select') }}</h4>
+                                <p class="list-group-item-text" id="cita_doctor_inf"></p>
+                                {{ $frm->hidden('doctor_id', 'doctor_id_hidden') }}
+                            </div>
+                            <div class="col-sm-2 hidden-xs">
+                                <img class="avatar-thumb" id="cita_doctor_avatar" src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- patient -->
+            <a href="#" id="open_patients_modal" class="list-group-item" data-toggle="modal" data-target="#new_event_patient_modal">
+                <div class="row form-item">
+                    <div class="col-sm-2 col-xs-2">
+                        <div class="status-icon" id="icon_patient">
+                            <i class="fa fa-4x fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 col-xs-10">
+                        <h4 class="list-group-item-heading" id="cita_patient_name">{{ Lang::get('global.select') }}</h4>
+                        <p class="list-group-item-text" id="cita_patient_inf"></p>
+                        {{ $frm->hidden('paciente_id', 'paciente_id_hidden') }}
+                    </div>
+                </div>
+            </a>
+
+            <!-- services -->
+            <a href="#" class="list-group-item" data-toggle="modal" data-target="#new_event_service_modal">
+                <div class="row form-item">
+                    <div class="col-sm-2 col-xs-2">
+                        <div class="status-icon" id="icon_service">
+                            <!--i class="fa fa-4x fa-check-square-o"></i-->
+                            <figure class="icon treatment"></figure>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 col-xs-10">
+                        <h4 class="list-group-item-heading" id="cita_service_name">{{ Lang::get('global.select') }}</h4>
+                        <p class="list-group-item-text" id="cita_service_inf"></p>
+                        {{ $frm->hidden('servicio_id', 'servicio_id_hidden') }}
+                    </div>
+                </div>
+            </a>
+
+            <!-- office -->
+            <a href="#" id="open_offices_modal" class="list-group-item" data-toggle="modal" data-target="#new_event_office_modal">
+                <div class="row form-item">
+                    <div class="col-sm-2 col-xs-2">
+                        <div class="status-icon" id="icon_office">
+                            <!--i class="fa fa-4x fa-cube"></i-->
+                            <figure class="icon door"></figure>
+                        </div>
+                    </div>
+                    <div class="col-sm-10 col-xs-10">
+                        <h4 class="list-group-item-heading" id="cita_office_name">{{ Lang::get('global.select') }}</h4>
+                        <p class="list-group-item-text" id="cita_office_inf"></p>
+                        {{ $frm->hidden('consultorio_id', 'consultorio_id_hidden') }}
+                    </div>
+                </div>
+            </a>
+        </div>
+
         {{ Form::token() }}
     </form>
 {{ $frm->modalClose() }}
 <!-- /NEW EVENT FORM-->
 
+    <!-- NEW DATE TIME FORM -->
+    {{ $frm->modalOpen('new_event_date_time_modal', Lang::get('citas.set_date_time')) }}
+        <form id="frm_new_event_date_time_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_datetime_inf_get') }}">
+            {{ $frm->date('fecha', null, Lang::get('citas.date'), 'day') }}
+            {{ $frm->time('hora_inicio', null, Lang::get('citas.time_start')) }}
+            {{ $frm->time('hora_fin', null, Lang::get('citas.time_end'), 'hidden') }}
+        </form>
+    {{ $frm->modalClose() }}
+    <!-- /NEW DATE TIME FORM -->
+
+    <!-- NEW DOCTOR FORM -->
+    {{ $frm->modalOpen('new_event_doctor_modal', Lang::get('citas.set') . ' ' . Lang::get('usuarios.doctor')) }}
+        <form id="frm_new_event_doctor_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_doctor_inf_get') }}">
+            {{ $frm->remoteSelect('doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
+        </form>
+    {{ $frm->modalClose() }}
+    <!-- /NEW DOCTOR FORM -->
+
+    <!-- NEW PATIENT FORM -->
+    {{ $frm->modalOpen('new_event_patient_modal', Lang::get('citas.set') . ' ' . Lang::get('pacientes.title_single')) }}
+        <form id="frm_new_event_patient_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_patient_inf_get') }}">
+            {{ $frm->remoteSelect('paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
+        </form>
+        <br>
+        <div id="new_patient">
+            <h4 class="text-center">{{ Lang::get('citas.new_patient') }}</h4>
+            <form id="frm_data_new_patient" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_pacientes_registrar_post') }}">
+                {{ $frm->text('nombre', null, Lang::get('pacientes.name'), "", true) }}
+                {{ $frm->text('apellido', null, Lang::get('pacientes.lastname'), "", true) }}
+                {{ $frm->text('dni', null, Lang::get('pacientes.dni'), "", true, array('[vejVEJ]{1}-{1}[0-9]{7,9}', 'Ej. V-123456789')); }}
+                {{ $frm->date('fecha_nacimiento', null, Lang::get('pacientes.birthdate')) }}
+                {{ $frm->select('sexo', null, Lang::get('pacientes.gender'), $genders) }}
+                {{ $frm->select('estado_civil', null, Lang::get('pacientes.marital_status'), $marital_statuses) }}
+                {{ $frm->text('direccion', null, Lang::get('pacientes.address')) }}
+                {{ $frm->tagSelect('telefonos', null, Lang::get('pacientes.phone')) }}
+                {{ $frm->tagSelect('correos', null, Lang::get('pacientes.email')) }}
+                {{ Form::token() }}
+            </form>
+        </div>
+    {{ $frm->modalClose() }}
+    <!-- /NEW PATIENT FORM -->
+
+    <!-- NEW SERVICE FORM -->
+    {{ $frm->modalOpen('new_event_service_modal', Lang::get('citas.set') . ' ' . Lang::get('servicio.title_single')) }}
+        <form id="frm_new_event_service_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_service_inf_get') }}">
+            {{ $frm->select('servicio_id', null, Lang::get('citas.service'), $servicios) }}
+        </form>
+    {{ $frm->modalClose() }}
+    <!-- /NEW SERVICE FORM -->
+
+    <!-- NEW OFFICE FORM -->
+    {{ $frm->modalOpen('new_event_office_modal', Lang::get('citas.set') . ' ' . Lang::get('consultorio.title_single')) }}
+        <div id="available_offices_holder"></div>
+        <form id="frm_new_event_office_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_office_inf_get') }}">
+            {{ $frm->select('consultorio_id', null, Lang::get('consultorio.title_single'), $consultorios) }}
+        </form>
+    {{ $frm->modalClose() }}
+    <!-- /NEW OFFICE FORM -->
+
+<!-- ACTIONS FORM -->
+{{ $frm->modalOpen('actions_modal', Lang::get('citas.actions')) }}
+    <div class="btn-toolbar" role="toolbar">
+        <div id="states" class="btn-group btn-group-lg" role="group">
+            <button id="state2" type="button" class="btn btn-default" attr-state_id="2" attr-type="primary">
+                <i class="fa fa-4x fa-check-circle-o"></i>
+                <span>{{ Lang::get('citas.confirmed') }}</span>
+            </button>
+            <button id="state3" type="button" class="btn btn-default" attr-state_id="3" attr-type="danger">
+                <i class="fa fa-4x fa-user-times"></i>
+                <span>{{ Lang::get('citas.cancelled') }}</span>
+            </button>
+            <button id="state1" type="button" class="btn btn-default" attr-state_id="1" attr-type="success">
+                <i class="fa fa-4x fa-check"></i>
+                <span>{{ Lang::get('citas.done') }}</span>
+            </button>
+        </div>
+        <div class="btn-group btn-group-lg" role="group">
+            <button type="button" class="btn btn-default">
+                <i class="fa fa-4x fa-comment"></i>
+                <span>{{ Lang::get('citas.add_note') }}</span>
+            </button>
+            <button type="button" class="btn btn-default">
+                <i class="fa fa-4x fa-pencil"></i>
+                <span>{{ Lang::get('citas.edit') }}</span>
+            </button>
+        </div>
+    </div>
+    <form id="frm_action" class="form-horizontal hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('cita_actions_post') }}">
+        {{ $frm->hidden('cita_id', 'cita_id_action') }}
+        {{ $frm->hidden('action', 'cita_action') }}
+        {{ $frm->hidden('val', 'action_val') }}
+        {{ Form::token() }}
+    </form>
+{{ $frm->modalClose(null, null, false) }}
+<!-- /ACTIONS FORM -->
+
 <!-- EDIT EVENT FORM -->
-<form id="frm_data_edit" class="form-horizontal hidden" role="form" method="post" action="{{ URL::route('admin_citas_editar_post') }}">
+<form id="frm_data_edit" class="form-horizontal hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_citas_editar_post') }}">
     {{ $frm->id() }}
     {{ $frm->date('fecha', null, Lang::get('citas.date'), 'day') }}
     {{ $frm->time('hora_inicio', null, Lang::get('citas.time_start')) }}
@@ -105,26 +299,6 @@ Panel de Administración
     {{ Form::token() }}
 </form>
 <!-- /EDIT EVENT FORM -->
-
-<!-- SAMPLE BOX CONFIGURATION MODAL FORM-->
-<div class="modal fade" id="box-config-search" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Configuración de búsqueda</h4>
-            </div>
-            <div class="modal-body">
-                Here goes box setting content.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">OK</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- /SAMPLE BOX CONFIGURATION MODAL FORM-->
 
 <!-- /MAIN CONTENT -->
 @stop
@@ -147,77 +321,41 @@ Panel de Administración
 <script type="text/javascript">
     var url_update_counter = "{{ URL::route('admin_citas_count_get') }}";
 
-    function getCalendarEvents() {
-        var date = new Date();
-        var d = date.getDate();
-        var m = date.getMonth();
-        var y = date.getFullYear();
+    var cita_ID;
 
-        return [
-                {
-                    title: 'All Day Event',
-                    start: new Date(y, m, 1),
-                    backgroundColor: Theme.colors.blue,
-                },
-                {
-                    title: 'Long Event',
-                    start: new Date(y, m, d-5),
-                    end: new Date(y, m, d-2),
-                    backgroundColor: Theme.colors.red,
-                },
-                {
-                    id: 999,
-                    title: 'Repeating Event',
-                    start: new Date(y, m, d-3, 16, 0),
-                    allDay: false,
-                    backgroundColor: Theme.colors.yellow,
-                },
-                {
-                    id: 999,
-                    title: 'Repeating Event',
-                    start: new Date(y, m, d+4, 16, 0),
-                    allDay: false,
-                    backgroundColor: Theme.colors.primary,
-                },
-                {
-                    title: 'Meeting',
-                    start: new Date(y, m, d, 10, 30),
-                    allDay: false,
-                    backgroundColor: Theme.colors.green,
-                },
-                {
-                    title: 'Lunch',
-                    start: new Date(y, m, d, 12, 0),
-                    end: new Date(y, m, d, 14, 0),
-                    allDay: false,
-                    backgroundColor: Theme.colors.red,
-                },
-                {
-                    title: 'Birthday Party',
-                    start: new Date(y, m, d+1, 19, 0),
-                    end: new Date(y, m, d+1, 22, 30),
-                    allDay: false,
-                    backgroundColor: Theme.colors.gray,
-                },
-                {
-                    title: 'Click for Google',
-                    start: new Date(y, m, 28),
-                    end: new Date(y, m, 29),
-                    url: 'http://google.com/',
-                    backgroundColor: Theme.colors.green,
-                }
-               ];
+    function setDateTime(start, end) {
+        var $frm = $('#frm_new_event_date_time_inf');
+        //setting date
+        setDatePicker($frm.find('#fecha'), start._d);
+        //setting start
+        setTimePicker($frm.find('#hora_inicio'), start._d);
+        //setting end
+        setTimePicker($frm.find('#hora_fin'), end._d);
+
+        submitForm( $frm, submitDateTimeFormDone, null, 'GET' );
+    }
+
+    function setDoctor() {
+        var $actives = $('a.filter-doctor.active');
+        if ($actives.length == 1) {
+            var $frm = $('#frm_new_event_doctor_inf');
+            var id = $actives.eq(0).attr('attr-id');
+            $frm.find('input[name=doctor_id]').val(id);
+            submitForm( $frm, submitDoctorFormDone, null, 'GET' );
+        }
+        else {
+            var data = {};
+            data['name_inf'] = '{{ Lang::get('global.select') }}';
+            data['avatar_inf'] = '{{ URL::asset('img/avatars/s/default.jpg') }}';
+            data['doctor_id'] = 0;
+            submitDoctorFormDone(null, data);
+        }
     }
 
     function fn_new_event(start, end, allDay) {
         var $modal = $('#new_event_form');
-        //setting date
-        setDatePicker($modal.find('#fecha'), start._d);
-        //setting start
-        setTimePicker($modal.find('#hora_inicio'), start._d);
-        //setting end
-        setTimePicker($modal.find('#hora_fin'), end._d);
-
+        setDateTime(start, end);
+        setDoctor();
         $modal.modal('show');
     }
 
@@ -242,7 +380,7 @@ Panel de Administración
     }
 
     function fn_render_event(event) {
-        console.log('rendered: ' + event.id);
+        //console.log('rendered: ' + event.id);
     }
 
     function fn_render_all_events(view) {
@@ -268,10 +406,62 @@ Panel de Administración
                 $o.find('span.badge').addClass('hidden')
             }
         });
+        highlightActiveDoctors();
+        bindEventClick();
+    }
+
+    function submitDateTimeFormDone($frm, data) {
+        $('#cita_date_time').html( data['fecha_inf'] + ' &nbsp; <span class="badge">' + data['hora_inf'] + '</span>' );
+        $('#cita_date_time_remaining').html( data['restante'] );
+
+        $('#fecha_hidden').val( data['fecha'] );
+        $('#hora_inicio_hidden').val( data['hora_inicio'] );
+        $('#hora_fin_hidden').val( data['hora_fin'] );
+    }
+
+    function submitDoctorFormDone($frm, data) {
+        $('#cita_doctor_name').html( data['name_inf'] );
+        //$('#cita_doctor_inf').html(  );
+        $('#cita_doctor_avatar').attr('src', data['avatar_inf']);
+
+        $('#doctor_id_hidden').val( data['doctor_id'] );
+    }
+
+    function submitPatientFormDone($frm, data) {
+        $('#cita_patient_name').html( data['name_inf'] );
+        $('#cita_patient_inf').html( data['record_inf'] + '  (' + data['num_citas_inf'] + ')');
+
+        $('#paciente_id_hidden').val( data['paciente_id'] );
+    }
+
+    function submitNewPatientFormDone($frm, data) {
+        submitFormDoneDefault($frm, data);
+        if (data['ok']) {
+            $('#paciente_id').val( data['created_id'] );
+            var $inf_frm = $('#frm_new_event_patient_inf');
+            submitForm( $inf_frm, submitPatientFormDone, null, 'GET' );
+            $inf_frm.closest('.modal').modal('hide');
+            Panel.resetForm( $frm );
+        }
+    }
+
+    function submitServiceFormDone($frm, data) {
+        $('#cita_service_name').html( data['name_inf'] );
+        $('#cita_service_inf').html( data['duration_inf'] );
+
+        $('#servicio_id_hidden').val( data['servicio_id'] );
+    }
+
+    function submitOfficeFormDone($frm, data) {
+        $('#cita_office_name').html( data['name_inf'] );
+        //$('#cita_office_inf').html( data['duration_inf'] );
+
+        $('#consultorio_id_hidden').val( data['consultorio_id'] );
     }
 
     function submitFormDone($frm, data) {
         submitFormDoneDefault($frm, data);
+        $('.status-icon').removeClass('bad');
         if (data['ok'] == 1) {
             var $cal = $('.full-calendar');
             /*$cal.fullCalendar('renderEvent',
@@ -286,12 +476,50 @@ Panel de Administración
             $cal.fullCalendar('unselect');*/
             $cal.fullCalendar( 'refetchEvents' );
         }
+        else {
+            $('#icon_' + data['bad']).addClass('bad');
+        }
+    }
+
+    function bindOfficeButtons() {
+        $('.office-btn').click(function() {
+            var $btn = $(this);
+            var id = parseInt($btn.attr('attr-id')) || 0;
+            if (id > 0) {
+                $('#consultorio_id').select2('val', id);
+                submitForm( $('#frm_new_event_office_inf'), submitOfficeFormDone, null, 'GET');
+                $btn.closest('.modal').modal('hide');
+            }
+        });
+    }
+
+    function getAvailableOffices(service_id, cdate, start) {
+        var $holder = $('#available_offices_holder');
+        if ((parseInt(service_id) || 0) > 0) {
+            $.ajax({
+                type: 'GET',
+                url: '{{ URL::route('get_available_offices') }}',
+                dataType: 'json',
+                data: { servicio_id : service_id, fecha: cdate, hora_inicio : start }
+            }).done(function(data) {
+                console.log(data);
+                if (data['ok']) {
+                    $holder.html( data['office_btns'] );
+                    bindOfficeButtons();
+                }
+                else {
+                    $holder.html('');
+                }
+            }).fail(function(data) {
+                console.log(data); //failed
+            });
+        }
     }
 
     function highlightActiveDoctors() {
         var $actives = $('a.filter-doctor.active');
         if ($actives.length == 0) {
-            $('a.fc-event').removeClass('event-faded');
+            $('a.fc-event').removeClass('event-faded wide');
         }
         else {
             $('a.fc-event').addClass('event-faded');
@@ -302,32 +530,263 @@ Panel de Administración
                     var $e = $(e);
                     if ($e.find('input.doctor_id').val() == $o.attr('attr-id')) {
                         $e.removeClass('event-faded');
+                        if ($actives.length == 1) {
+                            $e.addClass('wide');
+                        }
+                        else {
+                            $e.removeClass('wide');
+                        }
                     }
                 });
             });
         }
     }
 
+    function showHideNewPatient() {
+        var paciente_id = parseInt($('#paciente_id').val()) || 0;
+        var $new_patient_holder = $('#new_patient');
+        if (paciente_id > 0) {
+            $new_patient_holder.slideUp();
+        }
+        else {
+            $new_patient_holder.removeClass('hidden').slideDown();
+        }
+    }
+
+    function bindEventClick() {
+        $('a.fc-event').click(function() {
+            cita_ID = parseInt($(this).find('input.id').val()) || 0;
+            if (cita_ID > 0) {
+                getState(cita_ID);
+                $('#actions_modal').modal('show');
+            }
+        });
+    }
+
+    function showState(state) {
+        var $btns = $('#states').find('button');
+        $btns.removeClass('active btn-primary btn-danger btn-success').addClass('btn-default');
+        var $btn = $('#state' + state);
+        if ($btn.length) {
+            $btn.removeClass('btn-default').addClass('active btn-' + $btn.attr('attr-type'));
+        }
+    }
+
+    function setState(cita_id, state) {
+        showState(state);
+        var $frm = $('#frm_action');
+        $frm.find('input[name=cita_id]').val( cita_id );
+        $frm.find('input[name=action]').val( 'set_state' );
+        $frm.find('input[name=val]').val( state );
+        submitForm( $frm, function($frm, data) {
+            if (data['ok']) {
+                showState( data['state'] );
+            }
+        });
+    }
+
+    function getState(cita_id) {
+        var $frm = $('#frm_action');
+        $frm.find('input[name=cita_id]').val( cita_id );
+        $frm.find('input[name=action]').val( 'get_state' );
+        submitForm( $frm, function($frm, data) {
+            if (data['ok']) {
+                showState( data['state'] );
+            }
+        });
+    }
+
+    /*function checkAvailability() {
+        var $frm = $('#frm_data_new_event');
+        var url = '{{ URL::route('admin_citas_check_availability_post') }}';
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'json',
+            data: $frm.serialize() // serializes the form's elements.
+        }).done(function(data) {
+            console.log(data);
+            if (data['ok']) {
+
+            }
+        }).fail(function(data) {
+            console.log(data); //failed
+        });
+    }*/
+
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
         {{ $frm->script() }}
 
-        $('#new_event_ok').click(function() {
-            submitForm( $('#frm_data_new_event'), submitFormDone );
+        /* initialize the calendar
+        -----------------------------------------------------------------*/
+        var calendar = $('.full-calendar').fullCalendar({
+            'lang': '{{ Config::get('app.locale') }}',
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            selectable: true,
+            selectConstraint: {
+                start: '00:00',
+                end: '23:59',
+                dow: [ 1, 2, 3, 4, 5, 6 ]
+            },
+            selectHelper: true,
+            eventStartEditable: false,
+            eventDurationEditable: false,
+            firstDay: 1,
+            weekends: true,
+            allDaySlot: false,
+            defaultView: 'agendaWeek',
+            timeFormat: 'h(:mm)t',
+            axisFormat: 'h(:mm)t',
+            slotDuration: '00:10:00',
+            businessHours: {
+                start: '08:00',
+                end: '18:00',
+                dow: [ 1, 2, 3, 4, 5 ]
+                // days of week. an array of zero-based day of week integers (0=Sunday)
+            },
+            events: '{{ URL::route('calendar_source') }}',
+            select: function(start, end, allDay) {
+                if (typeof fn_new_event == 'function') {
+                    fn_new_event(start, end, allDay);
+                }
+            },
+            eventDrop: function( event, delta, revertFunc, jsEvent, ui, view ) {
+                if (typeof fn_drop_event == 'function') {
+                    fn_drop_event(event);
+                }
+            },
+            eventRender: function( event, element, view ) {
+                if (typeof fn_render_event == 'function') {
+                    fn_render_event(event);
+                }
+            },
+            eventAfterAllRender: function( view ) {
+                if (typeof fn_render_all_events == 'function') {
+                    fn_render_all_events(view);
+                }
+            },
+            editable: true,
+            droppable: false/*, // this allows things to be dropped onto the calendar !!!
+            drop: function(date, allDay) { // this function is called when something is dropped
+
+                // retrieve the dropped element's stored Event Object
+                var originalEventObject = $(this).data('eventObject');
+
+                // we need to copy it, so that multiple events don't have a reference to the same object
+                var copiedEventObject = $.extend({}, originalEventObject);
+
+                // assign it the date that was reported
+                copiedEventObject.start = date;
+                copiedEventObject.allDay = allDay;
+
+                // render the event on the calendar
+                // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+                $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+                // is the "remove after drop" checkbox checked?
+                if ($('#drop-remove').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+
+            },
+            events: (typeof getCalendarEvents == 'function' ? getCalendarEvents() : [])*/
+        });
+        //----- End calendar Initialization -----
+
+
+        $('#new_event_form').find('button.modal-btn-ok').click(function() {
+            var $form = $(this).closest('.modal').find('form').eq(0);
+            submitForm( $form, submitFormDone );
         });
 
-        $.each($('.full-calendar'), function(i, o) {
+        // getting date time inf
+        $('#new_event_date_time_modal').find('button.modal-btn-ok').click(function() {
+            var $modal = $(this).closest('.modal');
+            var $form = $modal.find('form').eq(0);
+            submitForm( $form, submitDateTimeFormDone, null, 'GET' );
+            $modal.modal('hide');
+        });
+
+        // getting doctor inf
+        $('#new_event_doctor_modal').find('button.modal-btn-ok').click(function() {
+            var $modal = $(this).closest('.modal');
+            var $form = $modal.find('form').eq(0);
+            submitForm( $form, submitDoctorFormDone, null, 'GET' );
+            $modal.modal('hide');
+        });
+
+        // getting patient inf
+        $('#new_event_patient_modal').find('button.modal-btn-ok').click(function() {
+            var paciente_id = parseInt($('#paciente_id').val()) || 0;
+            var $frm;
+            if (paciente_id > 0) {
+                var $modal = $(this).closest('.modal');
+                $frm = $modal.find('form').eq(0);
+                submitForm( $frm, submitPatientFormDone, null, 'GET' );
+                $modal.modal('hide');
+            }
+            else {
+                $frm = $('#frm_data_new_patient');
+                submitForm( $frm, submitNewPatientFormDone );
+            }
+        });
+
+        // getting service inf
+        $('#new_event_service_modal').find('button.modal-btn-ok').click(function() {
+            var $modal = $(this).closest('.modal');
+            var $form = $modal.find('form').eq(0);
+            submitForm( $form, submitServiceFormDone, null, 'GET' );
+            $modal.modal('hide');
+        });
+
+        // getting office inf
+        $('#new_event_office_modal').find('button.modal-btn-ok').click(function() {
+            var $modal = $(this).closest('.modal');
+            var $form = $modal.find('form').eq(0);
+            submitForm( $form, submitOfficeFormDone, null, 'GET' );
+            $modal.modal('hide');
+        });
+
+        $('#open_offices_modal').click(function() {
+            getAvailableOffices( $('#servicio_id_hidden').val(), $('#fecha_hidden').val(), $('#hora_inicio_hidden').val() );
+        });
+
+        $('#open_patients_modal').click(function() {
+            $('#paciente_id').select2('val', '');
+            showHideNewPatient();
+        });
+
+        $('#paciente_id').on("change", function(e) {
+            showHideNewPatient();
+        });
+
+        /*$.each($('.full-calendar'), function(i, o) {
             $(o).fullCalendar( 'addEventSource', {
-                 url: '{{ URL::route('calendar_source') }}'
-                 //events: getCalendarEvents()
+                 url: '{{-- URL::route('calendar_source') --}}'
             });
+        });*/
+
+        $('#states').find('button').click(function() {
+            var $btn = $(this);
+            if (!$btn.hasClass('active')) {
+                setState(cita_ID, $btn.attr('attr-state_id'));
+            }
+            else {
+                setState(cita_ID, 0);
+            }
         });
 
         $('a.filter-doctor').click(function(e) {
             var $a = $(this);
             var id = $a.attr('attr-id');
-            $a.toggleClass('active');
+            $a.toggleClass('active').siblings().removeClass('active');
             highlightActiveDoctors();
             e.preventDefault();
             return false;

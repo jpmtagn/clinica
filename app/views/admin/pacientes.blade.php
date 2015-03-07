@@ -27,7 +27,7 @@ Panel de Administración
             </ul>
             <!-- /BREADCRUMBS -->
             <!-- HEAD -->
-            {{ $frm->header('Personas', $total, 'fa-wheelchair') }}
+            {{ $frm->header('Personas', $total, 'fa-users') }}
             <!-- /HEAD -->
         </div>
     </div>

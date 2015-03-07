@@ -44,7 +44,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
             'id'        => 'integer|min:1',
-            'correo'    => 'required|email|max:255|unique:usuario,correo,' . (int)$ignore_id,
+            'correo'    => 'required|max:255|unique:usuario,correo,' . (int)$ignore_id,
             'password'  => 'required',
             'password2' => 'same:password',
             'activo'    => 'in:on,1,0',

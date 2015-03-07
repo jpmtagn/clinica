@@ -41,6 +41,7 @@ class TipoParienteController extends BaseController {
     /**
      * Proceso adicional al editar / crear un nuevo registro
      * @param $item
+     * @return bool
      */
     public function editarRelational($item) {
         if ($item->reciproco != $item->id) {

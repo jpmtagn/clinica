@@ -23,7 +23,10 @@ class UserController extends BaseController {
      * @return mixed
      */
     public function mostrarDefault() {
-        return 'Here you are.';
+        if (Auth::check()) {
+            return $this->paginaAdminInicio();
+        }
+        return $this->mostrarInicioSesion();
     }
 
     /**

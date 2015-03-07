@@ -46,6 +46,7 @@ return array(
 
     'years' => 'años',
     'months' => 'meses',
+    'weeks' => 'semanas',
     'days' => 'días',
     'hours' => 'horas',
     'minutes' => 'minutos',
@@ -53,6 +54,7 @@ return array(
 
     'year' => 'año',
     'month' => 'mes',
+    'week' => 'semana',
     'day' => 'día',
     'hour' => 'hora',
     'minute' => 'minuto',

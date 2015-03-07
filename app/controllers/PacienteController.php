@@ -82,17 +82,18 @@ class PacienteController extends BaseController {
      * @return boolean
      */
     public function afterValidation($inputs) {
-        $id = (int)Input::get('id');
-        if ($id > 0) {
-            //if the user to be modified is not the current one and the current one is not an admin then abort
-            if ($id != Auth::user()->paciente->id && !Auth::user()->admin) {
-                return false;
-            }
-        }
-        else {
-            //if creating a new profile it needs to be for the current one only
-            if (Input::get('usuario_id') != Auth::user()->id) {
-                return false;
+        if (!Auth::user()->admin) {
+            $id = (int)Input::get('id');
+            if ($id > 0) {
+                //if the user to be modified is not the current one, then abort
+                if ($id != Auth::user()->paciente->id) {
+                    return false;
+                }
+            } else {
+                //if creating a new profile it needs to be for the current one only
+                if (!Auth::user()->admin && Input::get('usuario_id') != Auth::user()->id) {
+                    return false;
+                }
             }
         }
         return true;
@@ -343,7 +344,7 @@ class PacienteController extends BaseController {
 
         foreach($query as $q) {
             $q = trim($q);
-            if (strlen($q) > 1) {
+            //if (strlen($q) > 1) {
                 $records = $records->where(function ($sql_query) use ($search_fields, $q) {
                     $first_query = true;
                     foreach($search_fields as $attr) {
@@ -356,7 +357,7 @@ class PacienteController extends BaseController {
                         }
                     }
                 });
-            }
+            //}
         }
 
         $records = $records->get();

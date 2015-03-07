@@ -164,7 +164,7 @@ class BaseController extends Controller {
      */
     public function registrarPost() {
         $item = $this->registrar(static::MODEL);
-        if ($item != false) {
+        if ($item !== false) {
             $this->editarRelational($item);
         }
         return $this->returnJson();
@@ -204,6 +204,24 @@ class BaseController extends Controller {
         }
 
         return false;
+    }
+
+    /**
+     * Determins if the input fields are valid for the model's fillable fields
+     * @return bool
+     */
+    public function validateInputs() {
+        $model = static::MODEL;
+        $fillables = (new $model)->getFillable();
+        $fields = array();
+        foreach (Input::all() as $input_name => $input_val) {
+            if (in_array($input_name, $fillables)) {
+                $fields[$input_name] = $model::getValidationRules($input_name);
+            }
+        }
+        $validator = Validator::make(Input::all(), $fields);
+        $data = $fields;
+        return ($validator->passes());
     }
 
     /**

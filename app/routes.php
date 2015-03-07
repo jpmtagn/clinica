@@ -198,10 +198,46 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ConsultorioController@listSeek'
     ));
 
+    Route::get('admin/servicios/list', array(
+        'as' => 'admin_servicios_list',
+        'uses' => 'ServicioController@listSeek'
+    ));
+
     //calendar
     Route::get('calendario/citas', array(
         'as' => 'calendar_source',
         'uses' => 'CitaController@getCitas'
+    ));
+
+    //information requests
+    Route::get('cita/dia_hora', array(
+        'as' => 'cita_datetime_inf_get',
+        'uses' => 'CitaController@getInfoDateTime'
+    ));
+
+    Route::get('cita/doctor', array(
+        'as' => 'cita_doctor_inf_get',
+        'uses' => 'CitaController@getInfoDoctor'
+    ));
+
+    Route::get('cita/paciente', array(
+        'as' => 'cita_patient_inf_get',
+        'uses' => 'CitaController@getInfoPatient'
+    ));
+
+    Route::get('cita/servicio', array(
+        'as' => 'cita_service_inf_get',
+        'uses' => 'CitaController@getInfoService'
+    ));
+
+    Route::get('cita/consultorio', array(
+        'as' => 'cita_office_inf_get',
+        'uses' => 'CitaController@getInfoOffice'
+    ));
+
+    Route::get('cita/consultorio_disponible', array(
+        'as' => 'get_available_offices',
+        'uses' => 'CitaController@getAvailableOffice'
     ));
 
     /**
@@ -377,7 +413,13 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'CitaController@registrarPost'
         ));
 
-        
+        //registrar
+        Route::post('admin/citas/chequear', array(
+            'as' => 'admin_citas_check_availability_post',
+            'uses' => 'CitaController@checkAvailabilityPost'
+        ));
+
+
         // PAGINA AREAS
 
         //buscar
@@ -531,6 +573,15 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/equipo/registrar', array(
             'as' => 'admin_equipo_registrar_post',
             'uses' => 'EquipoController@registrarPost'
+        ));
+
+
+        // PAGINA CALENDARIO
+
+        //acciones
+        Route::post('admin/equipo/accion', array(
+            'as' => 'cita_actions_post',
+            'uses' => 'CitaController@calendarActionPost'
         ));
 
     });

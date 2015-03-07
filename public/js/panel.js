@@ -92,7 +92,7 @@ var Panel = {
                                 }
                                 //slider
                                 else if (o.hasClass('input-slider') && (typeof o.attr('data') != 'undefined')) {
-                                    o.slider('setValue', value);
+                                    o.slider('setValue', parseInt(value));
                                 }
                                 else {
                                     o.val( value );
@@ -978,14 +978,15 @@ function submitFormDoneDefault($frm, data) {
     }
 }
 
-function submitForm($frm, fn_done, fn_fail, method) {
+function submitForm($frm, fn_done, fn_fail, method, extra_data) {
     method = typeof method == 'undefined' ? 'POST' : method;
+    extra_data = typeof extra_data == 'undefined' ? '' : extra_data;
     var url = $frm.attr('action');
     $.ajax({
         type: method,
         url: url,
         dataType: 'json',
-        data: $frm.serialize() // serializes the form's elements.
+        data: $frm.serialize() + extra_data // serializes the form's elements.
     }).done(function(data) {
         console.log(data);
         if (typeof fn_done == 'function') {

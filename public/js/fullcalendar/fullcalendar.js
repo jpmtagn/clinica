@@ -4662,6 +4662,11 @@ DayGrid.mixin({
 		var timeHtml = '';
 		var titleHtml;
 
+        //added by alfredo
+        var id = event.id;
+        var doctor_id = event.doctor_id;
+        var patient_id = event.patient_id;
+
         classes.unshift('fc-day-grid-event');
 
 		// Only display a timed events time if it is the starting segment
@@ -4689,6 +4694,9 @@ DayGrid.mixin({
 						titleHtml + ' ' + timeHtml : // put a natural space in between
 						timeHtml + ' ' + titleHtml   //
 						) +
+                        '<input type="hidden" class="id" value="' + id + '">' +
+                        '<input type="hidden" class="doctor_id" value="' + doctor_id + '">' +
+                        '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
 				'</div>' +
 				(isResizable ?
 					'<div class="fc-resizer"/>' :
