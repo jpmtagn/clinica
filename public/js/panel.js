@@ -978,10 +978,11 @@ function submitFormDoneDefault($frm, data) {
     }
 }
 
-function submitForm($frm, fn_done, fn_fail, method, extra_data) {
-    method = typeof method == 'undefined' ? 'POST' : method;
-    extra_data = typeof extra_data == 'undefined' ? '' : extra_data;
-    var url = $frm.attr('action');
+function submitForm($frm, fn_done, fn_fail, method, extra_data, url_alt) {
+    var frm_method = $frm.attr('method');
+    method = typeof method != 'string' ? (typeof frm_method != 'undefined' ? frm_method : 'POST') : method;
+    extra_data = typeof extra_data != 'string' ? '' : extra_data;
+    var url = typeof url_alt != 'string' ? $frm.attr('action') : url_alt;
     $.ajax({
         type: method,
         url: url,

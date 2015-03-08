@@ -4666,8 +4666,13 @@ DayGrid.mixin({
         var id = event.id;
         var doctor_id = event.doctor_id;
         var patient_id = event.patient_id;
+        var service_id = event.service_id;
+        var office_id = event.office_id;
+        var state = event.state_id;
 
         classes.unshift('fc-day-grid-event');
+
+        classes.push('state' + state);
 
 		// Only display a timed events time if it is the starting segment
 		if (!event.allDay && seg.isStart) {
@@ -4676,7 +4681,7 @@ DayGrid.mixin({
 
 		titleHtml =
 			'<span class="fc-title">' +
-				(htmlEscape(event.title || '') || '&nbsp;') + // we always want one line of height
+				(htmlEscape(event.title.split('<br>')[0] || '') || '&nbsp;') + // we always want one line of height
 			'</span>';
 		
 		return '<a class="' + classes.join(' ') + '"' +
@@ -4697,6 +4702,8 @@ DayGrid.mixin({
                         '<input type="hidden" class="id" value="' + id + '">' +
                         '<input type="hidden" class="doctor_id" value="' + doctor_id + '">' +
                         '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
+                        '<input type="hidden" class="service_id" value="' + service_id + '">' +
+                        '<input type="hidden" class="office_id" value="' + office_id + '">' +
 				'</div>' +
 				(isResizable ?
 					'<div class="fc-resizer"/>' :
@@ -5856,8 +5863,13 @@ TimeGrid.mixin({
         var id = event.id;
         var doctor_id = event.doctor_id;
         var patient_id = event.patient_id;
+        var service_id = event.service_id;
+        var office_id = event.office_id;
+        var state = event.state_id;
 
         classes.unshift('fc-time-grid-event');
+
+        classes.push('state' + state);
 
 		if (view.isMultiDayEvent(event)) { // if the event appears to span more than one day...
 			// Don't display time text on segments that run entirely through a day.
@@ -5897,13 +5909,15 @@ TimeGrid.mixin({
 						) +
 					(event.title ?
 						'<div class="fc-title">' +
-							htmlEscape(event.title) +
+							/*htmlEscape(*/event.title/*)*/ +
 						'</div>' :
 						''
 						) +
                     '<input type="hidden" class="id" value="' + id + '">' +
                     '<input type="hidden" class="doctor_id" value="' + doctor_id + '">' +
                     '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
+                    '<input type="hidden" class="service_id" value="' + service_id + '">' +
+                    '<input type="hidden" class="office_id" value="' + office_id + '">' +
 				'</div>' +
 				'<div class="fc-bg"/>' +
 				(isResizable ?

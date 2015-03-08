@@ -235,6 +235,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'CitaController@getInfoOffice'
     ));
 
+    Route::get('cita/info', array(
+        'as' => 'cita_all_inf_get',
+        'uses' => 'CitaController@getAllInfo'
+    ));
+
     Route::get('cita/consultorio_disponible', array(
         'as' => 'get_available_offices',
         'uses' => 'CitaController@getAvailableOffice'
@@ -413,7 +418,7 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'CitaController@registrarPost'
         ));
 
-        //registrar
+        //validacion
         Route::post('admin/citas/chequear', array(
             'as' => 'admin_citas_check_availability_post',
             'uses' => 'CitaController@checkAvailabilityPost'

@@ -6,6 +6,9 @@ class AForm {
     protected $values;
     protected $show_labels;
 
+    protected $accordion_id;
+    protected $accordion_count;
+
     public function __construct() {
         $this->script = "";
         $this->values = array();
@@ -903,6 +906,42 @@ EOT;
         return $output . <<<EOT
                     </div>
                 </div>
+            </div>
+EOT;
+    }
+
+
+    public function accordionOpen($id) {
+        $this->accordion_id = $id;
+        return <<<EOT
+            <div class="panel-group" id="{$id}" role="tablist" aria-multiselectable="true">
+EOT;
+    }
+
+    public function accordionItemOpen($title) {
+        $this->accordion_count = (int)$this->accordion_count + 1;
+        return <<<EOT
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#{$this->accordion_id}" href="#{$this->accordion_id}_{$this->accordion_count}" aria-expanded="true" aria-controls="collapseOne">
+                                {$title}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="{$this->accordion_id}_{$this->accordion_count}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+EOT;
+    }
+
+    public function accordionItemClose() {
+        return <<<EOT
+                    </div>
+                </div>
+EOT;
+    }
+
+    public function accordionClose() {
+        return <<<EOT
             </div>
 EOT;
     }

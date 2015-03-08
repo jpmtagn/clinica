@@ -31,12 +31,17 @@ class Cita extends Eloquent {
 
     protected $deletable_models = array();
 
+    const UNCONFIRMED = 0;
+    const DONE = 1;
+    const CONFIRMED = 2;
+    const CANCELLED = 3;
+
     public static function state($index = null) {
         $states = array(
-            0 => 'por_confirmar',
-            1 => 'realizada',
-            2 => 'confirmada',
-            3 => 'cancelada'
+            self::UNCONFIRMED   => 'por_confirmar',
+            self::DONE          => 'realizada',
+            self::CONFIRMED     => 'confirmada',
+            self::CANCELLED     => 'cancelada'
         );
         if ($index === null) return $states;
         return $states[$index];
@@ -130,17 +135,23 @@ class Cita extends Eloquent {
     }
 
     public function scopeBetween($query, $val1, $val2) {
-        return $query->where(function ($query) use ($val1, $val2) {
-            $query->where('hora_inicio', '>=', $val1)
-                  ->where('hora_inicio', '<=', $val2);
-        })->orWhere(function ($query) use ($val1, $val2) {
-            $query->where('hora_fin', '>=', $val1)
-                  ->where('hora_fin', '<=', $val2);
+        return $query->where(function ($query) use ($val1, $val2) { //TODO: check that this is working (!)
+            /*return */$query->where(function ($query) use ($val1, $val2) {
+                $query->where('hora_inicio', '>=', $val1)
+                    ->where('hora_inicio', '<=', $val2);
+            })->orWhere(function ($query) use ($val1, $val2) {
+                $query->where('hora_fin', '>=', $val1)
+                    ->where('hora_fin', '<=', $val2);
+            });
         });
     }
 
+    public function scopeNotCancelled($query) {
+        return $query->where('estado', '<>', self::CANCELLED);
+    }
+
     public function scopeTotal($query, $val) {
-        return $query->where('paciente_id', '=', $val)->where('estado', '=', '0');
+        return $query->where('paciente_id', '=', $val)->where('estado', '=', self::DONE); //all finished events for a patient
     }
 
 

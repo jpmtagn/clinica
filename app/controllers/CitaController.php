@@ -92,34 +92,31 @@ class CitaController extends BaseController {
             $doctor_id = $inputs['doctor_id'];
             $service_id = $inputs['servicio_id'];
             $office_id = $inputs['consultorio_id'];
+            $cita_id = (int)$inputs['id'];
             //check that the End Time is greater than the Start Time
             /*if (strtotime($start) > strtotime($end)) {
                 $this->setError(Lang::get(self::LANG_FILE . '.time_mismatch'));
                 return false;
             }*/
 
-            //check that the specified time is not busy for the given doctor
-            //$start = Functions::justTime($start, false);
-            //$end = Functions::justTime($end, false);
             $model = self::MODEL;
-            //$model::where(function ($sql_query) use ($start, $end) {
-                //$sql_query->where('hora_inicio', '<', $end);
-                //$sql_query->where('hora_inicio', '>', $start);
-            //});
             $start = $date . ' ' . Functions::ampmto24($start);
             $end = Functions::addMinutes($start, $duration, 'h:i A');
             Input::merge(array('hora_fin' => $end)); //<-- replaces the input end time with the start time + treatment duration
             $end = $date . ' ' . $end;
 
-            //validating overlapping
-            $overlapping = $model::whereRaw('(hora_inicio < ? AND hora_inicio > ?) OR (hora_fin > ? AND hora_fin < ?)', array($end, $start, $start, $end))->get();
+            //get overlapping
+            //$overlapping = $model::whereRaw('estado <> 3 AND ((hora_inicio < ? AND hora_inicio > ?) OR (hora_fin > ? AND hora_fin < ?))', array($end, $start, $start, $end))->get();
+            $overlapping = $model::notCancelled()->between($start, $end)->get();
             foreach ($overlapping as $ol) {
+                if ($cita_id == $ol->id) continue; //not going to validate against itself
+                //check that the specified doctor is not busy for the given time
                 if ($ol->doctor_id == $doctor_id) {
                     $this->setReturn('bad', 'doctor');
                     $this->setReturn('overlapping', $ol->id);
                     $this->setError(Lang::get(self::LANG_FILE . '.overlap_doctor'));
                     return false;
-                }
+                } //check that the specified office is not busy for the given time
                 elseif ($ol->consultorio_id == $office_id) {
                     $this->setReturn('bad', 'office');
                     $this->setReturn('overlapping', $ol->id);
@@ -319,7 +316,12 @@ EOT;
 
         foreach ($citas as $cita) {
             $paciente = $cita->paciente;
-            $title = str_replace('"', '', Functions::firstNameLastName($paciente->nombre, $paciente->apellido) . '<br>' . $cita->servicio->nombre);
+
+            $title = Functions::firstNameLastName($paciente->nombre, $paciente->apellido) . '<br>' .
+                     '<i>' . $cita->servicio->nombre . '</i><br>' .
+                     '<b>' . $cita->consultorio->nombre . '</b>';
+
+            $title = str_replace('"', '',  $title);
 
             $start = $cita->hora_inicio;
             $end = !empty($cita->hora_fin) ? "\"end\": \"$cita->hora_fin\"," : '';
@@ -343,7 +345,8 @@ EOT;
                 "doctor_id": "{$cita->doctor_id}",
                 "patient_id": "{$cita->paciente_id}",
                 "service_id": "{$cita->servicio_id}",
-                "office_id": "{$cita->consultorio_id}"
+                "office_id": "{$cita->consultorio_id}",
+                "state_id": "{$cita->estado}"
             }
 EOT;
         }
@@ -363,76 +366,106 @@ EOT;
     }
 
 
-    public function getInfoDateTime() {
-        if ($this->validateInputs()) {
-            $remaining = Functions::remainingTime( Input::get('fecha') . ' ' . Functions::ampmto24(Input::get('hora_inicio')), 'all' );
-            //send information
-            $this->setReturn('fecha_inf', Functions::longDateFormat( Input::get('fecha') ));
-            $this->setReturn('restante', $remaining != '' ? (Lang::get(self::LANG_FILE . '.in') . ' ' . $remaining) : ('<i class="fa fa-exclamation-triangle"></i> &nbsp;' . Lang::get(self::LANG_FILE . '.passed_time')));
-            $this->setReturn('hora_inf', Functions::justTime( Input::get('hora_inicio') ));
-            //send back data
-            $this->setReturn('fecha', Input::get('fecha'));
-            $this->setReturn('hora_inicio', Input::get('hora_inicio'));
-            $this->setReturn('hora_fin', Input::get('hora_fin'));
+    private function infoDateTime($date, $start, $end) {
+        $remaining = Functions::remainingTime( $date . ' ' . Functions::ampmto24($start), 'all' );
+        //send information
+        $this->setReturn('fecha_inf', Functions::longDateFormat( $date ));
+        $this->setReturn('restante', $remaining != '' ? (Lang::get(self::LANG_FILE . '.in') . ' ' . $remaining) : ('<i class="fa fa-exclamation-triangle"></i> &nbsp;' . Lang::get(self::LANG_FILE . '.passed_time')));
+        $this->setReturn('hora_inf', $start);
+        //send back data
+        $this->setReturn('fecha', $date);
+        $this->setReturn('hora_inicio', $start);
+        $this->setReturn('hora_fin', $end);
+    }
+
+    private function infoDoctor($doctor_id) {
+        $doctor = User::find($doctor_id);
+        if ($doctor) $doctor = $doctor->paciente;
+        //send information
+        $this->setReturn('doctor_name_inf', $doctor ? Functions::firstNameLastName($doctor->nombre, $doctor->apellido) : Lang::get('global.not_found'));
+        $this->setReturn('avatar_inf', ($doctor && $doctor->avatar) ? URL::asset('img/avatars/s/' . $doctor->avatar) : URL::asset('img/avatars/s/default.jpg'));
+        //send back data
+        $this->setReturn('doctor_id', $doctor_id);
+    }
+
+    private function infoPatient($patient_id) {
+        $patient = Paciente::find($patient_id);
+        $num_citas = Cita::total($patient_id)->count();
+        //send information
+        $this->setReturn('patient_name_inf', $patient ? Functions::firstNameLastName($patient->nombre, $patient->apellido) : Lang::get('global.not_found'));
+        $this->setReturn('record_inf', Lang::get(self::LANG_FILE . '.record_date_alt') . ' ' . Functions::longDateFormat($patient->created_at));
+        $this->setReturn('num_citas_inf', Functions::singlePlural(Lang::get(self::LANG_FILE . '.title_single'), Lang::get(self::LANG_FILE . '.title_plural'), $num_citas, true));
+        //send back data
+        $this->setReturn('paciente_id', $patient_id);
+    }
+
+    private function infoService($service_id) {
+        $service = Servicio::find($service_id);
+        //send information
+        $this->setReturn('service_name_inf', $service ? ucfirst($service->nombre) : Lang::get('global.not_found'));
+        $this->setReturn('duration_inf', $service ? Functions::minToHours($service->duracion) : '0');
+        //send back data
+        $this->setReturn('duration', $service ? $service->duracion : '0');
+        $this->setReturn('servicio_id', $service_id);
+    }
+
+    private function infoOffice($office_id) {
+        $office = Consultorio::find($office_id);
+        //send information
+        $this->setReturn('office_name_inf', $office ? ucfirst($office->nombre) : Lang::get('global.not_found'));
+        //send back data
+        $this->setReturn('consultorio_id', $office_id);
+    }
+
+
+    public function getAllInfo() {
+        $cita_id = (int)Input::get('id');
+        $this->setReturn('cita_id', $cita_id);
+        if ($cita_id > 0) {
+            $model = self::MODEL;
+            $cita = $model::find($cita_id);
+            if ($cita) {
+                $this->infoDateTime($cita->fecha, Functions::justTime($cita->hora_inicio), Functions::justTime($cita->hora_fin));
+                $this->infoDoctor($cita->doctor_id);
+                $this->infoPatient($cita->paciente_id);
+                $this->infoService($cita->servicio_id);
+                $this->infoOffice($cita->consultorio_id);
+            }
         }
         return $this->returnJson();
     }
 
+    public function getInfoDateTime() {
+        if ($this->validateInputs()) {
+            $this->infoDateTime(Input::get('fecha'), Input::get('hora_inicio'), Input::get('hora_fin'));
+        }
+        return $this->returnJson();
+    }
 
     public function getInfoDoctor() {
         if ($this->validateInputs()) {
-            $doctor_id =  Input::get('doctor_id');
-            $doctor = User::find($doctor_id);
-            if ($doctor) $doctor = $doctor->paciente;
-            //send information
-            $this->setReturn('name_inf', $doctor ? Functions::firstNameLastName($doctor->nombre, $doctor->apellido) : Lang::get('global.not_found'));
-            $this->setReturn('avatar_inf', ($doctor && $doctor->avatar) ? URL::asset('img/avatars/s/' . $doctor->avatar) : URL::asset('img/avatars/s/default.jpg'));
-            //send back data
-            $this->setReturn('doctor_id', $doctor_id);
+            $this->infoDoctor(Input::get('doctor_id'));
         }
         return $this->returnJson();
     }
-
 
     public function getInfoPatient() {
         if ($this->validateInputs()) {
-            $patient_id =  Input::get('paciente_id');
-            $patient = Paciente::find($patient_id);
-            $num_citas = Cita::total($patient_id)->count();
-            //send information
-            $this->setReturn('name_inf', $patient ? Functions::firstNameLastName($patient->nombre, $patient->apellido) : Lang::get('global.not_found'));
-            $this->setReturn('record_inf', Lang::get(self::LANG_FILE . '.record_date_alt') . ' ' . Functions::longDateFormat($patient->created_at));
-            $this->setReturn('num_citas_inf', Functions::singlePlural(Lang::get(self::LANG_FILE . '.title_single'), Lang::get(self::LANG_FILE . '.title_plural'), $num_citas, true));
-            //send back data
-            $this->setReturn('paciente_id', $patient_id);
+            $this->infoPatient(Input::get('paciente_id'));
         }
         return $this->returnJson();
     }
-
 
     public function getInfoService() {
         if ($this->validateInputs()) {
-            $service_id = Input::get('servicio_id');
-            $service = Servicio::find($service_id);
-            //send information
-            $this->setReturn('name_inf', $service ? ucfirst($service->nombre) : Lang::get('global.not_found'));
-            $this->setReturn('duration_inf', $service ? Functions::minToHours($service->duracion) : '0');
-            //send back data
-            $this->setReturn('duration', $service ? $service->duracion : '0');
-            $this->setReturn('servicio_id', $service_id);
+            $this->infoService(Input::get('servicio_id'));
         }
         return $this->returnJson();
     }
 
-
     public function getInfoOffice() {
         if ($this->validateInputs()) {
-            $office_id = Input::get('consultorio_id');
-            $office = Consultorio::find($office_id);
-            //send information
-            $this->setReturn('name_inf', $office ? ucfirst($office->nombre) : Lang::get('global.not_found'));
-            //send back data
-            $this->setReturn('consultorio_id', $office_id);
+            $this->infoOffice(Input::get('consultorio_id'));
         }
         return $this->returnJson();
     }
@@ -454,7 +487,7 @@ EOT;
                 if ($start_time >= $now) {
                     $duration = $service->duracion;
                     $end = Functions::addMinutes($start_time, $duration);
-                    $busy_offices = Cita::between($start, $end)->lists('consultorio_id');
+                    $busy_offices = Cita::notCancelled()->between($start, $end)->lists('consultorio_id');
                     if ($service) {
                         $offices = '<div class="list-group">';
                         foreach ($service->consultorios as $office) {
