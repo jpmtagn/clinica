@@ -754,6 +754,13 @@ Panel de Administración
         });
         //----- End calendar Initialization -----
 
+        $(window).resize(function() {
+            var $cal = $('#main_calendar');
+            var height = Math.floor( $(this).height() - $cal.offset().top ) - 80;
+            console.log(height);
+            $cal.fullCalendar('option', 'contentHeight', height);
+        }).resize();
+
 
         $('#new_event_form').on('hidden.bs.modal', function() {
             hideNewEventPlaceHolder();
