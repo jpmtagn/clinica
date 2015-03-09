@@ -695,12 +695,15 @@ Panel de Administración
             timeFormat: 'h(:mm)t',
             axisFormat: 'h(:mm)t',
             slotDuration: '00:10:00',
+            hiddenDays: [0],
             businessHours: {
                 start: '08:00',
                 end: '18:00',
                 dow: [ 1, 2, 3, 4, 5 ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
+            minTime: '06:00:00',
+            maxTime: '22:00:00',
             events: '{{ URL::route('calendar_source') }}',
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {
@@ -757,7 +760,7 @@ Panel de Administración
         }).find('button.modal-btn-ok').click(function() {
             var $form = $(this).closest('.modal').find('form').eq(0);
             //new one
-            if (parseInt($form.find('input[name=id]')) == 0) {
+            if (parseInt($form.find('input[name=id]').val()) == 0) {
                 submitForm( $form, submitFormDone );
             }
             //existing one
@@ -860,6 +863,14 @@ Panel de Administración
 
                 $btn.closest('.modal').modal('hide');
                 $btn.removeClass('disabled');
+
+                $frm = $('#new_event_date_time_modal');
+                //setting date
+                setDatePicker($frm.find('#fecha'), data['fecha']);
+                //setting start
+                setTimePicker($frm.find('#hora_inicio'), data['hora_inicio']);
+                //setting end
+                setTimePicker($frm.find('#hora_fin'), data['hora_fin']);
             });
 
         });

@@ -56,7 +56,7 @@ class Cita extends Eloquent {
      */
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
-            'id'                    => 'integer|min:1',
+            'id'                    => 'integer|min:0',
             'fecha'                 => 'required|date_format:Y-m-d',
             'hora_inicio'           => array('regex:/(0[0-9]|1[0-2]):([0-5][0-9]) (AM|PM)/'),
             'hora_fin'              => array('regex:/(0[0-9]|1[0-2]):([0-5][0-9]) (AM|PM)/'),

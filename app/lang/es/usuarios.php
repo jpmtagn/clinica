@@ -26,7 +26,7 @@ return array(
     'recepcionista' => 'Recepcionista',
     'secretaria' => 'Secretaria',
 
-    'view_doctor' => 'Ver doctores',
+    'view_doctor' => 'Ver terapeutas',
 
     //messages
     'wrong_current_password' => 'La contraseña actual ingresada no es correcta.',

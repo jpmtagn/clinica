@@ -4669,6 +4669,7 @@ DayGrid.mixin({
         var service_id = event.service_id;
         var office_id = event.office_id;
         var state = event.state_id;
+        var atention = event.atention == 1 ? '&nbsp;<i class="fa fa-exclamation-triangle"></i>' : '';
 
         classes.unshift('fc-day-grid-event');
 
@@ -4676,7 +4677,7 @@ DayGrid.mixin({
 
 		// Only display a timed events time if it is the starting segment
 		if (!event.allDay && seg.isStart) {
-			timeHtml = '<span class="fc-time">' + htmlEscape(this.getEventTimeText(event)) + '</span>';
+			timeHtml = '<span class="fc-time">' + htmlEscape(this.getEventTimeText(event)) + atention + '</span>';
 		}
 
 		titleHtml =
@@ -5866,6 +5867,7 @@ TimeGrid.mixin({
         var service_id = event.service_id;
         var office_id = event.office_id;
         var state = event.state_id;
+        var atention = event.atention == 1 ? '&nbsp;<i class="fa fa-exclamation-triangle"></i>' : '';
 
         classes.unshift('fc-time-grid-event');
 
@@ -5903,7 +5905,7 @@ TimeGrid.mixin({
 						' data-start="' + htmlEscape(startTimeText) + '"' +
 						' data-full="' + htmlEscape(fullTimeText) + '"' +
 						'>' +
-							'<span>' + htmlEscape(timeText) + '</span>' +
+							'<span>' + htmlEscape(timeText) + atention + '</span>' +
 						'</div>' :
 						''
 						) +

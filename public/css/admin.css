@@ -9131,26 +9131,35 @@ a.fc-event:hover {
     z-index: 999 !important;
 }
 
-a.fc-helper, a.fc-event.stateundefined {
+#main_calendar a.fc-helper, #main_calendar a.fc-event.stateundefined {
     border: none;
     box-shadow: 2px 2px 4px #222;
 }
 
-a.fc-event.state1 { /* done */
+#disponible_calendar a.fc-helper, #disponible_calendar a.fc-event.stateundefined {
+    border: none;
+    background-color: #849917;
+}
+
+#main_calendar a.fc-event.state1 { /* done */
     text-decoration: line-through;
     color: #ccc;
 }
 
-a.fc-event.state2 { /* confirmed */
+#main_calendar a.fc-event.state2 { /* confirmed */
     color: #ffff00;
 }
 
-a.fc-event.state3 { /* cancelled */
+#main_calendar a.fc-event.state3 { /* cancelled */
     color: #ff3f0e;
 }
 
 #actions_modal button:not(.active) {
     color: #555;
+}
+
+#disponible_calendar a.fc-event.state0 { /* disabled */
+    background-color: #787878 !important;
 }
 
 #actions_modal button span {

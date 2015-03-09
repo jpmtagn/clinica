@@ -147,15 +147,15 @@ class BaseController extends Controller {
      * @return string
      */
     public function editarPost() {
-        $item = $this->editar(static::MODEL);
-        if ($item != false) {
-            /*$view = */$this->editarRelational($item);
-            //if a file was uploaded (a view has been returned) then send the page instead of the ajax json
-            /*if ($view !== true) {
-                return $view;
-            }*/
+        $id = (int)Input::get('id');
+        if ($id > 0) {
+            $item = $this->editar(static::MODEL);
+            if ($item != false) {
+                $this->editarRelational($item);
+            }
+            return $this->returnJson();
         }
-        return $this->returnJson();
+        return $this->registrarPost();
     }
 
     /**
@@ -397,11 +397,14 @@ class BaseController extends Controller {
                 if (!$this->afterValidation( Input::all() )) return false;
             }
             $created = $model::create(Input::all());
-            $this->setReturn('created_id', $created->id);
-            $this->setSuccess( Lang::get('global.saved_msg'), false );
-            return $created;
+            if ($created) {
+                $this->setReturn('created_id', $created->id);
+                $this->setSuccess(Lang::get('global.saved_msg'), false);
+                return $created;
+            }
+            $this->setError(Lang::get('global.unable_perform_action'));
+            return false;
         }
-
         $this->setError($validator->messages()->first());
         return false;
     }
@@ -418,6 +421,7 @@ class BaseController extends Controller {
             if ($validator->passes()) {
                 if (method_exists(static::MODEL . 'Controller', 'afterValidation')) {
                     if (!$this->afterValidation( Input::all() )) return false;
+                    $all_inputs = Input::all();
                 }
                 $item = $model::find($id);
                 if ($item) {
@@ -437,14 +441,16 @@ class BaseController extends Controller {
                     $this->setSuccess( Lang::get('global.saved_msg'), false );
                     return $item;
                 }
+                else {
+                    $this->setError( Lang::get('global.not_found') );
+                }
             }
             else {
                 $this->setError( $validator->messages()->first() );
             }
         }
         else {
-            //$this->setError( Lang::get('global.not_found') );
-            return $this->registrarPost();
+            $this->setError( Lang::get('global.not_found') );
         }
         return false;
     }

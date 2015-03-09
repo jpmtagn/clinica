@@ -92,5 +92,7 @@ return array(
     'del_msg' => 'Registro eliminado.',
     'not_found' => 'No encontrado.',
     'wrong_action' => 'Solicitud no reconicida.',
+    'unable_perform_action' => 'Error. No se pudo completar la operación.',
+    'no_permission' => 'No tiene permisos para realizar la operación',
     'error_request' => 'Error de conexión.'
 );

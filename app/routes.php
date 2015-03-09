@@ -130,6 +130,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'EquipoController@paginaAdmin'
     ));
 
+    Route::get('admin/disponibilidad/{doctor_id}', array(
+        'as' => 'disponibilidad_doctor',
+        'uses' => 'DisponibilidadController@paginaAdminDisponibilidad'
+    ));
+
 
     //total registros
     Route::get('admin/usuarios/total', array(
@@ -207,6 +212,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('calendario/citas', array(
         'as' => 'calendar_source',
         'uses' => 'CitaController@getCitas'
+    ));
+
+    Route::get('calendario_disponibilidad/{doctor_id}', array(
+        'as' => 'disponibilidad_calendar_source',
+        'uses' => 'DisponibilidadController@getDisponibilidad'
     ));
 
     //information requests
@@ -503,7 +513,7 @@ Route::group(array('before' => 'auth'), function() {
         ));
 
 
-        // PAGINA SERVIVIOS
+        // PAGINA SERVICIOS
 
         //buscar
         Route::get('admin/servicio/buscar', array(
@@ -584,9 +594,24 @@ Route::group(array('before' => 'auth'), function() {
         // PAGINA CALENDARIO
 
         //acciones
-        Route::post('admin/equipo/accion', array(
+        Route::post('admin/cita/accion', array(
             'as' => 'cita_actions_post',
             'uses' => 'CitaController@calendarActionPost'
+        ));
+
+
+        // PAGINA DISPONIBILIDAD
+
+        //editar
+        Route::post('admin/disponibilidad/editar', array(
+            'as' => 'admin_disponibilidad_editar_post',
+            'uses' => 'DisponibilidadController@editarPost'
+        ));
+
+        //acciones
+        Route::post('admin/disponibilidad/accion', array(
+            'as' => 'disponibilidad_actions_post',
+            'uses' => 'DisponibilidadController@calendarActionPost'
         ));
 
     });

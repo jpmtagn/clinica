@@ -125,7 +125,16 @@
                     $doctores = Doctor::getAll();
                 ?>
                 @foreach ($doctores as $doctor)
-				    {{ AForm::userStatus($doctor->nombre, $doctor->apellido, $doctor->atendidos + 2, $doctor->pendientes + 3, URL::asset('img/avatars/s/' . (!empty($doctor->avatar) ? $doctor->avatar : 'default.jpg'))) }}
+				    {{
+				        AForm::userStatus(
+                            $doctor->nombre,
+                            $doctor->apellido,
+                            $doctor->atendidos,
+                            $doctor->pendientes,
+                            URL::asset('img/avatars/s/' . (!empty($doctor->avatar) ? $doctor->avatar : 'default.jpg')),
+                            URL::route('disponibilidad_doctor', array('doctor_id' => $doctor->usuario_id))
+                        )
+                     }}
                 @endforeach
 			</ul>
 		</div>

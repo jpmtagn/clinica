@@ -77,6 +77,10 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         return $this->hasMany('Cita', 'doctor_id', 'id');
     }
 
+    public function disponibilidad() {
+        return $this->hasMany('Disponibilidad', 'usuario_id', 'id');
+    }
+
 
     public function setPasswordAttribute($value)
     {
@@ -210,6 +214,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
             Session::set('user_avatar', !empty($hasAvatar) ? $hasAvatar : ($hasAvatar = '0'));
             return $hasAvatar;
         }
+    }
+
+
+    // ACCESS CONTROL
+
+    public static function canChangeDisponibilidadState($user_id) {
+        $user = Auth::user();
+        return ($user->admin || $user->id == $user_id);
     }
 
 }

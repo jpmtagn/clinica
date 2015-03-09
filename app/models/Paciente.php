@@ -70,7 +70,7 @@ class Paciente extends Eloquent {
      */
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
-            'id'                => 'integer|min:1',
+            'id'                => 'integer|min:0',
             'nombre'            => 'required|alpha_spaces|max:45',
             'apellido'          => 'required|alpha_spaces|max:45',
             'dni'               => 'required|regex:/^[vejVEJ]{1}-{1}[0-9]{7,9}$/|unique:paciente,dni,' . (int)$ignore_id,

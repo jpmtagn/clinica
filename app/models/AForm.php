@@ -677,7 +677,7 @@ EOT;
 EOT;
     }
 
-    public static function userStatus($nombre, $apellido, $atendidos, $pendientes, $avatar) {
+    public static function userStatus($nombre, $apellido, $atendidos, $pendientes, $avatar, $link) {
         $title = Functions::firstNameLastName($nombre, $apellido);
         $t = $atendidos + $pendientes;
         if ($t > 0) {
@@ -692,7 +692,7 @@ EOT;
         $pendientes_lbl = Functions::singlePlural(Lang::get('pacientes.pending_singular'), Lang::get('pacientes.pending_plural'), $pendientes);
         return <<<EOT
         <li><!-- class="current"-->
-            <a href="javascript:void(0);">
+            <a href="{$link}">
                 <span class="image">
                     <img src="{$avatar}" alt="" />
                 </span>

@@ -103,7 +103,7 @@ class CitaController extends BaseController {
             $start = $date . ' ' . Functions::ampmto24($start);
             $end = Functions::addMinutes($start, $duration, 'h:i A');
             Input::merge(array('hora_fin' => $end)); //<-- replaces the input end time with the start time + treatment duration
-            $end = $date . ' ' . $end;
+            $end = $date . ' ' . Functions::ampmto24($end);
 
             //get overlapping
             //$overlapping = $model::whereRaw('estado <> 3 AND ((hora_inicio < ? AND hora_inicio > ?) OR (hora_fin > ? AND hora_fin < ?))', array($end, $start, $start, $end))->get();
@@ -135,7 +135,7 @@ class CitaController extends BaseController {
      */
     public function editarRelational($item) {
         $paciente = $item->paciente;
-        $this->setReturn('titulo', Functions::firstNameLastName($paciente->nombre, $paciente->apellido));
+        $this->setReturn('titulo', $paciente ? Functions::firstNameLastName($paciente->nombre, $paciente->apellido) : '-');
         $this->setReturn('inicio', Functions::explodeDateTime($item->hora_inicio));
         $this->setReturn('fin', empty($item->hora_fin) ? '' : Functions::explodeDateTime($item->hora_fin));
         $this->setReturn('dia_completo', empty($item->hora_fin) ? '1' : '0');
@@ -335,6 +335,8 @@ EOT;
             }
             $color = $colors[ $doctor_color[$cita->doctor_id] ];
 
+            $atention = (($cita->estado != Cita::DONE && $cita->estado != Cita::CANCELLED) && strtotime($cita->hora_inicio) < time()) ? '1' : '0';
+
             $citas_json[] = <<<EOT
             {
                 "id": "{$cita->id}",
@@ -346,7 +348,8 @@ EOT;
                 "patient_id": "{$cita->paciente_id}",
                 "service_id": "{$cita->servicio_id}",
                 "office_id": "{$cita->consultorio_id}",
-                "state_id": "{$cita->estado}"
+                "state_id": "{$cita->estado}",
+                "atention": "{$atention}"
             }
 EOT;
         }
