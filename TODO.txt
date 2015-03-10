@@ -1,0 +1,3 @@
+[ ] Disable edit when cita is done
+[ ] Don't allow scrolling when in calendar mode (doesn't do it in all displays though)
+[ ] Reset ignore all options after submitting
