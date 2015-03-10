@@ -99,11 +99,31 @@ class CitaController extends BaseController {
                 return false;
             }*/
 
+            $ignore_warning = Input::get('ignore_warning', false);
+            $ignore_warning_all = Input::get('ignore_warning_all', false);
+            $warning_key = (int)Input::get('warning_key', 0);
+
             $model = self::MODEL;
             $start = $date . ' ' . Functions::ampmto24($start);
             $end = Functions::addMinutes($start, $duration, 'h:i A');
             Input::merge(array('hora_fin' => $end)); //<-- replaces the input end time with the start time + treatment duration
             $end = $date . ' ' . Functions::ampmto24($end);
+
+            if ($ignore_warning_all) return true;
+
+            //WARNINGS
+
+            //get availables for the user
+            if (!($ignore_warning && $warning_key == 1)) {
+                $available = Disponibilidad::forDateTime($start, $end, $doctor_id)->count();
+                if (!$available) {
+                    $this->setReturn('warning_key', '1');
+                    $this->setReturn('bad', 'doctor');
+                    $this->setReturn('overlapping', '0');
+                    $this->setError(Lang::get(self::LANG_FILE . '.unavailable_doctor'));
+                    return false;
+                }
+            }
 
             //get overlapping
             //$overlapping = $model::whereRaw('estado <> 3 AND ((hora_inicio < ? AND hora_inicio > ?) OR (hora_fin > ? AND hora_fin < ?))', array($end, $start, $start, $end))->get();
@@ -111,17 +131,24 @@ class CitaController extends BaseController {
             foreach ($overlapping as $ol) {
                 if ($cita_id == $ol->id) continue; //not going to validate against itself
                 //check that the specified doctor is not busy for the given time
-                if ($ol->doctor_id == $doctor_id) {
-                    $this->setReturn('bad', 'doctor');
-                    $this->setReturn('overlapping', $ol->id);
-                    $this->setError(Lang::get(self::LANG_FILE . '.overlap_doctor'));
-                    return false;
-                } //check that the specified office is not busy for the given time
-                elseif ($ol->consultorio_id == $office_id) {
-                    $this->setReturn('bad', 'office');
-                    $this->setReturn('overlapping', $ol->id);
-                    $this->setError(Lang::get(self::LANG_FILE . '.overlap_office'));
-                    return false;
+                if (!($ignore_warning && $warning_key == 2)) {
+                    if ($ol->doctor_id == $doctor_id) {
+                        $this->setReturn('warning_key', '2');
+                        $this->setReturn('bad', 'doctor');
+                        $this->setReturn('overlapping', $ol->id);
+                        $this->setError(Lang::get(self::LANG_FILE . '.overlap_doctor'));
+                        return false;
+                    }
+                }
+                //check that the specified office is not busy for the given time
+                if (!($ignore_warning && $warning_key == 3)) {
+                    if ($ol->consultorio_id == $office_id) {
+                        $this->setReturn('warning_key', '3');
+                        $this->setReturn('bad', 'office');
+                        $this->setReturn('overlapping', $ol->id);
+                        $this->setError(Lang::get(self::LANG_FILE . '.overlap_office'));
+                        return false;
+                    }
                 }
             }
         }

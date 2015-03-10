@@ -884,18 +884,25 @@ EOT;
 
     }
 
-    public function modalClose($ok = null, $close = null, $footer = true) {
+    public function modalClose($ok = null, $close = null, $footer = true, $before_footer_html = null) {
         if ($ok == null) $ok = Lang::get('global.ok');
         if ($close == null) $close = Lang::get('global.close');
         $output = '';
         if ($footer) {
-            $output = <<<EOT
+            if ($before_footer_html == null) {
+                $output = <<<EOT
                             <div class="alert alert-danger alert-dismissible modal-alert hidden" role="alert">
                               <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                               <i class="fa fa-exclamation-circle"></i>&nbsp; 
                               <span class="sr-only">Error:</span>
                               <span class="msg"></span>
                             </div>
+EOT;
+            }
+            else {
+                $output = $before_footer_html;
+            }
+            $output .= <<<EOT
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">{$close}</button>
@@ -903,6 +910,7 @@ EOT;
                         </div>
 EOT;
         }
+        else $output.= '</div>';
         return $output . <<<EOT
                     </div>
                 </div>

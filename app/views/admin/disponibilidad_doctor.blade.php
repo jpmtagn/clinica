@@ -251,11 +251,11 @@ Panel de Administración
                 right: 'month,agendaWeek,agendaDay'
             },
             selectable: true,
-            /*selectConstraint: {
+            selectConstraint: {
                 start: '00:00',
                 end: '23:59',
                 dow: [ 1, 2, 3, 4, 5, 6 ]
-            },*/
+            },
             selectHelper: true,
             eventStartEditable: true,
             eventDurationEditable: true,

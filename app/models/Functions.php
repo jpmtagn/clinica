@@ -76,8 +76,8 @@ class Functions {
         )) . ($show_time ? date(' h:i a', $date) : '');
     }
 
-    public static function justTime($time, $ampm = true) {
-        return date($ampm ? 'h:i A' : 'H:i', strtotime($time));
+    public static function justTime($time, $ampm = true, $convert_to_time = true) {
+        return date($ampm ? 'h:i A' : 'H:i', $convert_to_time ? strtotime($time) : $time);
     }
 
     public static function ampmto24($time) {

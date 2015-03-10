@@ -84,22 +84,36 @@ class DisponibilidadController extends BaseController {
 
 
     public function getDisponibilidad($doctor_id) {
-        /*$cal_start = Input::get('start'); //TODO: this needs to affect the items from the database in order to show them
-        $cal_end = Input::get('end');*/
+        $cal_start = strtotime(Input::get('start')); //TODO: this needs to affect the items from the database in order to show them
+        //$cal_end = strtotime(Input::get('end'));
         $items_json = array();
         $doctor = User::find($doctor_id);
         if ($doctor) {
             $items = $doctor->disponibilidad()/*->fromDate($cal_start)->toDate($cal_end)*/->get();
 
+            $cal_start_w = date('N', $cal_start) - 1;
+            if ($cal_start_w > 0) { //not a monday
+                $cal_start = strtotime('-' . $cal_start_w . ' days', $cal_start);
+            }
+
             foreach ($items as $item) {
                 $color = '#849917';
+
+                $start = strtotime($item->inicio);
+                $end = strtotime($item->fin);
+
+                $dws = date('N', $start) - 1;
+                $dwe = date('N', $end) - 1;
+
+                $start = date('Y-m-d', $dws > 0 ? strtotime('+' . $dws . ' days', $cal_start) : $start) . ' ' . date('H:i:s', $start);
+                $end = date('Y-m-d', $dwe > 0 ? strtotime('+' . $dwe . ' days', $cal_start) : $end) . ' ' . date('H:i:s', $end);
 
                 $items_json[] = <<<EOT
                 {
                     "id": "{$item->id}",
                     "title": "",
-                    "start": "{$item->inicio}",
-                    "end": "{$item->fin}",
+                    "start": "{$start}",
+                    "end": "{$end}",
                     "allDay": false,
                     "backgroundColor": "{$color}",
                     "state_id": "{$item->disponible}"

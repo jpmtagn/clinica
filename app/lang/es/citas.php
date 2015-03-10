@@ -38,8 +38,12 @@ return array(
     'no_time' => 'Sin hora definida',
     'passed_time' => 'Fecha pasada',
 
+    'ignore_warning' => 'Ignorar esta advertencia',
+    'ignore_all_warnings' => 'Ignorar todas las advertencias',
+
     //errors
     'time_mismatch' => 'El intervalo de tiempo elegido es inválido',
-    'overlap_doctor' => 'El terapeuta no está disponible para la hora y fecha seleccionada',
-    'overlap_office' => 'La cabina no está disponible para la hora y fecha seleccionada'
+    'overlap_doctor' => 'El terapeuta ya tiene una cita registrada durante el intervalo seleccionado',
+    'overlap_office' => 'La cabina no está disponible para la hora y fecha seleccionada',
+    'unavailable_doctor' => 'El terapeuta no está disponible para la hora y fecha seleccionada'
 );

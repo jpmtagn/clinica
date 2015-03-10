@@ -12,6 +12,9 @@ Panel de Administración
 {{ HTML::style('js/pickadate/themes/default.time.css') }}
 {{ HTML::style('js/fullcalendar/fullcalendar.min.css') }}
 <style type="text/css">
+    body {
+        overflow: hidden;
+    }
     #content {
         /*background: #fff url({{ URL::asset('img/bg/squairy_light.png') }}) repeat;*/
         background: #fff url({{ URL::asset('img/bg/gray_jean.png') }}) repeat;
@@ -205,10 +208,36 @@ Panel de Administración
                 </div>
             </a>
         </div>
+        <input type="hidden" name="warning_key" id="warning_key">
+        <input type="hidden" name="ignore_warning" id="ignore_warning_submit" value="0">
+        <input type="hidden" name="ignore_warning_all" id="ignore_warning_all_submit" value="0">
 
         {{ Form::token() }}
     </form>
-{{ $frm->modalClose() }}
+<?php
+    $custom_footer = <<<EOT
+    <div class="alert alert-danger alert-dismissible modal-alert hidden" role="alert">
+        <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <i class="fa fa-exclamation-circle"></i>&nbsp; 
+        <span class="sr-only">Error:</span>
+        <span class="msg"></span>
+EOT;
+    if (Auth::user()->admin) {
+        $lbl_ignore = Lang::get('citas.ignore_warning');
+        $lbl_ignore_all = Lang::get('citas.ignore_all_warnings');
+        $custom_footer .= <<<EOT
+        <div class="hidden" id="warning_ignore_options">
+            <br>
+            <br><input type="checkbox" id="ignore_warning" value="1"><label for="ignore_warning">&nbsp;{$lbl_ignore}</label>
+            <br><input type="checkbox" id="ignore_warning_all" value="1"><label for="ignore_warning_all">&nbsp;{$lbl_ignore_all}</label>
+        </div>
+EOT;
+    }
+    $custom_footer .= <<<EOT
+    </div>
+EOT;
+?>
+{{ $frm->modalClose(null, null, true, $custom_footer) }}
 <!-- /NEW EVENT FORM-->
 
     <!-- NEW DATE TIME FORM -->
@@ -518,7 +547,21 @@ Panel de Administración
             $cal.fullCalendar( 'refetchEvents' );
         }
         else {
-            $('#icon_' + data['bad']).addClass('bad');
+            var $ignore_options = $('#warning_ignore_options');
+            var $warning_key = $('#warning_key');
+            if (data['bad']) {
+                $('#icon_' + data['bad']).addClass('bad');
+                if ($ignore_options.length) {
+                    $ignore_options.removeClass('hidden');
+                    $warning_key.val( data['warning_key'] );
+                }
+            }
+            else {
+                if ($ignore_options.length) {
+                    $ignore_options.addClass('hidden');
+                    $warning_key.val('0');
+                }
+            }
         }
     }
 
@@ -842,6 +885,14 @@ Panel de Administración
                  url: '{{-- URL::route('calendar_source') --}}'
             });
         });*/
+
+        $('#ignore_warning').change(function() {
+            $('#ignore_warning_submit').val( $(this).is(':checked') ? '1' : '0' );
+        });
+
+        $('#ignore_warning_all').change(function() {
+            $('#ignore_warning_all_submit').val( $(this).is(':checked') ? '1' : '0' );
+        });
 
         $('#states').find('button').click(function() {
             var $btn = $(this);

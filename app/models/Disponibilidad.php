@@ -77,7 +77,7 @@ class Disponibilidad extends Eloquent {
 
 
     //FILTROS:
-    public function scopeFromDate($query, $val) {
+    /*public function scopeFromDate($query, $val) {
         $date = Functions::explodeDateTime($val, true);
         if (checkdate($date['month'], $date['day'], $date['year'])) {
             return $query->where('inicio', '>=', $val);
@@ -91,6 +91,21 @@ class Disponibilidad extends Eloquent {
             return $query->where('fin', '<=', $val);
         }
         return $query;
+    }*/
+
+    public function scopeForDateTime($query, $start, $end, $user_id) {
+        $start = strtotime($start);
+        $dow = date('N', $start) - 1;
+
+        $start = date('H:i', $start);
+        $end = date('H:i', strtotime($end));
+        return $query->whereRaw(
+            '(usuario_id = ? AND WEEKDAY(inicio) = ? AND disponible = 1 AND DATE_FORMAT(inicio,"%H:%i") <= ? AND DATE_FORMAT(fin,"%H:%i") >= ?)', array(
+            $user_id,
+            $dow,
+            $start,
+            $end
+        ));
     }
 
 
