@@ -565,4 +565,22 @@ EOT;
         return $this->returnJson();
     }
 
+
+    public function getNoteId() {
+        $cita_id = (int)Input::get('cita_id');
+        $note_id = 0;
+        $note_content = '';
+        $cita = Cita::find($cita_id);
+        if ($cita) {
+            $note = $cita->nota;
+            if ($note) {
+                $note_id = (int)$note->id;
+                $note_content = $note->contenido;
+            }
+        }
+        $this->setReturn('nota_id', $note_id);
+        $this->setReturn('nota', $note_content);
+        return $this->returnJson();
+    }
+
 }

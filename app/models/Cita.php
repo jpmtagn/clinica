@@ -91,6 +91,10 @@ class Cita extends Eloquent {
         return $this->belongsTo('Consultorio', 'consultorio_id', 'id');
     }
 
+    public function nota() {
+        return $this->hasOne('Nota', 'cita_id', 'id');
+    }
+
 
     //ASIGNACIONES:
     public function setHoraInicioAttribute($value)

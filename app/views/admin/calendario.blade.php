@@ -336,6 +336,18 @@ EOT;
 {{ $frm->modalClose(null, null, false) }}
 <!-- /ACTIONS FORM -->
 
+<!-- NOTE FORM -->
+{{ $frm->modalOpen('note_modal', Lang::get('citas.notes')) }}
+    <form id="frm_action" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_cita_editar_nota_post') }}">
+        <?php $frm->displayLabels(false); ?>
+        {{ $frm->hidden('id', 'note_id') }}
+        {{ $frm->textarea('contenido', null, '') }}
+        {{ $frm->hidden('cita_id', 'cita_id_note') }}
+        {{ Form::token() }}
+    </form>
+{{ $frm->modalClose() }}
+<!-- /NOTE FORM -->
+
 <!-- MOVE EVENT FORM -->
 <form id="frm_data_move" class="form-horizontal hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_citas_editar_post') }}">
     {{ $frm->id() }}
@@ -527,6 +539,13 @@ EOT;
         //$('#cita_office_inf').html( data['duration_inf'] );
 
         $('#consultorio_id_hidden').val( data['consultorio_id'] );
+    }
+
+    function submitNoteFormDone($frm, data) {
+        submitFormDoneDefault($frm, data);
+        if (data['ok'] == 1) {
+            $frm.closest('.modal').modal('hide');
+        }
     }
 
     function submitFormDone($frm, data) {
@@ -742,7 +761,7 @@ EOT;
             businessHours: {
                 start: '08:00',
                 end: '18:00',
-                dow: [ 1, 2, 3, 4, 5 ]
+                dow: [ 1, 2, 3, 4, 5, 6 ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
             minTime: '06:00:00',
@@ -867,6 +886,14 @@ EOT;
             $modal.modal('hide');
         });
 
+        // saving note
+        $('#note_modal').find('button.modal-btn-ok').click(function() {
+            var $modal = $(this).closest('.modal');
+            var $form = $modal.find('form').eq(0);
+            submitForm( $form, submitNoteFormDone );
+            $modal.modal('hide');
+        });
+
         $('#open_offices_modal').click(function() {
             getAvailableOffices( $('#servicio_id_hidden').val(), $('#fecha_hidden').val(), $('#hora_inicio_hidden').val() );
         });
@@ -931,6 +958,31 @@ EOT;
                 setTimePicker($frm.find('#hora_fin'), data['hora_fin']);
             });
 
+        });
+
+        $('#add_note').click(function() {
+            var $btn = $(this);
+            var $modal = $('#note_modal');
+
+            $btn.closest('.modal').modal('hide');
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ URL::route('get_cita_note') }}',
+                dataType: 'json',
+                data: { 'cita_id' : cita_ID }
+            }).done(function(data) {
+                if (data['ok'] == 1) {
+                    $modal.find('input[name=id]').val(parseInt(data['nota_id']) || 0);
+                    $modal.find('textarea[name=contenido]').val( data['nota'] );
+                }
+            }).fail(function(data) {
+                console.log(data); //failed
+            });
+
+
+            $modal.find('input[name=cita_id]').val(cita_ID);
+            $modal.modal('show');
         });
 
         $('a.filter-doctor').click(function(e) {

@@ -23,6 +23,7 @@
 
 
 Route::pattern('doctor_id', '[0-9]+');
+Route::pattern('cita_id', '[0-9]+');
 
 
 Route::get('/', array(
@@ -253,6 +254,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('cita/consultorio_disponible', array(
         'as' => 'get_available_offices',
         'uses' => 'CitaController@getAvailableOffice'
+    ));
+
+    Route::get('cita/nota_id', array(
+        'as' => 'get_cita_note',
+        'uses' => 'CitaController@getNoteId'
     ));
 
     /**
@@ -597,6 +603,12 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/cita/accion', array(
             'as' => 'cita_actions_post',
             'uses' => 'CitaController@calendarActionPost'
+        ));
+
+        //nota
+        Route::post('admin/cita/editar_nota', array(
+            'as' => 'admin_cita_editar_nota_post',
+            'uses' => 'NotaController@editarPost'
         ));
 
 

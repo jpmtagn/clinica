@@ -247,8 +247,8 @@ Panel de Administración
             'lang': '{{ Config::get('app.locale') }}',
             header: {
                 left: 'prev,next today',
-                center: 'title',
-                right: 'month,agendaWeek,agendaDay'
+                center: 'title'/*,
+                right: 'month,agendaWeek,agendaDay'*/
             },
             selectable: true,
             selectConstraint: {
@@ -270,7 +270,7 @@ Panel de Administración
             businessHours: {
                 start: '08:00',
                 end: '20:00',
-                dow: [ 1, 2, 3, 4, 5 ]
+                dow: [ 1, 2, 3, 4, 5, 6 ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
             minTime: '06:00:00',

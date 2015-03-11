@@ -61,6 +61,33 @@ EOT;
         }
     }
 
+    public function textarea($name, $id = null, $label = null, $classes = "", $required = false) {
+        if ($id == null) $id = $name;
+        if ($label === null) $label = ucfirst($name);
+        if ($this->edit) $id = $id . '_edit';
+        $required = $required ? ' required' : '';
+        $value = isset($this->values[$name]) ? $this->values[$name] : '';
+        if ($this->show_labels) {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    <textarea id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$required}>{$value}</textarea>
+                </div>
+            </div>
+EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <textarea id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$required}>{$value}</textarea>
+                </div>
+            </div>
+EOT;
+        }
+    }
+
     public function email($name = 'correo', $id = null, $label = null, $classes = "", $required = true) {
         if ($id == null) $id = $name;
         if ($label === null) $label = ucfirst($name);

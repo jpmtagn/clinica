@@ -25,6 +25,7 @@ return array(
 
     'add_note' => 'Agregar nota',
     'edit' => 'Editar',
+    'notes' => 'Notas',
 
     'new_event' => 'Nueva Cita',
     'new_patient' => 'Nuevo Registro',
