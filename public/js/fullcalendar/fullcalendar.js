@@ -4670,14 +4670,20 @@ DayGrid.mixin({
         var office_id = event.office_id;
         var state = event.state_id;
         var atention = event.atention == 1 ? '&nbsp;<i class="fa fa-exclamation-triangle"></i>' : '';
+		var comment = event.comment;
+		var has_comment = (typeof comment == 'string' && comment.length);
+		var comment_icon = has_comment ? '&nbsp;<i class="fa fa-comment"></i>' : '';
 
         classes.unshift('fc-day-grid-event');
 
         classes.push('state' + state);
+		if (has_comment) {
+			classes.push('tip');
+		}
 
 		// Only display a timed events time if it is the starting segment
 		if (!event.allDay && seg.isStart) {
-			timeHtml = '<span class="fc-time">' + htmlEscape(this.getEventTimeText(event)) + atention + '</span>';
+			timeHtml = '<span class="fc-time">' + htmlEscape(this.getEventTimeText(event)) + comment_icon + atention + '</span>';
 		}
 
 		titleHtml =
@@ -4686,6 +4692,7 @@ DayGrid.mixin({
 			'</span>';
 		
 		return '<a class="' + classes.join(' ') + '"' +
+				(has_comment ? ' data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
 				(event.url ?
 					' href="' + htmlEscape(event.url) + '"' :
 					''
@@ -5868,10 +5875,16 @@ TimeGrid.mixin({
         var office_id = event.office_id;
         var state = event.state_id;
         var atention = event.atention == 1 ? '&nbsp;<i class="fa fa-exclamation-triangle"></i>' : '';
+		var comment = event.comment;
+		var has_comment = (typeof comment == 'string' && comment.length);
+		var comment_icon = has_comment ? '&nbsp;<i class="fa fa-comment"></i>' : '';
 
         classes.unshift('fc-time-grid-event');
 
         classes.push('state' + state);
+		if (has_comment) {
+			classes.push('tip');
+		}
 
 		if (view.isMultiDayEvent(event)) { // if the event appears to span more than one day...
 			// Don't display time text on segments that run entirely through a day.
@@ -5890,6 +5903,7 @@ TimeGrid.mixin({
 		}
 
 		return '<a class="' + classes.join(' ') + '"' +
+			(has_comment ? ' data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
 			(event.url ?
 				' href="' + htmlEscape(event.url) + '"' :
 				''
@@ -5905,7 +5919,7 @@ TimeGrid.mixin({
 						' data-start="' + htmlEscape(startTimeText) + '"' +
 						' data-full="' + htmlEscape(fullTimeText) + '"' +
 						'>' +
-							'<span>' + htmlEscape(timeText) + atention + '</span>' +
+							'<span>' + htmlEscape(timeText) + comment_icon + atention + '</span>' +
 						'</div>' :
 						''
 						) +

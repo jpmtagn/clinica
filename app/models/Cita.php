@@ -97,10 +97,14 @@ class Cita extends Eloquent {
 
 
     //ASIGNACIONES:
-    public function setHoraInicioAttribute($value)
-    {
+    public function setHoraInicioAttribute($value) {
         if (!empty($value)) {
-            $this->attributes['hora_inicio'] = $this->fecha . ' ' . Functions::ampmto24($value) . ':00';
+			if (!empty($this->fecha)) {
+				$this->attributes['hora_inicio'] = $this->fecha . ' ' . Functions::ampmto24($value) . ':00';
+			}
+			else {
+				$this->attributes['hora_inicio'] = Session::get('input_fecha') . ' ' . Functions::ampmto24($value) . ':00';
+			}
         }
         else {
             $this->attributes['hora_inicio'] = null;
@@ -109,7 +113,12 @@ class Cita extends Eloquent {
 
     public function setHoraFinAttribute($value) {
         if (!empty($value)) {
-            $this->attributes['hora_fin'] = $this->fecha . ' ' . Functions::ampmto24($value) . ':00';
+			if (!empty($this->fecha)) {
+				$this->attributes['hora_fin'] = $this->fecha . ' ' . Functions::ampmto24($value) . ':00';
+			}
+			else {
+				$this->attributes['hora_fin'] = Session::get('input_fecha') . ' ' . Functions::ampmto24($value) . ':00';
+			}
         }
         else {
             $this->attributes['hora_fin'] = null;

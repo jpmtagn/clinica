@@ -86,7 +86,7 @@ class Functions {
         $ampm = $time[1];
         $time = explode(':', $time[0], 3);
         if (count($time) > 1) {
-            $time[0] = (int)$time[0] + ($ampm == 'PM' ? 12 : 0);
+            $time[0] = (int)$time[0] + (($ampm == 'PM' && $time[0] != 12) ? 12 : 0);
             return ($time[0] < 10 ? '0' : '') . $time[0] . ':' . $time[1];
         }
         return '';

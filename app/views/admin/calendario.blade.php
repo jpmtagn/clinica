@@ -490,6 +490,7 @@ EOT;
         });
         highlightActiveDoctors();
         bindEventClick();
+		$('.tip').tooltip();
     }
 
     function submitDateTimeFormDone($frm, data) {

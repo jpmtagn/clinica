@@ -76,6 +76,7 @@ class CitaController extends BaseController {
     * @return boolean
     */
     public function afterValidation($inputs) {
+		Session::set('input_fecha', $inputs['fecha']);
         $service = $inputs['servicio_id'];
         if ($service > 0) {
             $service = Servicio::find($service);
@@ -363,6 +364,9 @@ EOT;
             $color = $colors[ $doctor_color[$cita->doctor_id] ];
 
             $atention = (($cita->estado != Cita::DONE && $cita->estado != Cita::CANCELLED) && strtotime($cita->hora_inicio) < time()) ? '1' : '0';
+			
+			$comment = $cita->nota;
+			$comment = $comment ? $comment->contenido : '';
 
             $citas_json[] = <<<EOT
             {
@@ -376,7 +380,8 @@ EOT;
                 "service_id": "{$cita->servicio_id}",
                 "office_id": "{$cita->consultorio_id}",
                 "state_id": "{$cita->estado}",
-                "atention": "{$atention}"
+                "atention": "{$atention}",
+				"comment": "{$comment}"
             }
 EOT;
         }
