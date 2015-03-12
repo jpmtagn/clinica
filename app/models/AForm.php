@@ -949,7 +949,7 @@ EOT;
     public function accordionOpen($id) {
         $this->accordion_id = $id;
         return <<<EOT
-            <div class="panel-group" id="{$id}" role="tablist" aria-multiselectable="true">
+            <div class="panel-group filter-accordion" id="{$id}" role="tablist" aria-multiselectable="true">
 EOT;
     }
 

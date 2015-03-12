@@ -85,6 +85,7 @@ return array(
     'saving' => 'guardando...',
 
     'home' => 'Inicio',
+    'settings' => 'Opciones',
 
     'modified_date_lbl' => 'actualizado el ',
 

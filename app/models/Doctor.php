@@ -25,4 +25,16 @@ class Doctor /*extends Paciente*/ {
         return $items;
     }
 
+    public static function getByLetter($letter) {
+        return DB::table('doctor')->where('nombre', 'LIKE', $letter . '%')->get();
+    }
+
+    public static function getFirstNameLetters() {
+        return DB::table('doctor')
+                ->select(DB::raw('substr(nombre, 1, 1) AS "inicial"'))
+                ->groupBy('inicial')
+                ->orderBy('inicial')
+                ->lists('inicial');
+    }
+
 } 

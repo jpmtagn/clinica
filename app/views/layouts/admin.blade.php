@@ -61,7 +61,7 @@
 	<div class="container">
 		<div class="navbar-brand">
 			<!-- COMPANY LOGO -->
-			<a href="index.html">
+			<a href="{{ URL::route('admin_inicio') }}">
 			<img src="{{ URL::asset('img/logo/logo.png') }}" alt="" class="img-responsive" height="30" width="120">
 			</a>
 			<!-- /COMPANY LOGO -->
@@ -150,7 +150,7 @@
 			<ul>
 				<!-- inicio -->
 				<li{{ activeClassIf('inicio', $active_menu) }}>
-					<a href="index.html">
+					<a href="{{ URL::route('admin_inicio') }}">
 					    <i class="fa fa-fw fa-home"></i> <span class="menu-text">Inicio</span>
 					    <span class="selected"></span>
 					</a>
@@ -225,6 +225,14 @@
                     <a href="{{ URL::route('admin_equipos') }}">
                         <i class="fa fa-fw fa-plug"></i>
                         <span class="menu-text">{{ Lang::get('equipo.title_plural') }}</span>
+                    </a>
+                </li>
+
+                <!-- opciones -->
+                <li{{ activeClassIf('opciones', $active_menu) }}>
+                    <a href="{{ URL::route('admin_config') }}">
+                        <i class="fa fa-fw fa-cog"></i>
+                        <span class="menu-text">{{ Lang::get('global.settings') }}</span>
                     </a>
                 </li>
 			</ul>

@@ -24,18 +24,22 @@ Panel de Administración
         background-color: #fff;
     }
 
-    #filter_accordion .panel {
+    .filter-accordion .panel {
         background: none !important;
         border: 0 none !important;
         box-shadow: none !important;
     }
 
-    #filter_accordion h4 a {
+    .filter-accordion h4 a {
         text-decoration: none;
     }
 
-    #filter_accordion .list-group-item:first-child {
+    .filter-accordion .list-group-item:first-child {
         border-radius: 0;
+    }
+
+    .bring-to-front {
+        z-index: 1000 !important;
     }
 </style>
 @stop
@@ -88,13 +92,26 @@ Panel de Administración
                     {{ $frm->accordionItemOpen(Lang::get('usuarios.doctor')) }}
                         <div class="list-group">
                             @foreach ($doctores as $doctor)
-                                <a href="#" class="list-group-item filter-doctor" attr-id="{{ $doctor->usuario_id }}"> <!-- active -->
+                                <a href="#" class="list-group-item group-filter filter-doctor" attr-id="{{ $doctor->usuario_id }}"> <!-- active -->
                                     @if (!empty($doctor->avatar))
                                         <img class="avatar-thumb" src="{{ URL::asset('img/avatars/s/' . $doctor->avatar) }}" alt="">
                                     @else
                                         <img class="avatar-thumb" src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
                                     @endif
                                     {{ Functions::firstNameLastName($doctor->nombre, '') }}
+                                    <span class="badge hidden">0</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    {{ $frm->accordionItemClose() }}
+                {{ $frm->accordionClose() }}
+
+                {{ $frm->accordionOpen('filter_office_accordion') }}
+                    {{ $frm->accordionItemOpen(Lang::get('consultorio.title_single')) }}
+                        <div class="list-group">
+                            @foreach ($consultorios as $id => $nombre)
+                                <a href="#" class="list-group-item group-filter filter-office" attr-id="{{ $id }}">
+                                    {{ $nombre }}
                                     <span class="badge hidden">0</span>
                                 </a>
                             @endforeach
@@ -254,7 +271,17 @@ EOT;
     {{ $frm->modalOpen('new_event_doctor_modal', Lang::get('citas.set') . ' ' . Lang::get('usuarios.doctor')) }}
         <form id="frm_new_event_doctor_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_doctor_inf_get') }}">
             {{ $frm->remoteSelect('doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
+            <nav>
+              <ul class="pagination pagination-sm">
+                @foreach ($doctor_letters as $letter)
+                <li>
+                    <a class="doctor-letter-index" href="#">{{ strtoupper($letter) }}</a>
+                </li>
+                @endforeach
+              </ul>
+            </nav>
         </form>
+        <div id="doctors_by_letter_holder"></div>
     {{ $frm->modalClose() }}
     <!-- /NEW DOCTOR FORM -->
 
@@ -359,10 +386,16 @@ EOT;
 <!-- /MOVE EVENT FORM -->
 
 <!-- GET EDIT EVENT FORM -->
-<form id="frm_get_data_edit" class="form-horizontal hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_all_inf_get') }}">
+<form id="frm_get_data_edit" class="hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_all_inf_get') }}">
     <input type="hidden" name="id" value="0">
 </form>
 <!-- /GET EDIT EVENT FORM -->
+
+<!-- SEARCH EVENT FORM -->
+<form id="frm_get_search" class="hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('calendar_search') }}">
+    <input type="hidden" name="query" value="">
+</form>
+<!-- /SEARCH EVENT FORM -->
 
 <!-- /MAIN CONTENT -->
 @stop
@@ -461,20 +494,16 @@ EOT;
         $frm.submit();
     }*/
 
-    function fn_render_event(event) {
-        //console.log('rendered: ' + event.id);
-    }
-
-    function fn_render_all_events(view) {
+    function updateCountPer(name) {
         //updates count of events per doctors
-        var $a = $('a.filter-doctor');
+        var $a = $('a.filter-' + name);
         $.each($a, function(i, o) {
             var id = $(o).attr('attr-id') || '0';
             window['total_' + id] = 0;
         });
         var $events = $('a.fc-event');
         $.each($events, function(i, o) {
-            var id = $(o).find('input.doctor_id').val();
+            var id = $(o).find('input.' + name + '_id').val();
             window['total_' + id] = (parseInt(window['total_' + id]) || 0) + 1;
         });
         $.each($a, function(i, o) {
@@ -488,7 +517,17 @@ EOT;
                 $o.find('span.badge').addClass('hidden')
             }
         });
-        highlightActiveDoctors();
+    }
+
+    function fn_render_event(event) {
+        //console.log('rendered: ' + event.id);
+    }
+
+    function fn_render_all_events(view) {
+        updateCountPer('doctor');
+        updateCountPer('office');
+        highlightActive('doctor');
+        highlightActive('office');
         bindEventClick();
 		$('.tip').tooltip();
     }
@@ -620,8 +659,9 @@ EOT;
         }
     }
 
-    function highlightActiveDoctors() {
-        var $actives = $('a.filter-doctor.active');
+    function highlightActive(name) {
+        var $actives = $('a.filter-' + name + '.active');
+        $('a.group-filter').not('.filter-' + name).removeClass('active');
         if ($actives.length == 0) {
             $('a.fc-event').removeClass('event-faded wide');
         }
@@ -632,7 +672,7 @@ EOT;
                 var $events = $('a.fc-event');
                 $.each($events, function(j, e) {
                     var $e = $(e);
-                    if ($e.find('input.doctor_id').val() == $o.attr('attr-id')) {
+                    if ($e.find('input.' + name + '_id').val() == $o.attr('attr-id')) {
                         $e.removeClass('event-faded');
                         if ($actives.length == 1) {
                             $e.addClass('wide');
@@ -708,6 +748,59 @@ EOT;
                 showState( data['state'] );
             }
         });
+    }
+
+    function bindDoctorByLetter() {
+        var $holder = $('#doctors_by_letter_holder');
+        $holder.find('a').click(function() {
+            var $a = $(this);
+            var id = parseInt($a.attr('data-id')) || 0;
+            if (id > 0) {
+                var $frm = $('#frm_new_event_doctor_inf');
+                $frm.find('input[name=doctor_id]').val(id);
+                submitForm( $frm, function($frm, data) {
+                    submitDoctorFormDone($frm, data);
+                    $holder.closest('.modal').modal('hide');
+                }, null, 'GET');
+            }
+        });
+    }
+
+    function emphasizeEvent(event_id) {
+        var $events = $('a.fc-event');
+        $.each($events, function(i, o) {
+            var $o = $(o);
+            var id = $o.find('input.id').val();
+            console.log('id:' + id);
+            if (id == event_id) {
+                $o.addClass('bring-to-front animated tada');
+                setTimeout(function() {
+                    $o.removeClass('bring-to-front animated tada');
+                }, 2000);
+                return false;
+            }
+        });
+        console.log('you tried to find ' + event_id);
+    }
+
+    function gotoDate(date) {
+        var $cal = $('#main_calendar');
+        $cal.fullCalendar('gotoDate', date);
+    }
+
+    function doFind(query) {
+        if (query.length > 0) {
+            var $frm = $('#frm_get_search');
+            $frm.find('input[name=query]').val( query );
+            submitForm($frm, function($frm, data) {
+                if (data['ok'] == 1) {
+                    gotoDate( data['fecha'] );
+                    setTimeout(function() {
+                        emphasizeEvent( data['cita_id'] );
+                    }, 1000);
+                }
+            }, null, 'GET');
+        }
     }
 
     /*function checkAvailability() {
@@ -986,13 +1079,59 @@ EOT;
             $modal.modal('show');
         });
 
+        $('a.doctor-letter-index').click(function(e) {
+            var letter = $(this).html();
+            console.log('you want to load doctors with the letter ' + letter);
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ URL::route('get_doctor_by_letter') }}',
+                dataType: 'json',
+                data: { 'letter' : letter }
+            }).done(function(data) {
+                if (data['ok'] == 1) {
+                    $('#doctors_by_letter_holder').html( data['html'] );
+                    bindDoctorByLetter();
+                }
+            }).fail(function(data) {
+                console.log(data); //failed
+            });
+
+            e.preventDefault();
+            return false;
+        });
+
         $('a.filter-doctor').click(function(e) {
             var $a = $(this);
             var id = $a.attr('attr-id');
             $a.toggleClass('active').siblings().removeClass('active');
-            highlightActiveDoctors();
+            highlightActive('doctor');
             e.preventDefault();
             return false;
+        });
+
+        $('a.filter-office').click(function(e) {
+            var $a = $(this);
+            var id = $a.attr('attr-id');
+            $a.toggleClass('active').siblings().removeClass('active');
+            highlightActive('office');
+            e.preventDefault();
+            return false;
+        });
+
+        $('#search_event_btn').click(function(e) {
+            var query = $('#search_event_query').val();
+            if (query.length > 0) {
+                doFind( query );
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        $('#search_event_query').keydown(function (e) {
+            if (e.keyCode == 13) {
+                $('#search_event_btn').click();
+            }
         });
 
     });

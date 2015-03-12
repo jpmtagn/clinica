@@ -136,6 +136,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'DisponibilidadController@paginaAdminDisponibilidad'
     ));
 
+    Route::get('admin/opciones', array(
+        'as' => 'admin_config',
+        'uses' => 'OpcionController@paginaAdminOpciones'
+    ));
+
 
     //total registros
     Route::get('admin/usuarios/total', array(
@@ -259,6 +264,16 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('cita/nota_id', array(
         'as' => 'get_cita_note',
         'uses' => 'CitaController@getNoteId'
+    ));
+
+    Route::get('cita/nota_id', array(
+        'as' => 'get_doctor_by_letter',
+        'uses' => 'UserController@getDoctorByLetter'
+    ));
+
+    Route::get('calendario/buscar', array(
+        'as' => 'calendar_search',
+        'uses' => 'CitaController@findInCalendar'
     ));
 
     /**
@@ -624,6 +639,15 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/disponibilidad/accion', array(
             'as' => 'disponibilidad_actions_post',
             'uses' => 'DisponibilidadController@calendarActionPost'
+        ));
+
+
+        // PAGINA OPCIONES
+
+        //editar
+        Route::post('admin/opciones/guardar', array(
+            'as' => 'admin_options_post',
+            'uses' => 'OpcionController@save'
         ));
 
     });

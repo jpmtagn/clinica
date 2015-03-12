@@ -306,12 +306,12 @@ class BaseController extends Controller {
      * @param $nombre_tabla
      * @param $query
      * @param $page
-     * @param &$search_fields
+     * @param $search_fields
      * @param &$match_total
      * @param $fields
      * @return array|\Illuminate\Database\Query\Builder|static
      */
-    public function buscarTabla($nombre_tabla, $query, $page, $search_fields, &$match_total, $fields = null) {
+    public function buscarTabla($nombre_tabla, $query, $page, $search_fields, &$match_total, $fields = null, $order_by = null) {
         $records = DB::table($nombre_tabla);
         $page = (int)$page;
         if ($page <= 0) $page = 1;
@@ -342,6 +342,16 @@ class BaseController extends Controller {
             $match_total = $records->count();
 
             $records = $records->skip(($page-1) * static::PAGE_LIMIT)->limit(static::PAGE_LIMIT);
+
+            if ($order_by !== null) {
+                if (is_array($order_by)) {
+                    $records = $records->orderBy($order_by[0], $order_by[1]);
+                }
+                else {
+                    $records = $records->orderBy($order_by);
+                }
+            }
+
             if ($fields == null) {
                 $records = $records->get();
             }

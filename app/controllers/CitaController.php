@@ -54,6 +54,7 @@ class CitaController extends BaseController {
             $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
             $genders = Functions::langArray('pacientes', Paciente::getGenders());
             $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
+            $doctor_letters = Doctor::getFirstNameLetters();
             return View::make('admin.calendario')->with(
                 array(
                     'active_menu' => 'citas',
@@ -63,7 +64,8 @@ class CitaController extends BaseController {
                     'servicios' => $servicios,
                     'consultorios' => $consultorios,
                     'genders' => $genders,
-                    'marital_statuses' => $marital_statuses
+                    'marital_statuses' => $marital_statuses,
+                    'doctor_letters' => $doctor_letters
                 )
             );
         }
@@ -585,6 +587,37 @@ EOT;
         }
         $this->setReturn('nota_id', $note_id);
         $this->setReturn('nota', $note_content);
+        return $this->returnJson();
+    }
+
+
+    public function findInCalendar() {
+        $query = trim(Input::get('query'));
+        $page = 1;
+        $search_fields = array(
+            'nombre_paciente',
+            'apellido_paciente',
+            'cedula_paciente',
+            'nombre_doctor',
+            'apellido_doctor',
+            'cedula_doctor'
+        );
+        $match_total = 0;
+
+        if (strlen($query)) {
+            $records = $this->buscarTabla('citas', $query, $page, $search_fields, $match_total, null, array('fecha', 'DESC'));
+
+            if ($match_total > 0) {
+                foreach ($records as $record) {
+                    $this->setReturn('cita_id', $record->id);
+                    $this->setReturn('fecha', str_replace(' ', 'T', $record->hora_inicio));
+                    break; //only using first one
+                }
+            }
+        }
+        else {
+            return $this->setError( Lang::get('global.not_found') );
+        }
         return $this->returnJson();
     }
 

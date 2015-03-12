@@ -65,6 +65,21 @@ class UserController extends BaseController {
     }
 
     /**
+     * Muestra la página de usuarios
+     * @return mixed
+     */
+    public function paginaAdminOpciones() {
+        if (Auth::user()->admin) {
+            return View::make('admin.opciones')->with(
+                array(
+                    'active_menu' => 'opciones'
+                )
+            );
+        }
+        return View::make('admin.inicio');
+    }
+
+    /**
      * Procesa los datos ingresados por el usuario para el inicio de sesión
      * @return mixed
      */
@@ -129,9 +144,28 @@ class UserController extends BaseController {
         return $output;
     }
 
+
     public function buscarReturnHtml($records, $search_fields) {
         return AForm::searchResults($records, reset($search_fields), null, 'Admin', 'admin', 1);
     }
+
+
+    public function getDoctorByLetter() {
+        $letter = Input::get('letter');
+        $html = '';
+        if (strlen($letter) > 0) {
+            $items = Doctor::getByLetter($letter);
+            foreach ($items as $item) {
+                $nombre = Functions::firstNameLastName($item->nombre, $item->apellido);
+                $html.= <<<EOT
+                <a class="list-group-item search-result" data-id="{$item->usuario_id}">{$nombre}</a>
+EOT;
+            }
+        }
+        $this->setReturn('html', $html);
+        return $this->returnJson();
+    }
+
 
     public function changePasswordPost() {
         $validator = Validator::make(Input::all(),
