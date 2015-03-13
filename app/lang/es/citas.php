@@ -12,6 +12,7 @@ return array(
     'service' => 'Tratamiento',
     'record_date' => 'Fecha de registro',
     'record_date_alt' => 'Registrado el',
+    'goto' => 'Ir a...',
 
     //states
     'realizada' => 'Realizada',

@@ -55,6 +55,8 @@ class CitaController extends BaseController {
             $genders = Functions::langArray('pacientes', Paciente::getGenders());
             $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
             $doctor_letters = Doctor::getFirstNameLetters();
+            $options = Opcion::load();
+            $options['days_to_show'] = implode(',', $options['days_to_show']);
             return View::make('admin.calendario')->with(
                 array(
                     'active_menu' => 'citas',
@@ -65,7 +67,8 @@ class CitaController extends BaseController {
                     'consultorios' => $consultorios,
                     'genders' => $genders,
                     'marital_statuses' => $marital_statuses,
-                    'doctor_letters' => $doctor_letters
+                    'doctor_letters' => $doctor_letters,
+                    'options' => $options
                 )
             );
         }

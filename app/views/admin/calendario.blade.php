@@ -397,6 +397,8 @@ EOT;
 </form>
 <!-- /SEARCH EVENT FORM -->
 
+{{ $frm->date('goto_date', null, null, 'day', 'hidden') }}
+
 <!-- /MAIN CONTENT -->
 @stop
 
@@ -839,7 +841,7 @@ EOT;
             selectConstraint: {
                 start: '00:00',
                 end: '23:59',
-                dow: [ 1, 2, 3, 4, 5, 6 ]
+                dow: [ {{ $options['days_to_show'] }} ]
             },
             selectHelper: true,
             eventStartEditable: false,
@@ -853,13 +855,13 @@ EOT;
             slotDuration: '00:10:00',
             hiddenDays: [0],
             businessHours: {
-                start: '08:00',
-                end: '18:00',
-                dow: [ 1, 2, 3, 4, 5, 6 ]
+                start: '{{ $options['start_time'] }}',
+                end: '{{ $options['end_time'] }}',
+                dow: [ {{ $options['days_to_show'] }} ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
-            minTime: '06:00:00',
-            maxTime: '22:00:00',
+            minTime: '{{ $options['min_time'] }}',
+            maxTime: '{{ $options['max_time'] }}',
             events: '{{ URL::route('calendar_source') }}',
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {
@@ -913,9 +915,22 @@ EOT;
         $(window).resize(function() {
             var $cal = $('#main_calendar');
             var height = Math.floor( $(this).height() - $cal.offset().top ) - 80;
-            console.log(height);
             $cal.fullCalendar('option', 'contentHeight', height);
         }).resize();
+
+        //go to date button
+        $('#main_calendar').find('.fc-toolbar').find('.fc-left').append($('<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right" type="button">{{ Lang::get('citas.goto') }}</button>'));
+        
+        $('#goto_date_btn').click(function() {
+            setTimeout(function() {
+                $('#goto_date_edit').pickadate('picker').open();
+            }, 300);
+        });
+
+        $('#goto_date_edit').pickadate('picker').on('set', function() {
+            var $dp = $('#goto_date_edit').pickadate('picker');
+            gotoDate( $dp.get('select', 'yyyy-mm-dd') );
+        });
 
 
         $('#new_event_form').on('hidden.bs.modal', function() {

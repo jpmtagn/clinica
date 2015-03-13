@@ -222,13 +222,21 @@ EOT;
         if ($id == null) $id = $name;
         if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
+        $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
+
+        if (strlen($value) > 0) {
+            $this->script .= <<<EOT
+                setTimePicker($('#{$id}'), '{$this->values[$name]}');
+EOT;
+        }
+
         if ($this->show_labels) {
             return <<<EOT
           <div class="form-group {$classes}">
              <label for="{$id}" class="col-md-2 control-label">{$label}</label>
              <div class="col-md-10">
                 <div class="input-group">
-                    <input type="text" id="{$id}" name="{$name}" class="form-control input-time" data-mask="99:99 aa" placeholder="{$label}">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control input-time" data-mask="99:99 aa" placeholder="{$label}"{$value}>
                 </div>
             </div>
           </div>
@@ -239,7 +247,7 @@ EOT;
           <div class="form-group {$classes}">
              <div class="col-md-12">
                 <div class="input-group">
-                    <input type="text" id="{$id}" name="{$name}" class="form-control input-time" data-mask="99:99 aa" placeholder="{$label}">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control input-time" data-mask="99:99 aa" placeholder="{$label}"{$value}>
                 </div>
             </div>
           </div>
@@ -355,7 +363,7 @@ EOT;
             if ($options_val != null) {
                 $val = $val[$options_val];
             }
-            if (in_array($val, $options_selected) || $id == $value) {
+            if (in_array($val, $options_selected) || in_array($id, $options_selected) || $id == $value) {
                 $output.= <<<EOT
                     <option value="{$id}" selected>{$val}</option>
 EOT;
@@ -704,7 +712,7 @@ EOT;
 EOT;
     }
 
-    public static function userStatus($nombre, $apellido, $atendidos, $pendientes, $avatar, $link) {
+    public static function userStatus($nombre, $apellido, $atendidos, $pendientes, $avatar, $link, $id = 0) {
         $title = Functions::firstNameLastName($nombre, $apellido);
         $t = $atendidos + $pendientes;
         if ($t > 0) {
@@ -718,7 +726,7 @@ EOT;
         $atendidos_lbl = Functions::singlePlural(Lang::get('pacientes.done_singular'), Lang::get('pacientes.done_plural'), $atendidos);
         $pendientes_lbl = Functions::singlePlural(Lang::get('pacientes.pending_singular'), Lang::get('pacientes.pending_plural'), $pendientes);
         return <<<EOT
-        <li><!-- class="current"-->
+        <li id="user_status_{$id}"><!-- class="current"-->
             <a href="{$link}">
                 <span class="image">
                     <img src="{$avatar}" alt="" />

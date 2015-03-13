@@ -266,7 +266,7 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'CitaController@getNoteId'
     ));
 
-    Route::get('cita/nota_id', array(
+    Route::get('cita/doctor_indice', array(
         'as' => 'get_doctor_by_letter',
         'uses' => 'UserController@getDoctorByLetter'
     ));
@@ -274,6 +274,12 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('calendario/buscar', array(
         'as' => 'calendar_search',
         'uses' => 'CitaController@findInCalendar'
+    ));
+
+
+    Route::get('doctores/estado', array(
+        'as' => 'update_doctors_status',
+        'uses' => 'UserController@getDoctorStatuses'
     ));
 
     /**

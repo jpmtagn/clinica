@@ -150,6 +150,33 @@ class UserController extends BaseController {
     }
 
 
+    public function getDoctorStatuses() {
+        $doctores = Doctor::getAll();
+        $user_status = array();
+        foreach ($doctores as $doctor) {
+            $atendidos = $doctor->atendidos;
+            $pendientes = $doctor->pendientes;
+            $t = $atendidos + $pendientes;
+            if ($t > 0) {
+                $p_atendido = (int)(($atendidos / $t) * 100);
+                $p_pendiente = 100 - $p_atendido; //(int)($pendientes / $t);
+            }
+            else {
+                $p_atendido = 0;
+                $p_pendiente = 0;
+            }
+            $user['user_status_' . $doctor->usuario_id] = array(
+                'atendidos' => $atendidos,
+                'pendientes' => $pendientes,
+                'p_atendido' => $p_atendido,
+                'p_pendiente' => $p_pendiente
+            );
+            $this->setReturn('user_status_' . $doctor->usuario_id, json_encode($user));
+        }
+        return $this->returnJson();
+    }
+
+
     public function getDoctorByLetter() {
         $letter = Input::get('letter');
         $html = '';

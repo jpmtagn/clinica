@@ -132,7 +132,8 @@
                             $doctor->atendidos,
                             $doctor->pendientes,
                             URL::asset('img/avatars/s/' . (!empty($doctor->avatar) ? $doctor->avatar : 'default.jpg')),
-                            URL::route('disponibilidad_doctor', array('doctor_id' => $doctor->usuario_id))
+                            URL::route('disponibilidad_doctor', array('doctor_id' => $doctor->usuario_id),
+                            $doctor->usuario_id)
                         )
                      }}
                 @endforeach
@@ -296,6 +297,39 @@
 {{-- HTML::script('js/gritter/js/jquery.gritter.min.js') --}}
 <!-- CUSTOM SCRIPT -->
 {{ HTML::script('js/script.js') }}
+<script type="text/javascript">
+
+    function updateDoctorsStatus() {
+        $.ajax({
+            type: 'GET',
+            url: '{{ URL::route('update_doctors_status') }}',
+            dataType: 'json'
+        }).done(function(data) {
+            if (data['ok'] == 1) {
+                $users = $('#teamslider').find('ul.team-list').find('li');
+                $.each($users, function(i, o) {
+                    var $o = $(this);
+                    var id = $o.attr('id');
+                    if (typeof data[id] != 'undefined') {
+                        $o.find('span.badge.badge-green').html( data[id].atendidos );
+                        $o.find('span.badge.badge-red').html( data[id].pendientes );
+                        $o.find('div.progress-bar.progress-bar-success').width( data[id].p_atendido + '%' );
+                        $o.find('div.progress-bar.progress-bar-danger').width( data[id].p_pendiente+ '%' );
+                    }
+                });
+            }
+        }).fail(function(data) {
+            console.log(data); //failed
+        });
+    }
+
+    $(document).ready(function() {
+        $('a.team-status-toggle').click(function() {
+            updateDoctorsStatus();
+        });
+    });
+
+</script>
 @yield('scripts')
 <!-- /JAVASCRIPTS -->
 </body>

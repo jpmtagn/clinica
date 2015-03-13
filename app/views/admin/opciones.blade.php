@@ -12,7 +12,12 @@ Panel de Administración
 @stop
 
 @section('contenido')
-<?php $frm = new AForm; ?>
+<?php
+    $frm = new AForm;
+    if (isset($field_values) && is_array($field_values)) {
+        $frm->setValues( $field_values );
+    }
+?>
 <!-- PAGE HEADER-->
 <div class="row">
     <div class="col-sm-12">
@@ -40,14 +45,16 @@ Panel de Administración
 
         <!-- OPTIONS -->
         {{ $frm->panelOpen('config', Lang::get('global.settings'), 'fa-cog', '', array('collapse')) }}
-        <form id="frm_data_options" class="form-horizontal" role="form" action="{{ URL::route('admin_options_post') }}">
-            {{ $frm->time('min_time', null, Lang::get('opcion.time_start')) }}
-            {{ $frm->time('max_time', null, Lang::get('opcion.time_end')) }}
-            
-            {{ $frm->multiselect('days_to_show[]', 'days_to_show', Lang::get('opcion.title_plural'), $days) }}
+        <form id="frm_data_options" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_options_post') }}">
             {{ $frm->time('start_time', null, Lang::get('opcion.start_time')) }}
             {{ $frm->time('end_time', null, Lang::get('opcion.end_time')) }}
+            
+            {{ $frm->multiselect('days_to_show[]', 'days_to_show', Lang::get('opcion.days_to_show'), $days, null, null, $field_values['days_to_show']) }}
+            {{ $frm->time('min_time', null, Lang::get('opcion.min_time')) }}
+            {{ $frm->time('max_time', null, Lang::get('opcion.max_time')) }}
+            
             {{ Form::token() }}
+            {{ $frm->submit() }}
         </form>
         {{ $frm->panelClose() }}
 
@@ -68,11 +75,30 @@ Panel de Administración
 <?php endif; ?>
 {{ HTML::script('js/panel.js') }}
 <script type="text/javascript">
+
+    function saveSettings($frm, data) {
+        if (data['ok'] == 1) {
+            var $panel = $('#config_panel');
+            Panel.status.saved( $panel );
+        }
+        else {
+            Panel.status.error( $panel, data['err'] );
+        }
+    }
     
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
         {{ $frm->script() }}
+
+        $('#frm_data_options').submit(function(e) {
+            var $panel = $('#config_panel');
+            Panel.status.saving( $panel );
+            submitForm($(this), saveSettings);
+
+            e.preventDefault();
+            return false;
+        });
     });
 </script>
 @stop

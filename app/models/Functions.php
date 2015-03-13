@@ -83,10 +83,15 @@ class Functions {
     public static function ampmto24($time) {
         if (empty($time)) return null;
         $time = explode(' ', $time);
-        $ampm = $time[1];
+        $ampm = strtoupper($time[1]);
         $time = explode(':', $time[0], 3);
         if (count($time) > 1) {
-            $time[0] = (int)$time[0] + (($ampm == 'PM' && $time[0] != 12) ? 12 : 0);
+            if ($time[0] == 12 && $ampm == 'AM') {
+              $time[0] = 0;
+            }
+            else {
+              $time[0] = (int)$time[0] + (($ampm == 'PM' && $time[0] != 12) ? 12 : 0);
+            }
             return ($time[0] < 10 ? '0' : '') . $time[0] . ':' . $time[1];
         }
         return '';

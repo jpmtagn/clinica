@@ -8,30 +8,33 @@
 
 class OpcionController extends BaseController {
 
-	public paginaAdminOpciones() {
+	public function paginaAdminOpciones() {
 		if (Auth::user()->admin) {
             $days = array(
-            	1 => 'Lunes',
-            	2 => 'Martes',
-            	3 => 'Mi'
-            	4 =>
-            	5 =>
-            	6 =>
-            	7 =>
+            	1 => Lang::get('global.mon_l'),
+            	2 => Lang::get('global.tue_l'),
+            	3 => Lang::get('global.wed_l'),
+            	4 => Lang::get('global.thu_l'),
+            	5 => Lang::get('global.fri_l'),
+            	6 => Lang::get('global.sat_l'),
+            	7 => Lang::get('global.sun_l')
         	);
-            return View::make('admin.equipos')->with(
+        	$field_values = Opcion::load();
+            return View::make('admin.opciones')->with(
                 array(
                     'active_menu' => 'opcion',
-                    'days' => $days
+                    'days' => $days,
+					'field_values' => $field_values
                 )
             );
         }
+
         return View::make('admin.inicio');
 	}
 
 	public function save() {
 		$validator = Validator::make(Input::all(),
-            $model::getValidationRules();
+            Opcion::getValidationRules()
         );
 
         if ($validator->passes()) {
