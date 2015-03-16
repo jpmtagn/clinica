@@ -136,6 +136,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'DisponibilidadController@paginaAdminDisponibilidad'
     ));
 
+    Route::get('admin/doctor/{doctor_id}', array(
+        'as' => 'inicio_doctor',
+        'uses' => 'UserController@paginaAdminInicioDoctor'
+    ));
+
     Route::get('admin/opciones', array(
         'as' => 'admin_config',
         'uses' => 'OpcionController@paginaAdminOpciones'
@@ -285,7 +290,7 @@ Route::group(array('before' => 'auth'), function() {
     /**
      * Form Actions
      */
-    Route::group(array('before' => 'csrf'), function() {
+    //Route::group(array('before' => 'csrf'), function() {
 
         // PAGINA USUARIOS
 
@@ -656,7 +661,7 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'OpcionController@save'
         ));
 
-    });
+    //});
 
     Route::get('cerrar_sesion', array(
         'as' => 'cerrar_sesion',

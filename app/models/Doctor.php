@@ -25,6 +25,10 @@ class Doctor /*extends Paciente*/ {
         return $items;
     }
 
+    public static function getIds() {
+        return DB::table('doctor')->orderBy('usuario_id')->lists('usuario_id');
+    }
+
     public static function getByLetter($letter) {
         return DB::table('doctor')->where('nombre', 'LIKE', $letter . '%')->get();
     }

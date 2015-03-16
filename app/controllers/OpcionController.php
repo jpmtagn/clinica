@@ -17,7 +17,7 @@ class OpcionController extends BaseController {
             	4 => Lang::get('global.thu_l'),
             	5 => Lang::get('global.fri_l'),
             	6 => Lang::get('global.sat_l'),
-            	7 => Lang::get('global.sun_l')
+            	0 => Lang::get('global.sun_l')
         	);
         	$field_values = Opcion::load();
             return View::make('admin.opciones')->with(

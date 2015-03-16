@@ -15,6 +15,7 @@ class Disponibilidad extends Eloquent {
         'inicio',
         'fin',
         'disponible',
+        'fijo',
         'usuario_id'
     );
 
@@ -41,6 +42,7 @@ class Disponibilidad extends Eloquent {
             'inicio'            => 'required|date',//array('regex:/(0[0-9]|1[0-2]):([0-5][0-9]) (AM|PM)/'),
             'fin'               => 'required|date',//array('regex:/(0[0-9]|1[0-2]):([0-5][0-9]) (AM|PM)/'),
             'disponibilidad'    => 'in:0,1',
+            'fijo'              => 'in:0,1',
             'usuario_id'        => ($ignore_id == 0 ? 'required|' : '') . 'integer|exists:usuario,id'
         );
         if ($field === null) {
@@ -77,32 +79,58 @@ class Disponibilidad extends Eloquent {
 
 
     //FILTROS:
-    /*public function scopeFromDate($query, $val) {
-        $date = Functions::explodeDateTime($val, true);
-        if (checkdate($date['month'], $date['day'], $date['year'])) {
-            return $query->where('inicio', '>=', $val);
-        }
+    public function scopeFromDateToDate($query, $start, $end) {
+        //$date = Functions::explodeDateTime($start, true);
+        //if (checkdate($date['month'], $date['day'], $date['year'])) {
+            return $query->whereRaw('fijo = 1 OR (inicio <= ? AND fin >= ?)', array(
+                $start,
+                $end
+            ));
+        //}
         return $query;
     }
 
-    public function scopeToDate($query, $val) {
+    /*public function scopeToDate($query, $val) {
         $date = Functions::explodeDateTime($val, true);
         if (checkdate($date['month'], $date['day'], $date['year'])) {
-            return $query->where('fin', '<=', $val);
+            return $query->where('fijo', '=', '1')->orWhere('fin', '<=', $val);
         }
         return $query;
     }*/
 
     public function scopeForDateTime($query, $start, $end, $user_id) {
         $start = strtotime($start);
+        $end = strtotime($end);
         $dow = date('N', $start) - 1;
 
-        $start = date('H:i', $start);
-        $end = date('H:i', strtotime($end));
+        $start_time = date('H:i', $start);
+        $end_time = date('H:i', $end);
+
+        $start = date('Y-m-d H:i', $start);
+        $end = date('Y-m-d H:i', $end);
+
         return $query->whereRaw(
-            '(usuario_id = ? AND WEEKDAY(inicio) = ? AND disponible = 1 AND DATE_FORMAT(inicio,"%H:%i") <= ? AND DATE_FORMAT(fin,"%H:%i") >= ?)', array(
+            '(
+                usuario_id = ? AND
+                (
+                    (
+                     fijo = 1 AND
+                     WEEKDAY(inicio) = ? AND 
+                     disponible = 1 AND
+                     DATE_FORMAT(inicio,"%H:%i") <= ? AND DATE_FORMAT(fin,"%H:%i") >= ?
+                    )
+                    OR
+                    (
+                     fijo = 0 AND
+                     inicio <= ? AND
+                     fin >= ?
+                    )
+                )
+             )', array(
             $user_id,
             $dow,
+            $start_time,
+            $end_time,
             $start,
             $end
         ));

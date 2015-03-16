@@ -92,6 +92,7 @@ Panel de Administración
         </form>
         {{ $frm->panelClose() }}
 
+        <?php if (false) : ?>
         <!-- CREATE NEW RELATIVE -->
         {{ $frm->panelOpen('create_relative', 'Nuevo Pariente', 'fa-plus', 'primary hidden', array('collapse','remove')) }}
         <form id="frm_data_new_relative" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_pacientes_registrar_pariente_post') }}">
@@ -104,6 +105,7 @@ Panel de Administración
             {{ $frm->submit('Guardar') }}
         </form>
         {{ $frm->panelClose() }}
+        <?php endif; ?>
 
         <!-- EDIT -->
         {{ $frm->panelOpen('edit', 'Modificar', 'fa-pencil', 'orange hidden', array('collapse','remove')) }}
@@ -173,7 +175,7 @@ Panel de Administración
 
     }
 
-    function dropDown_addRelative($a) {
+    /*function dropDown_addRelative($a) {
         var $panel = $('#create_relative_panel');
         var tipo_pariente_id = $a.attr('menu-action');
         var paciente_id = Panel.view.form().find('input[name=id]').val();
@@ -187,13 +189,13 @@ Panel de Administración
 
         Panel.status.restore( $panel, 'Nuevo Pariente (' + $a.html() + ')', 'fa-plus');
         Panel.show( $panel );
-    }
+    }*/
 
     function beforePanelCreate() {
 
     }
 
-    function saveRelative() {
+    /*function saveRelative() {
         var $panel = $('#create_relative_panel');
         var $frm = $('#frm_data_new_relative');
         var url = $frm.attr('action');
@@ -215,18 +217,18 @@ Panel de Administración
             console.log(data); //failed
             Panel.status.error($panel, data);
         });
-    }
+    }*/
 
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
         {{ $frm->script() }}
 
-        $('#frm_data_new_relative').submit(function(e) {
+        /*$('#frm_data_new_relative').submit(function(e) {
             setTimeout(saveRelative(), 100);
             e.preventDefault();
             return false;
-        });
+        });*/
 
     });
 </script>

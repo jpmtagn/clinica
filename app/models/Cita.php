@@ -147,6 +147,10 @@ class Cita extends Eloquent {
         return $query;
     }
 
+    public function scopeForToday($query) {
+        return $query->where('fecha', '=', date('Y-m-d'));
+    }
+
     public function scopeBetween($query, $val1, $val2) {
         return $query->where(function ($query) use ($val1, $val2) { //TODO: check that this is working (!)
             /*return */$query->where(function ($query) use ($val1, $val2) {
@@ -161,6 +165,14 @@ class Cita extends Eloquent {
 
     public function scopeNotCancelled($query) {
         return $query->where('estado', '<>', self::CANCELLED);
+    }
+
+    public function scopeCancelled($query) {
+        return $query->where('estado', '=', self::CANCELLED);
+    }
+
+    public function scopeDone($query) {
+        return $query->where('estado', '=', self::DONE);
     }
 
     public function scopeTotal($query, $val) {

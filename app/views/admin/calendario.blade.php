@@ -422,6 +422,8 @@ EOT;
 
     var cita_ID;
 
+    var creating_new_event = false;
+
     function setDateTime(start, end) {
         var $frm = $('#frm_new_event_date_time_inf');
         //setting date
@@ -459,6 +461,7 @@ EOT;
     }
 
     function fn_new_event(start, end, allDay) {
+        window.creating_new_event = true;
         var $cal = $('#main_calendar');
         $cal.fullCalendar('renderEvent', {
                 id: 0,
@@ -526,12 +529,17 @@ EOT;
     }
 
     function fn_render_all_events(view) {
-        updateCountPer('doctor');
-        updateCountPer('office');
-        highlightActive('doctor');
-        highlightActive('office');
-        bindEventClick();
-		$('.tip').tooltip();
+        if (!window.creating_new_event) {
+            updateCountPer('doctor');
+            updateCountPer('office');
+            highlightActive('doctor');
+            highlightActive('office');
+            bindEventClick();
+    		$('.tip').tooltip();
+        }
+        else {
+            window.creating_new_event = false;
+        }
     }
 
     function submitDateTimeFormDone($frm, data) {
@@ -578,7 +586,7 @@ EOT;
 
     function submitOfficeFormDone($frm, data) {
         $('#cita_office_name').html( data['office_name_inf'] );
-        //$('#cita_office_inf').html( data['duration_inf'] );
+        $('#cita_office_inf').html( data['area_inf'] );
 
         $('#consultorio_id_hidden').val( data['consultorio_id'] );
     }
@@ -587,6 +595,7 @@ EOT;
         submitFormDoneDefault($frm, data);
         if (data['ok'] == 1) {
             $frm.closest('.modal').modal('hide');
+            $('#main_calendar').fullCalendar('refetchEvents');
         }
     }
 
@@ -606,6 +615,7 @@ EOT;
             );
             $cal.fullCalendar('unselect');*/
             $cal.fullCalendar( 'refetchEvents' );
+            resetIgnoreWarningCheckboxes();
         }
         else {
             var $ignore_options = $('#warning_ignore_options');
@@ -624,6 +634,14 @@ EOT;
                 }
             }
         }
+    }
+
+    function resetIgnoreWarningCheckboxes() {
+        $('#warning_key').val(0);
+        $('#ignore_warning_submit').val(0);
+        $('#ignore_warning_all_submit').val(0);
+        $('#ignore_warning').prop('checked', false);
+        $('#ignore_warning_all').prop('checked', false);
     }
 
     function bindOfficeButtons() {
@@ -663,11 +681,11 @@ EOT;
 
     function highlightActive(name) {
         var $actives = $('a.filter-' + name + '.active');
-        $('a.group-filter').not('.filter-' + name).removeClass('active');
         if ($actives.length == 0) {
             $('a.fc-event').removeClass('event-faded wide');
         }
         else {
+            $('a.group-filter').not('.filter-' + name).removeClass('active');
             $('a.fc-event').addClass('event-faded');
             $.each($actives, function(i, o) {
                 var $o = $(o);
@@ -685,6 +703,9 @@ EOT;
                     }
                 });
             });
+            /*$('a.fc-event.event-faded').mouseenter(function() {
+                $(this).hide();
+            });*/
         }
     }
 
@@ -715,6 +736,14 @@ EOT;
         var $btn = $('#state' + state);
         if ($btn.length) {
             $btn.removeClass('btn-default').addClass('active btn-' + $btn.attr('attr-type'));
+        }
+        //disable edit if state equal done (1), confirmed (2) or cancelled (3)
+        $btn_edit = $('#edit_cita');
+        if (state != 0) {
+            $btn_edit.addClass('disabled');
+        }
+        else {
+            $btn_edit.removeClass('disabled');
         }
     }
 
@@ -773,16 +802,16 @@ EOT;
         $.each($events, function(i, o) {
             var $o = $(o);
             var id = $o.find('input.id').val();
-            console.log('id:' + id);
             if (id == event_id) {
-                $o.addClass('bring-to-front animated tada');
+                setTimeout(function() {
+                    $o.addClass('bring-to-front animated tada');
+                }, 1000);
                 setTimeout(function() {
                     $o.removeClass('bring-to-front animated tada');
-                }, 2000);
+                }, 4000);
                 return false;
             }
         });
-        console.log('you tried to find ' + event_id);
     }
 
     function gotoDate(date) {
@@ -841,7 +870,7 @@ EOT;
             selectConstraint: {
                 start: '00:00',
                 end: '23:59',
-                dow: [ {{ $options['days_to_show'] }} ]
+                dow: [ {{ $options['days_to_show_str'] }} ]
             },
             selectHelper: true,
             eventStartEditable: false,
@@ -853,11 +882,11 @@ EOT;
             timeFormat: 'h(:mm)t',
             axisFormat: 'h(:mm)t',
             slotDuration: '00:10:00',
-            hiddenDays: [0],
+            hiddenDays: [{{ $options['days_to_hide_str'] }}],
             businessHours: {
                 start: '{{ $options['start_time'] }}',
                 end: '{{ $options['end_time'] }}',
-                dow: [ {{ $options['days_to_show'] }} ]
+                dow: [ {{ $options['days_to_show_str'] }} ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
             minTime: '{{ $options['min_time'] }}',
@@ -925,6 +954,10 @@ EOT;
             setTimeout(function() {
                 $('#goto_date_edit').pickadate('picker').open();
             }, 300);
+        }).mouseenter(function() {
+            $(this).addClass('fc-state-hover');
+        }).mouseleave(function() {
+            $(this).removeClass('fc-state-hover');
         });
 
         $('#goto_date_edit').pickadate('picker').on('set', function() {
@@ -1037,6 +1070,16 @@ EOT;
             }
             else {
                 setState(cita_ID, 0);
+            }
+        });
+
+        $('#dni').blur(function() {
+            var $this = $(this);
+            var val = $this.val();
+            if (val.length > 3) {
+                if (val.slice(1,2) != '-') {
+                    $this.val( 'V-' + val.replace(/\D/g,'') );
+                }
             }
         });
 

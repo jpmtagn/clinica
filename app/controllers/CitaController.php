@@ -56,7 +56,6 @@ class CitaController extends BaseController {
             $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
             $doctor_letters = Doctor::getFirstNameLetters();
             $options = Opcion::load();
-            $options['days_to_show'] = implode(',', $options['days_to_show']);
             return View::make('admin.calendario')->with(
                 array(
                     'active_menu' => 'citas',
@@ -346,6 +345,8 @@ EOT;
         $citas = Cita::fromDate($cal_start)->toDate($cal_end)->get();
 
         $doctor_color = array();
+        $doctor_index = Doctor::getIds();
+        $colors = array('#2983AE', '#A64499', '#ED1B24', '#F78F1E', '#FEF200', '#00A88F0', '#0092CE', '#6B439B', '#E44097', '#F37020', '#FFC20F', '#8DFD07');
 
         foreach ($citas as $cita) {
             $paciente = $cita->paciente;
@@ -362,16 +363,15 @@ EOT;
 
             //$color = $cita->estado == 1 ? 'blue' : 'gray';
             //$colors = array('#2983ae', 'blue', 'red', 'yellow');
-            $colors = array('#2983AE', '#A64499', '#ED1B24', '#F78F1E', '#FEF200', '#00A88F0', '#0092CE', '#6B439B', '#E44097', '#F37020', '#FFC20F', '#8DFD07');
             if (!isset($doctor_color[$cita->doctor_id])) {
-                $doctor_color[$cita->doctor_id] = count($doctor_color);
+                $doctor_color[$cita->doctor_id] = array_search($cita->doctor_id, $doctor_index);//count($doctor_color);
             }
             $color = $colors[ $doctor_color[$cita->doctor_id] ];
 
             $atention = (($cita->estado != Cita::DONE && $cita->estado != Cita::CANCELLED) && strtotime($cita->hora_inicio) < time()) ? '1' : '0';
 			
 			$comment = $cita->nota;
-			$comment = $comment ? $comment->contenido : '';
+			$comment = $comment ? Functions::nl2br(htmlentities($comment->contenido)) : '';
 
             $citas_json[] = <<<EOT
             {
@@ -453,6 +453,7 @@ EOT;
         $office = Consultorio::find($office_id);
         //send information
         $this->setReturn('office_name_inf', $office ? ucfirst($office->nombre) : Lang::get('global.not_found'));
+        $this->setReturn('area_inf', $office ? ucfirst($office->area->nombre) : '');
         //send back data
         $this->setReturn('consultorio_id', $office_id);
     }

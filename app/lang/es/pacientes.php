@@ -23,6 +23,7 @@ return array(
     'relatives' => 'Parientes',
     'add_relative' => 'Agregar Pariente',
     'add_new_relative' => 'Agregar nuevo registro',
+    'per_month' => 'Pacientes Atendidos por Mes',
 
     'done_singular' => 'Atendido',
     'done_plural' => 'Atendidos',

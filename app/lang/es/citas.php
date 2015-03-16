@@ -13,6 +13,8 @@ return array(
     'record_date' => 'Fecha de registro',
     'record_date_alt' => 'Registrado el',
     'goto' => 'Ir a...',
+    'for_today_single' => 'Cita para hoy',
+    'for_today_plural' => 'Citas para hoy',
 
     //states
     'realizada' => 'Realizada',
@@ -24,7 +26,7 @@ return array(
     'cancelled' => 'Cancelada',
     'done' => 'Realizada',
 
-    'add_note' => 'Agregar nota',
+    'add_note' => 'Notas',
     'edit' => 'Editar',
     'notes' => 'Notas',
 

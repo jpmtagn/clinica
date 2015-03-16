@@ -42,7 +42,58 @@ class UserController extends BaseController {
      * @return mixed
      */
     public function paginaAdminInicio() {
-        return View::make('admin.inicio');
+        $total_patients = Paciente::count();
+        $total_citas = Cita::count();
+        $total_citas_today = Cita::forToday()->count();
+        $total_citas_done = Cita::done()->count();
+        $total_citas_cancelled = Cita::cancelled()->count();
+        $chart_data_patient_month = DB::table('cita')
+                                    ->selectRaw('MONTH(fecha) AS "mes", COUNT(fecha) AS "total"')
+                                    ->where('estado', '=', 1)
+                                    ->groupBy(DB::raw('MONTH(fecha)'))
+                                    ->orderBy('fecha', 'ASC')
+                                    ->take(12)
+                                    ->get();
+
+        return View::make('admin.inicio')->with(array(
+            'total_patients' => $total_patients,
+            'total_citas' => $total_citas,
+            'total_citas_today' => $total_citas_today,
+            'total_citas_done' => $total_citas_done,
+            'total_citas_cancelled' => $total_citas_cancelled,
+            'chart_data_patient_month' => $chart_data_patient_month
+        ));
+    }
+
+    /**
+     * Muestra la página de inicio del usuario que inicio sesión
+     * @return mixed
+     */
+    public function paginaAdminInicioDoctor($doctor_id) {
+        $doctor = User::find($doctor_id);
+        //$citas = $doctor->cita();
+
+        $total_citas = $doctor->cita()->count();
+        $total_citas_today = $doctor->cita()->forToday()->count();
+        $total_citas_done = $doctor->cita()->done()->count();
+        $total_citas_cancelled = $doctor->cita()->cancelled()->count();
+        $chart_data_patient_month = DB::table('cita')
+                                    ->selectRaw('MONTH(fecha) AS "mes", COUNT(fecha) AS "total"')
+                                    ->where('estado', '=', 1)
+                                    ->where('doctor_id', '=', $doctor_id)
+                                    ->groupBy(DB::raw('YEAR(fecha), MONTH(fecha)'))
+                                    ->orderBy('fecha', 'ASC')
+                                    ->take(12)
+                                    ->get();
+
+        return View::make('admin.inicio_doctor')->with(array(
+            'total_citas' => $total_citas,
+            'total_citas_today' => $total_citas_today,
+            'total_citas_done' => $total_citas_done,
+            'total_citas_cancelled' => $total_citas_cancelled,
+            'chart_data_patient_month' => $chart_data_patient_month,
+            'doctor' => $doctor->paciente
+        ));
     }
 
     /**
@@ -165,15 +216,15 @@ class UserController extends BaseController {
                 $p_atendido = 0;
                 $p_pendiente = 0;
             }
-            $user['user_status_' . $doctor->usuario_id] = array(
+            $user_status['user_status_' . $doctor->usuario_id] = array(
                 'atendidos' => $atendidos,
                 'pendientes' => $pendientes,
                 'p_atendido' => $p_atendido,
                 'p_pendiente' => $p_pendiente
             );
-            $this->setReturn('user_status_' . $doctor->usuario_id, json_encode($user));
         }
-        return $this->returnJson();
+        $user_status['ok'] = 1;
+        return json_encode($user_status);
     }
 
 

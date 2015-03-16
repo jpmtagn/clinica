@@ -4692,7 +4692,7 @@ DayGrid.mixin({
 			'</span>';
 		
 		return '<a class="' + classes.join(' ') + '"' +
-				(has_comment ? ' data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
+				(has_comment ? ' data-html="true" data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
 				(event.url ?
 					' href="' + htmlEscape(event.url) + '"' :
 					''
@@ -5903,7 +5903,7 @@ TimeGrid.mixin({
 		}
 
 		return '<a class="' + classes.join(' ') + '"' +
-			(has_comment ? ' data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
+			(has_comment ? ' data-html="true" data-toggle="tooltip" data-original-title="' + comment + '" title="' + comment + '"' : '') +
 			(event.url ?
 				' href="' + htmlEscape(event.url) + '"' :
 				''

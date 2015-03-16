@@ -198,7 +198,7 @@ class PacienteController extends BaseController {
         $correos = array();
         $this->getContactInfo($item, $telefonos, $correos, true);
 
-        $relatives = $item->tipoPariente()->select(array('tipo_pariente_id', 'pariente_id'))->get();
+        //$relatives = $item->tipoPariente()->select(array('tipo_pariente_id', 'pariente_id'))->get();
 
         $frm = new AForm;
         $output = "";
@@ -208,7 +208,7 @@ class PacienteController extends BaseController {
         $output .= $frm->halfPanelOpen(true, 7);
         $output .= $frm->view('name', Lang::get(self::LANG_FILE . '.name'), strtoupper($item->apellido) . ', ' . $item->nombre);
         $output .= $frm->view('dni', Lang::get(self::LANG_FILE . '.dni'), $item->dni);
-        $output .= $frm->view('birthdate', Lang::get(self::LANG_FILE . '.birthdate'), Functions::shortDateFormat($item->fecha_nacimiento));
+        $output .= $frm->view('birthdate', Lang::get(self::LANG_FILE . '.birthdate'), Functions::shortDateFormat($item->fecha_nacimiento) . ' (' . Functions::ageFromDate($item->fecha_nacimiento) . ' ' . Lang::get('global.years') . ')');
         $output .= $frm->view('gender', Lang::get(self::LANG_FILE . '.gender'), Lang::get(self::LANG_FILE . '.' . Paciente::getGenders($item->sexo)));
         $output .= $frm->view('marital_status', Lang::get(self::LANG_FILE . '.marital_status'), Lang::get(self::LANG_FILE . '.' . Paciente::getMaritalStatuses($item->estado_civil)));
         $output .= $frm->view('address', Lang::get(self::LANG_FILE . '.address'), $item->direccion);
@@ -222,7 +222,7 @@ class PacienteController extends BaseController {
         $output .= $frm->view('contact_phones', Lang::get(self::LANG_FILE . '.phone'), $telefonos, 'fa-phone');
         $output .= $frm->view('contact_emails', Lang::get(self::LANG_FILE . '.email'), $correos, 'fa-envelope');
 
-        if (count($relatives)) {
+        /*if (count($relatives)) {
             $output .= '<br><label><b>' . Lang::get(self::LANG_FILE . '.relatives') . '</b></label>';
             $i = 0;
             foreach($relatives as $relative) {
@@ -232,14 +232,14 @@ class PacienteController extends BaseController {
                     $i++;
                 }
             }
-        }
+        }*/
 
         //$output .= $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative') . '<br>';
         $output .= $frm->halfPanelClose(true);
 
-        $output .= $frm->controlButtons(null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
+        //$output .= $frm->controlButtons(null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
 
-        $this->setReturn('script', $frm->script());
+        //$this->setReturn('script', $frm->script());
 
         return $output;
     }

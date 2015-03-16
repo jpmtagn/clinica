@@ -84,12 +84,12 @@ class DisponibilidadController extends BaseController {
 
 
     public function getDisponibilidad($doctor_id) {
-        $cal_start = strtotime(Input::get('start')); //TODO: this needs to affect the items from the database in order to show them
-        //$cal_end = strtotime(Input::get('end'));
+        $cal_start = strtotime(Input::get('start'));
+        $cal_end = strtotime(Input::get('end'));
         $items_json = array();
         $doctor = User::find($doctor_id);
         if ($doctor) {
-            $items = $doctor->disponibilidad()/*->fromDate($cal_start)->toDate($cal_end)*/->get();
+            $items = $doctor->disponibilidad()->fromDateToDate($cal_start, $cal_end)->get();
 
             $cal_start_w = date('N', $cal_start) - 1;
             if ($cal_start_w > 0) { //not a monday

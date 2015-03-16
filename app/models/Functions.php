@@ -129,8 +129,7 @@ class Functions {
                  ($min ?  Functions::singlePlural(Lang::get('global.minute'), Lang::get('global.minutes'), $min, true) : '');
     }
 
-    public static function addMinutes($start, $minutes, $return_format = 'Y-m-d H:i:s')
-    {
+    public static function addMinutes($start, $minutes, $return_format = 'Y-m-d H:i:s') {
         if (strlen(preg_replace('/[0-9]/', '', $start)) > 0) {
             $start = strtotime($start);
         }
@@ -139,6 +138,13 @@ class Functions {
             return date($return_format, $time);
         }
         return $time;
+    }
+
+    public static function ageFromDate($date) {
+      $date = new DateTime($date);
+      $now = new DateTime();
+      $interval = $now->diff($date);
+      return $interval->y;
     }
 
     public static function wrapWithSpanIf($to_be_wrapped, $wrap, $class = '', $find_str = '', $find_wrap_open = '<b><i>', $find_wrap_close = '</i></b>') {
@@ -159,6 +165,15 @@ class Functions {
             }
         }
         return $in;
+    }
+
+    /**
+     * Replaces new line for a html br tag. PHP's function only adds a br but doesn't remove the new line character
+     * @param $str
+     * @return string
+     */
+    public static function nl2br($str) {
+      return str_replace(array("\r\n", "\r", "\n", "\n\r"), '<br />', $str);
     }
 
     /**

@@ -74,7 +74,9 @@ EOT;
         );
         @include (public_path() . '/user_config.php');
         
+        $options['days_to_show_str'] = $options['days_to_show'];
         $options['days_to_show'] = explode(',', $options['days_to_show']);
+        $options['days_to_hide_str'] = implode(',', Opcion::getHiddenDays( $options['days_to_show'] ));
 
         /*$this->days_to_show = $options['days_to_show'];
         $this->start_time = $options['start_time'];
@@ -83,6 +85,12 @@ EOT;
         $this->max_time = $options['max_time'];
         $this->from_file = isset($options['from_file']);*/
         return $options;
+    }
+
+
+    public static function getHiddenDays($shown_days) {
+        $days = array(0,1,2,3,4,5,6);
+        return array_diff($days, $shown_days);
     }
 
 }

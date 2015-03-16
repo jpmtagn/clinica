@@ -814,6 +814,198 @@ EOT;
 EOT;
     }
 
+    public function infoCountBox($fa_icon, $total, $label, $link) {
+        return <<<EOT
+        <a href="{$link}">
+            <div class="dashbox panel panel-default">
+                <div class="panel-body">
+                    <div class="panel-left red">
+                        <i class="fa {$fa_icon} fa-3x"></i>
+                    </div>
+                    <div class="panel-right">
+                        <div class="number">{$total}</div>
+                        <div class="title">{$label}</div>
+                        <!--span class="label label-success">
+                            26% <i class="fa fa-arrow-up"></i>
+                        </span-->
+                    </div>
+                </div>
+            </div>
+        </a>
+EOT;
+    }
+
+    public function pieChart($title, $value, $total = 100, $color = null, $id = null) {
+        if ($total != 100 && $total > 0) {
+            $percent = round($value * 100 / $total);
+        }
+        else {
+            $percent = $value;
+        }
+
+        if ($id === null) {
+            $id = 'chart_' . uniqid() . rand(0,100);
+        }
+        if ($color === null) {
+            $color = printf('#%06x', rand(0,16777215));
+        }
+        $this->script .= <<<EOT
+        $('#{$id}').easyPieChart({
+            animate: 2000,
+            easing: 'easeOutBounce',
+            onStep: function(from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent)+"%");
+            },
+            lineWidth: 6,
+            barColor: "{$color}"
+        });
+EOT;
+        return <<<EOT
+        <div id="{$id}" class="piechart" data-percent="{$percent}">
+            <span class="percent"></span>
+        </div>
+        <a class="title">{$title}</a>
+EOT;
+    }
+
+    public function lineChart($title, $fa_icon, $data, $key, $val, $tooltip_text = null, $id = null) {
+        if ($id === null) {
+            $id = 'chart_' . uniqid() . rand(0,100);
+        }
+        if ($tooltip_text === null) {
+            $tooltip_text = $title;
+        }
+        $cur_month = date('n');
+        for /*($i = 0; $i <= 11; $i++) {*/ ($i = 11; $i >= 0; $i--) {
+            $months[$i] = $cur_month - $i;
+            if ($months[$i] <= 0) {
+                $months[$i] += 12;
+            }
+        }
+        $plot = array();
+        $data = Functions::arrayIt($data, $key, $val);
+        foreach($months as $point) {
+            if (isset($data[$point])) {
+                $plot[] = "[{$point}, " . $data[$point] . "]";
+            }
+            else {
+                $plot[] = "[{$point}, 0]";
+            }
+        }
+        $plot = implode(', ', $plot);
+        $this->script .= <<<EOT
+        var {$id}_likes = [{$plot}];
+        
+        var plot = $.plot($("#{$id}"),
+               [ { data: {$id}_likes} ], {
+                   series: {
+                       label: "{$tooltip_text}",
+                       lines: { 
+                            show: true,
+                            lineWidth: 3, 
+                            fill: false
+                       },
+                       points: { 
+                            show: true, 
+                            lineWidth: 3,
+                            fill: true,
+                            fillColor: "#9EB37A" 
+                       },   
+                       shadowSize: 0
+                   },
+                   grid: { hoverable: true, 
+                           clickable: true, 
+                           tickColor: "rgba(255,255,255,.15)",
+                           borderColor: "rgba(255,255,255,0)"
+                         },
+                   colors: ["#fff"],
+                   xaxis: {
+                        font: {
+                            color: "#fff"
+                        },
+                        ticks:6, 
+                        tickDecimals: 0, 
+                        tickColor: "#9EB37A",
+                   },
+                   yaxis: {
+                        font: {
+                            color: "#fff"
+                        },
+                        ticks:4, 
+                        tickDecimals: 0,
+                        autoscaleMargin: 0.000001
+                   },
+                   legend: {
+                        show: false
+                   }
+                 });
+
+        function showTooltip(x, y, contents) {
+            $('<div id="tooltip">' + contents + '</div>').css( {
+                position: 'absolute',
+                display: 'none',
+                top: y + 5,
+                left: x + 5,
+                border: '1px solid #fdd',
+                padding: '2px',
+                'background-color': '#dfeffc',
+                opacity: 0.80
+            }).appendTo("body").fadeIn(200);
+        }
+
+        var previousPoint = null;
+        $("#{$id}").bind("plothover", function (event, pos, item) {
+            $("#x").text(pos.x.toFixed(2));
+            $("#y").text(pos.y.toFixed(2));
+
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
+                        previousPoint = item.dataIndex;
+
+                        $("#tooltip").remove();
+                        var x = Math.round(item.datapoint[0].toFixed(2)),
+                            y = Math.round(item.datapoint[1].toFixed(2));
+
+                        showTooltip(item.pageX, item.pageY,
+                                    y + ' ' + item.series.label);
+                    }
+                }
+                else {
+                    $("#tooltip").remove();
+                    previousPoint = null;
+                }
+        });
+EOT;
+
+        return <<<EOT
+        <div class="box solid grey">
+            <div class="box-title">
+                <h4><i class="fa {$fa_icon}"></i>{$title}</h4>
+                <!--div class="tools">
+                    <span class="label label-danger">
+                        20% <i class="fa fa-arrow-up"></i>
+                    </span>
+                    <a href="#box-config" data-toggle="modal" class="config">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                    <a href="javascript:;" class="reload">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                    <a href="javascript:;" class="collapse">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a href="javascript:;" class="remove">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div-->
+            </div>
+            <div class="box-body">
+                <div id="{$id}" style="height:240px"></div>
+            </div>
+        </div>
+EOT;
+    }
+
     public function script($jquery = false) {
         if (!$jquery) {
             return $this->script;

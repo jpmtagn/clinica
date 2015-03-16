@@ -9075,9 +9075,10 @@ a.fc-event {
 }
 
 a.fc-event.event-faded {
-    opacity: .2;
+    opacity: 0;
     transition: .5s opacity;
     z-index: -100 !important;
+    pointer-events: none;
 }
 
 .fc-event.wide {

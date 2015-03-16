@@ -105,6 +105,16 @@ class Paciente extends Eloquent {
         $this->attributes['sexo'] = (int)$value;
     }
 
+    public function getNombreAttribute()
+    {
+        return ucwords($this->attributes['nombre']);
+    }
+
+    public function getApellidoAttribute()
+    {
+        return ucwords($this->attributes['apellido']);
+    }
+
     //RELACIONES:
     public function tipoPariente() {
         return $this->belongsToMany('TipoPariente', 'paciente_tipo_pariente', 'paciente_id', 'tipo_pariente_id');

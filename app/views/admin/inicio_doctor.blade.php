@@ -11,7 +11,7 @@
     <div class="col-sm-12">
         <div class="page-header">
             <div class="clearfix">
-                <h3 class="content-title pull-left">Inicio</h3>
+                <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
             </div>
             <div class="description">Información general y estadísticas</div>
         </div>
@@ -25,7 +25,7 @@
     <div class="col-md-5">
         <div class="row">
           <div class="col-lg-6">
-             {{ $frm->infoCountBox('fa-user', $total_patients, Lang::get('pacientes.title_plural'), URL::route('admin_pacientes')) }}
+             {{ $frm->infoCountBox('fa-calendar-o', $total_citas, Lang::get('citas.title_plural'), URL::route('admin_calendario')) }}
           </div>
           <div class="col-lg-6">
              {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), URL::route('admin_calendario')) }}
