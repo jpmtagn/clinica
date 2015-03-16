@@ -883,18 +883,25 @@ EOT;
             }
         }
         $plot = array();
+        $month_labels = array();
         $data = Functions::arrayIt($data, $key, $val);
+        $i = 1;
         foreach($months as $point) {
             if (isset($data[$point])) {
-                $plot[] = "[{$point}, " . $data[$point] . "]";
+                $plot[] = "[{$i}, " . $data[$point] . "]";
             }
             else {
-                $plot[] = "[{$point}, 0]";
+                $plot[] = "[{$i}, 0]";
             }
+            $month_labels[$i - 1] = '"' . Functions::monthName($point) . '"';
+            $i++;
         }
         $plot = implode(', ', $plot);
+        $month_labels = implode(', ', $month_labels);
+
         $this->script .= <<<EOT
         var {$id}_likes = [{$plot}];
+        var {$id}_point = [{$month_labels}];
         
         var plot = $.plot($("#{$id}"),
                [ { data: {$id}_likes} ], {
@@ -925,7 +932,8 @@ EOT;
                         },
                         ticks:6, 
                         tickDecimals: 0, 
-                        tickColor: "#9EB37A",
+                        //tickColor: "#9EB37A",
+                        tickFormatter: function(val, axis) { return (val > 0 && val <= 12) ? {$id}_point[val - 1] : ''; }
                    },
                    yaxis: {
                         font: {

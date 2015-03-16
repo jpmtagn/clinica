@@ -206,7 +206,7 @@ class CitaController extends BaseController {
             if (!empty($item->hora_fin)) {
                 $output .= $frm->view('start_time', Lang::get(self::LANG_FILE . '.time_start'), '<i class="fa fa-clock-o"></i>&nbsp; ' . Functions::justTime($item->hora_inicio) . ' - ' . Functions::justTime($item->hora_fin));
             }
-            $output .= $frm->view('patient', Lang::get(self::LANG_FILE . '.patient'), '<i class="fa fa-wheelchair"></i>&nbsp; ' . strtoupper($patient->apellido) . ', ' . $patient->nombre);
+            $output .= $frm->view('patient', Lang::get(self::LANG_FILE . '.patient'), '<i class="fa fa-user"></i>&nbsp; ' . strtoupper($patient->apellido) . ', ' . $patient->nombre);
             $output .= $frm->view('doctor', Lang::get(self::LANG_FILE . '.doctor'), '<i class="fa fa-user-md"></i>&nbsp; ' . strtoupper($doctor->apellido) . ', ' . $doctor->nombre);
             $output .= $frm->view('record_date', Lang::get(self::LANG_FILE . '.record_date'), '<i>' . Functions::longDateFormat($item->created_at) . '</i>');
         $output .= $frm->halfPanelClose();
@@ -214,7 +214,7 @@ class CitaController extends BaseController {
         $output .= $frm->halfPanelOpen(false, 6, 'text-center');
             if (!empty($item->hora_inicio)) {
                 $remaining = Functions::remainingTime($item->hora_inicio);
-                if ($remaining->invert) {
+                if ($item->hora_inicio > date('Y-m-d H:i')) { //(!$remaining->invert) {
                     //if it is a matter of minutes, show minutes counter
                     if ($remaining->y == 0 && $remaining->m == 0 && $remaining->d == 0 && $remaining->h == 0) {
                         if ($remaining->i > 0) {
@@ -237,6 +237,27 @@ class CitaController extends BaseController {
 
 
         return $output;
+    }
+
+    public function searchByFields($date, $doctor_id, $paciente_id) {
+        $model = self::MODEL;
+        $records = new $model;
+
+        //if the date is specified
+        if (strlen($date) > 0) {
+            $records = $records::where('fecha', '=', $date);
+        }
+        //if the doctor is specified
+        if ($doctor_id > 0) {
+            $records = $records->where('doctor_id', '=', $doctor_id);
+        }
+        //if the patient is specified
+        if ($paciente_id > 0) {
+            $records = $records->where('paciente_id', '=', $paciente_id);
+        }
+        $records = $records->get();
+
+        return $records;
     }
 
     public function buscarGetAlt() {
@@ -263,23 +284,7 @@ class CitaController extends BaseController {
                 $doctor_id = (int)Input::get('buscar_doctor_id');
                 $paciente_id = (int)Input::get('buscar_paciente_id');
 
-                $model = self::MODEL;
-
-                $records = new $model;
-
-                //if the date is specified
-                if (strlen($query) > 0) {
-                    $records = $records::where('fecha', '=', $query);
-                }
-                //if the doctor is specified
-                if ($doctor_id > 0) {
-                    $records = $records->where('doctor_id', '=', $doctor_id);
-                }
-                //if the patient is specified
-                if ($paciente_id > 0) {
-                    $records = $records->where('paciente_id', '=', $paciente_id);
-                }
-                $records = $records->get();
+                $records = $this->searchByFields($query, $doctor_id, $paciente_id);
                 
                 $total = count($records);
                 $match_total = $total;
@@ -299,7 +304,7 @@ class CitaController extends BaseController {
      * @param $search_fields
      * @return string
      */
-    public function buscarReturnHtml($records, $search_fields) {
+    public function buscarReturnHtml($records, $search_fields, $showDoctor = true) {
         //return AForm::searchResults($records, 'hora_inicio', array(array(Lang::get(self::LANG_FILE . '.patient'),'nombre_paciente'), array(Lang::get(self::LANG_FILE . '.doctor'),'nombre_doctor')));
 
         $output = "";
@@ -322,12 +327,12 @@ EOT;*/
                 if (!empty($record->hora_fin)) {
                     $row .= AForm::badge(Functions::justTime($record->hora_inicio));
                 }
-                $row = '<h4><i class="fa fa-clock-o"></i> ' . $row . '</h4>';
+                $row = Functions::inactiveIf('<h4><i class="fa fa-clock-o"></i> ' . $row . '</h4>', $record->estado == Cita::DONE);
                 $id = $record->id;
                 $patient = Paciente::find($record->paciente_id);
                 $doctor = User::find($record->doctor_id)->paciente;
                 $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' .  Functions::firstNameLastName($patient->nombre, $patient->apellido);
-                $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' .  Functions::firstNameLastName($doctor->nombre, $doctor->apellido);
+                if ($showDoctor) $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' .  Functions::firstNameLastName($doctor->nombre, $doctor->apellido);
                 $output.= <<<EOT
                     <a class="list-group-item search-result" data-id="{$id}">{$row}</a>
 EOT;

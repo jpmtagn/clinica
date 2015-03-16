@@ -8,18 +8,8 @@
 
 class Functions {
 
-    public static function longDateFormat($date, $show_time=false) {
-        $date = strtotime($date);
-        if ($date === false) return "";
-        $week = array(
-            Lang::get('global.sun_l'),
-            Lang::get('global.mon_l'),
-            Lang::get('global.tue_l'),
-            Lang::get('global.wed_l'),
-            Lang::get('global.thu_l'),
-            Lang::get('global.fri_l'),
-            Lang::get('global.sat_l')
-        );
+    public static function monthName($index, $long = true) {
+      if ($long) {
         $months = array(
             Lang::get('global.jan_l'),
             Lang::get('global.feb_l'),
@@ -34,10 +24,43 @@ class Functions {
             Lang::get('global.nov_l'),
             Lang::get('global.dec_l')
         );
+      }
+      else {
+        $months = array(
+            Lang::get('global.jan_s'),
+            Lang::get('global.feb_s'),
+            Lang::get('global.mar_s'),
+            Lang::get('global.apr_s'),
+            Lang::get('global.may_s'),
+            Lang::get('global.jun_s'),
+            Lang::get('global.jul_s'),
+            Lang::get('global.aug_s'),
+            Lang::get('global.sep_s'),
+            Lang::get('global.oct_s'),
+            Lang::get('global.nov_s'),
+            Lang::get('global.dec_s')
+        );
+      }
+      return $months[$index - 1];
+    }
+
+    public static function longDateFormat($date, $show_time=false) {
+        $date = strtotime($date);
+        if ($date === false) return "";
+        $week = array(
+            Lang::get('global.sun_l'),
+            Lang::get('global.mon_l'),
+            Lang::get('global.tue_l'),
+            Lang::get('global.wed_l'),
+            Lang::get('global.thu_l'),
+            Lang::get('global.fri_l'),
+            Lang::get('global.sat_l')
+        );
+        
         return Lang::get('global.long_date', array(
             'semana' => $week[date('w', $date)],
             'dia' => date('d', $date),
-            'mes' => $months[date('n', $date)-1],
+            'mes' => Functions::monthName(date('n', $date)-1),
             'ano' => date('Y', $date)
         )) . ($show_time ? (', ' . date(' h:i a', $date)) : '');
     }
@@ -54,24 +77,11 @@ class Functions {
             Lang::get('global.fri_s'),
             Lang::get('global.sat_s')
         );
-        $months = array(
-            Lang::get('global.jan_s'),
-            Lang::get('global.feb_s'),
-            Lang::get('global.mar_s'),
-            Lang::get('global.apr_s'),
-            Lang::get('global.may_s'),
-            Lang::get('global.jun_s'),
-            Lang::get('global.jul_s'),
-            Lang::get('global.aug_s'),
-            Lang::get('global.sep_s'),
-            Lang::get('global.oct_s'),
-            Lang::get('global.nov_s'),
-            Lang::get('global.dec_s')
-        );
+        
         return Lang::get($show_week ? 'global.short_date_week' : 'global.short_date', array(
             'semana' => $week[date('w', $date)],
             'dia' => date('d', $date),
-            'mes' => $months[date('n', $date)-1],
+            'mes' => Functions::monthName(date('n', $date)-1),
             'ano' => date('Y', $date)
         )) . ($show_time ? date(' h:i a', $date) : '');
     }
@@ -145,6 +155,10 @@ class Functions {
       $now = new DateTime();
       $interval = $now->diff($date);
       return $interval->y;
+    }
+
+    public static function inactiveIf($content, $inactive) {
+      return ($inactive ? '<span class="text-muted" style="text-decoration:line-through">' : '') . $content . ($inactive ? '</span>' : '');
     }
 
     public static function wrapWithSpanIf($to_be_wrapped, $wrap, $class = '', $find_str = '', $find_wrap_open = '<b><i>', $find_wrap_close = '</i></b>') {

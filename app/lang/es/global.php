@@ -86,6 +86,7 @@ return array(
 
     'home' => 'Inicio',
     'settings' => 'Opciones',
+    'general_inf' => 'Información general y estadísticas',
 
     'modified_date_lbl' => 'actualizado el ',
 

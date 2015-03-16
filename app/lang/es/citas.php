@@ -15,6 +15,7 @@ return array(
     'goto' => 'Ir a...',
     'for_today_single' => 'Cita para hoy',
     'for_today_plural' => 'Citas para hoy',
+    'cita_details' => 'Detalles de la Cita',
 
     //states
     'realizada' => 'Realizada',
@@ -25,6 +26,8 @@ return array(
     'confirmed' => 'Confirmada',
     'cancelled' => 'Cancelada',
     'done' => 'Realizada',
+
+    'done_citas' => 'Citas atendidas',
 
     'add_note' => 'Notas',
     'edit' => 'Editar',

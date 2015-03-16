@@ -66,34 +66,60 @@ class UserController extends BaseController {
     }
 
     /**
-     * Muestra la página de inicio del usuario que inicio sesión
+     * Muestra la página de inicio para un usuario específico
      * @return mixed
      */
     public function paginaAdminInicioDoctor($doctor_id) {
-        $doctor = User::find($doctor_id);
-        //$citas = $doctor->cita();
+        if (User::canViewDoctorPage($doctor_id) || User::is(User::ROL_DOCTOR, $doctor_id)) {
+            $doctor = User::find($doctor_id);
+            //$citas = $doctor->cita();
 
-        $total_citas = $doctor->cita()->count();
-        $total_citas_today = $doctor->cita()->forToday()->count();
-        $total_citas_done = $doctor->cita()->done()->count();
-        $total_citas_cancelled = $doctor->cita()->cancelled()->count();
-        $chart_data_patient_month = DB::table('cita')
-                                    ->selectRaw('MONTH(fecha) AS "mes", COUNT(fecha) AS "total"')
-                                    ->where('estado', '=', 1)
-                                    ->where('doctor_id', '=', $doctor_id)
-                                    ->groupBy(DB::raw('YEAR(fecha), MONTH(fecha)'))
-                                    ->orderBy('fecha', 'ASC')
-                                    ->take(12)
-                                    ->get();
+            $total_citas = $doctor->cita()->count();
+            $total_citas_today = $doctor->cita()->forToday()->count();
+            $total_citas_done = $doctor->cita()->done()->count();
+            $total_citas_cancelled = $doctor->cita()->cancelled()->count();
+            $chart_data_patient_month = DB::table('cita')
+                                        ->selectRaw('MONTH(fecha) AS "mes", COUNT(fecha) AS "total"')
+                                        ->where('estado', '=', 1)
+                                        ->where('doctor_id', '=', $doctor_id)
+                                        ->groupBy(DB::raw('YEAR(fecha), MONTH(fecha)'))
+                                        ->orderBy('fecha', 'ASC')
+                                        ->take(12)
+                                        ->get();
 
-        return View::make('admin.inicio_doctor')->with(array(
-            'total_citas' => $total_citas,
-            'total_citas_today' => $total_citas_today,
-            'total_citas_done' => $total_citas_done,
-            'total_citas_cancelled' => $total_citas_cancelled,
-            'chart_data_patient_month' => $chart_data_patient_month,
-            'doctor' => $doctor->paciente
-        ));
+            return View::make('admin.inicio_doctor')->with(array(
+                'total_citas' => $total_citas,
+                'total_citas_today' => $total_citas_today,
+                'total_citas_done' => $total_citas_done,
+                'total_citas_cancelled' => $total_citas_cancelled,
+                'chart_data_patient_month' => $chart_data_patient_month,
+                'doctor' => $doctor->paciente,
+                'doctor_id' => $doctor_id
+            ));
+        }
+        return $this->mostrarDefault();
+    }
+
+    /**
+     * Muestra la página de citas del día para un usuario específico
+     * @return mixed
+     */
+    public function paginaAdminDoctorCitas($doctor_id) {
+        if (User::canViewDoctorPage($doctor_id) || User::is(User::ROL_DOCTOR, $doctor_id)) {
+            $doctor = User::find($doctor_id);
+            
+            $citas = $doctor->cita()->forToday()->orderBy('hora_inicio')->get();
+
+            //uses the cita controller to use the buscar return template
+            $controller = new CitaController();
+            $citas = $controller->buscarReturnHtml($citas, array(), false);
+
+            return View::make('admin.citas_doctor')->with(array(
+                'doctor' => $doctor->paciente,
+                'citas' => $citas
+            ));
+        }
+        return $this->mostrarDefault();
     }
 
     /**
@@ -112,7 +138,7 @@ class UserController extends BaseController {
                 )
             );
         }
-        return View::make('admin.inicio');
+        return $this->mostrarDefault();//View::make('admin.inicio');
     }
 
     /**
@@ -127,7 +153,7 @@ class UserController extends BaseController {
                 )
             );
         }
-        return View::make('admin.inicio');
+        return $this->mostrarDefault();//View::make('admin.inicio');
     }
 
     /**

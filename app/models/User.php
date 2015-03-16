@@ -12,6 +12,10 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
      */
     protected $table = 'usuario';
 
+    const ROL_DOCTOR = 1;
+    const ROL_RECEPCIONIST = 2;
+    const ROL_PATIENT = 3;
+
 
     protected $fillable = array(
         'correo',
@@ -184,7 +188,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     *
     * @return boolean
     */
-    public static function is($role) {
+    public static function is($role, $with_id = null) {
+        $user = Auth::user();
+        if ($with_id !== null && $user->id != $with_id) return false;
         if (!is_array($role)) {
             $roles = array();
             $roles[] = $role;
@@ -193,13 +199,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
             $roles = $role;
         }
 
-        $user_roles = Auth::user()->roles->lists('nombre');
+        $user_roles = $user->roles->lists('nombre');
         return in_array($role, $user_roles);
     }
 
 
     /**
-    * Returns avatar name if the use has one
+    * Returns avatar name if the user has one
     *
     * @return mixed
     */
@@ -222,6 +228,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function canChangeDisponibilidadState($user_id) {
         $user = Auth::user();
         return ($user->admin || $user->id == $user_id);
+    }
+
+    public static function canViewDoctorPage($user_id) {
+        $user = Auth::user();
+        return ($user->admin || $user->id == $user_id || User::is(User::ROL_RECEPCIONIST));
     }
 
 }

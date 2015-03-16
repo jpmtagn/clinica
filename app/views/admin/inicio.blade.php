@@ -13,7 +13,7 @@
             <div class="clearfix">
                 <h3 class="content-title pull-left">Inicio</h3>
             </div>
-            <div class="description">Información general y estadísticas</div>
+            <div class="description">{{ Lang::get('global.general_inf') }}</div>
         </div>
     </div>
 </div>
