@@ -10,6 +10,7 @@ return array(
     'doctor' => 'Terapeuta',
     'patient' => 'Paciente',
     'service' => 'Tratamiento',
+    'office' => 'Cabina',
     'record_date' => 'Fecha de registro',
     'record_date_alt' => 'Registrado el',
     'goto' => 'Ir a...',

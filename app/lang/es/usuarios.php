@@ -27,6 +27,9 @@ return array(
     'secretaria' => 'Secretaria',
 
     'view_doctor' => 'Ver terapeutas',
+    'view_disponibility' => 'Ver y editar horario del terapeuta',
+    'view_citas_print' => 'Versión de impresión',
+    'disponibility' => 'Disponibilidad',
 
     //messages
     'wrong_current_password' => 'La contraseña actual ingresada no es correcta.',

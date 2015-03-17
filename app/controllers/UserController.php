@@ -116,7 +116,34 @@ class UserController extends BaseController {
 
             return View::make('admin.citas_doctor')->with(array(
                 'doctor' => $doctor->paciente,
-                'citas' => $citas
+                'citas' => $citas,
+                'doctor_id' => $doctor_id
+            ));
+        }
+        return $this->mostrarDefault();
+    }
+
+    /**
+     * Muestra la página de citas del día en versión de impresión para un usuario específico
+     * @return mixed
+     */
+    public function paginaAdminDoctorCitasPrint($doctor_id) {
+        if (User::canViewDoctorPage($doctor_id) || User::is(User::ROL_DOCTOR, $doctor_id)) {
+            $doctor = User::find($doctor_id);
+            
+            $citas = $doctor->cita()->forToday()->orderBy('hora_inicio')->get();
+
+            //uses the cita controller to use the buscar return template
+            $controller = new CitaController();
+            $citas = $controller->buscarReturnHtmlPrint($citas, false, false);
+
+            $doctor = $doctor->paciente;
+
+            return View::make('admin.citas_doctor_print')->with(array(
+                'doctor_name' => Functions::firstNameLastName($doctor->nombre, $doctor->apellido),
+                'citas' => $citas,
+                'date' => Functions::longDateFormat(time(), true, false),
+                'doctor_id' => $doctor_id
             ));
         }
         return $this->mostrarDefault();

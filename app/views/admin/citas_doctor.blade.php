@@ -10,7 +10,7 @@
             width: 900px;
         }
 
-        div.btn-group {
+        #modal_cita_info div.btn-group {
             display: none;
         }
     </style>
@@ -22,10 +22,39 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-header">
-            <div class="clearfix">
-                <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
+            <!-- BREADCRUMBS -->
+            <ul class="breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="{{ URL::route('admin_inicio') }}">{{ Lang::get('global.home') }}</a>
+                </li>
+                <li>
+                    <a href="{{ URL::route('inicio_doctor', array('doctor_id' => $doctor_id)) }}">{{ Lang::get('global.general_inf') }}</a>
+                </li>
+                <li>
+                    {{ Lang::get('citas.for_today_plural') }}
+                </li>
+            </ul>
+            <!-- /BREADCRUMBS -->
+            <div class="row">
+                <div class="col-md-2">
+                    <figure class="avatar">
+                        @if (false)
+                            @if (!empty($doctor->avatar))
+                            <img src="{{ URL::asset('img/avatars/s/' . $doctor->avatar) }}" alt="">
+                            @else
+                            <img src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
+                            @endif
+                        @endif
+                    </figure>
+                </div>
+                <div class="col-md-10">
+                    <div class="clearfix">
+                        <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
+                    </div>
+                    <div class="description">{{ Lang::get('citas.for_today_plural') }}</div>
+                </div>
             </div>
-            <div class="description">{{ Lang::get('citas.for_today_plural') }}</div>
         </div>
     </div>
 </div>
@@ -36,12 +65,23 @@
         {{ $citas }}
     </div>
 </div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group btn-group-lg" role="group">
+            <a class="btn btn-default" href="{{ URL::route('doctor_citas_impresion', array('doctor_id' => $doctor_id)) }}">
+                <i class="fa fa-print"></i>&nbsp;
+                {{ Lang::get('usuarios.view_citas_print') }}
+            </a>
+        </div>
+    </div>
+</div>
 
 {{ $frm->modalOpen('modal_cita_info', Lang::get('citas.cita_details')) }}
     <form class="form-horizontal">
         <div id="cita_details"></div>
     </form>
-{{ $frm->modalClose() }}
+{{ $frm->modalClose(null, null, false) }}
 <form id="frm_get_info" action="{{ URL::route('admin_citas_info_get') }}" method="get">
     <input type="hidden" name="id" value="0">
 </form>

@@ -903,7 +903,7 @@ EOT;
         var {$id}_likes = [{$plot}];
         var {$id}_point = [{$month_labels}];
         
-        var plot = $.plot($("#{$id}"),
+        var {$id}_plot = $.plot($("#{$id}"),
                [ { data: {$id}_likes} ], {
                    series: {
                        label: "{$tooltip_text}",
@@ -1008,11 +1008,12 @@ EOT;
                 </div-->
             </div>
             <div class="box-body">
-                <div id="{$id}" style="height:240px"></div>
+                <div id="{$id}" style="height:240px;"></div>
             </div>
         </div>
 EOT;
     }
+
 
     public function script($jquery = false) {
         if (!$jquery) {
@@ -1120,8 +1121,8 @@ EOT;
     }
 
     public function modalClose($ok = null, $close = null, $footer = true, $before_footer_html = null) {
-        if ($ok == null) $ok = Lang::get('global.ok');
-        if ($close == null) $close = Lang::get('global.close');
+        if ($ok === null) $ok = Lang::get('global.ok');
+        if ($close === null) $close = Lang::get('global.close');
         $output = '';
         if ($footer) {
             if ($before_footer_html == null) {

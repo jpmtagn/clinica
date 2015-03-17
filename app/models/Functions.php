@@ -44,8 +44,10 @@ class Functions {
       return $months[$index - 1];
     }
 
-    public static function longDateFormat($date, $show_time=false) {
-        $date = strtotime($date);
+    public static function longDateFormat($date, $show_time=false, $convert_to_time=true) {
+        if ($convert_to_time) {
+          $date = strtotime($date);
+        }
         if ($date === false) return "";
         $week = array(
             Lang::get('global.sun_l'),

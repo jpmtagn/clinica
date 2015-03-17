@@ -199,6 +199,7 @@ class CitaController extends BaseController {
 
         $doctor = $item->doctor->paciente;
         $patient = $item->paciente;
+        $office = $item->consultorio;
 
         //left panel
         $output .= $frm->halfPanelOpen(true);
@@ -208,6 +209,7 @@ class CitaController extends BaseController {
             }
             $output .= $frm->view('patient', Lang::get(self::LANG_FILE . '.patient'), '<i class="fa fa-user"></i>&nbsp; ' . strtoupper($patient->apellido) . ', ' . $patient->nombre);
             $output .= $frm->view('doctor', Lang::get(self::LANG_FILE . '.doctor'), '<i class="fa fa-user-md"></i>&nbsp; ' . strtoupper($doctor->apellido) . ', ' . $doctor->nombre);
+            $output .= $frm->view('office', Lang::get(self::LANG_FILE . '.office'), '<i class="fa fa-cube"></i>&nbsp; ' . $office->nombre . ' (' . $office->area->nombre . ')');
             $output .= $frm->view('record_date', Lang::get(self::LANG_FILE . '.record_date'), '<i>' . Functions::longDateFormat($item->created_at) . '</i>');
         $output .= $frm->halfPanelClose();
         //right panel
@@ -304,7 +306,7 @@ class CitaController extends BaseController {
      * @param $search_fields
      * @return string
      */
-    public function buscarReturnHtml($records, $search_fields, $showDoctor = true) {
+    public function buscarReturnHtml($records, $search_fields, $show_doctor = true, $show_service = false, $show_office = false) {
         //return AForm::searchResults($records, 'hora_inicio', array(array(Lang::get(self::LANG_FILE . '.patient'),'nombre_paciente'), array(Lang::get(self::LANG_FILE . '.doctor'),'nombre_doctor')));
 
         $output = "";
@@ -316,7 +318,7 @@ class CitaController extends BaseController {
                     $row .= AForm::badge(Functions::justTime($record->hora_inicio));
                 }
                 $row = '<h4><i class="fa fa-clock-o"></i> ' . $row . '</h4>';
-                $id = $record->id;
+                //$id = $record->id;
                 $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' .  Functions::firstNameLastName($record->nombre_paciente, $record->apellido_paciente);
                 $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' .  Functions::firstNameLastName($record->nombre_doctor, $record->apellido_doctor);
                 $output.= <<<EOT
@@ -327,15 +329,84 @@ EOT;*/
                 if (!empty($record->hora_fin)) {
                     $row .= AForm::badge(Functions::justTime($record->hora_inicio));
                 }
+                //  date & time
                 $row = Functions::inactiveIf('<h4><i class="fa fa-clock-o"></i> ' . $row . '</h4>', $record->estado == Cita::DONE);
-                $id = $record->id;
-                $patient = Paciente::find($record->paciente_id);
-                $doctor = User::find($record->doctor_id)->paciente;
-                $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' .  Functions::firstNameLastName($patient->nombre, $patient->apellido);
-                if ($showDoctor) $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' .  Functions::firstNameLastName($doctor->nombre, $doctor->apellido);
+                
+                //  patient
+                $patient = $record->paciente;//Paciente::find($record->paciente_id);
+                $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' . Functions::firstNameLastName($patient->nombre, $patient->apellido);
+                
+                //  doctor
+                if ($show_doctor) {
+                    $doctor = User::find($record->doctor_id)->paciente;
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' . Functions::firstNameLastName($doctor->nombre, $doctor->apellido);
+                }
+
+                //  treatment
+                if ($show_service) {
+                    $service = $record->servicio;//Servicio::find($record->paciente_id);
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.service') . '</b>: ' . $service->nombre;
+                }
+
+                //  location
+                if ($show_office) {
+                    $office = $record->consultorio;
+                    $area = $office->area->nombre;
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.office') . '</b>: ' . $office->nombre . ' &nbsp; (' . $area . ')';
+                }
+
                 $output.= <<<EOT
-                    <a class="list-group-item search-result" data-id="{$id}">{$row}</a>
+                    <a class="list-group-item search-result" data-id="{$record->id}">{$row}</a>
 EOT;
+            }
+        }
+
+        return $output;
+    }
+
+
+    public function buscarReturnHtmlPrint($records, $show_date = true, $show_doctor = true, $show_service = true, $show_office = true) {
+        $output = "";
+        if (count($records)) {
+            foreach ($records as $record) {
+                //date & time
+                if ($show_date) {
+                    $row = Functions::longDateFormat($record->fecha);
+                    if (!empty($record->hora_fin)) {
+                        $row .= '&nbsp;&nbsp;(' . Functions::justTime($record->hora_inicio) . ')';
+                    }
+                }
+                else {
+                    if (!empty($record->hora_fin)) {
+                        $row = Functions::justTime($record->hora_inicio);
+                    }
+                }
+                $row = '<h4>' . $row . '</h4>';
+
+                //  patient
+                $patient = $record->paciente;//Paciente::find($record->paciente_id);
+                $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' . Functions::firstNameLastName($patient->nombre, $patient->apellido);
+                
+                //  doctor
+                if ($show_doctor) {
+                    $doctor = User::find($record->doctor_id)->paciente;
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.doctor') . '</b>: ' . Functions::firstNameLastName($doctor->nombre, $doctor->apellido);
+                }
+
+                //  treatment
+                if ($show_service) {
+                    $service = $record->servicio;//Servicio::find($record->paciente_id);
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.service') . '</b>: ' . $service->nombre;
+                }
+
+                //  location
+                if ($show_office) {
+                    $office = $record->consultorio;
+                    $area = $office->area->nombre;
+                    $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.office') . '</b>: ' . $office->nombre . ' &nbsp; (' . $area . ')';
+                }
+
+                $output.= '<br>' . $row;
             }
         }
 

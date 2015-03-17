@@ -9069,6 +9069,13 @@ img.avatar-thumb {
     border-radius: 50%;
 }
 
+figure.avatar img {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    margin: 10px 0;
+}
+
 a.fc-event {
     opacity: 1;
     transition: 1s opacity, .5s left, .5s margin-right;

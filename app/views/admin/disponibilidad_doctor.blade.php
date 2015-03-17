@@ -25,7 +25,6 @@ Panel de Administración
 
 @section('contenido')
 <?php $frm = new AForm; ?>
-<?php if (false) : ?>
 <!-- PAGE HEADER-->
 <div class="row">
     <div class="col-sm-12">
@@ -36,19 +35,31 @@ Panel de Administración
                     <i class="fa fa-home"></i>
                     <a href="{{ URL::route('admin_inicio') }}">{{ Lang::get('global.home') }}</a>
                 </li>
-                <li>Disponibilidad</li>
+                <li>
+                    <a href="{{ URL::route('inicio_doctor', array('doctor_id' => $doctor_id)) }}">{{ Lang::get('global.general_inf') }}</a>
+                </li>
+                <li>
+                    {{ Lang::get('usuarios.disponibility') }}
+                </li>
             </ul>
             <!-- /BREADCRUMBS -->
-            <!-- HEAD -->
-            {{-- $frm->header('Calendario', null, 'fa-calendar') --}}
-            <!-- /HEAD -->
+            <div class="row">
+                <div class="col-md-2">
+                    <figure class="avatar">
+
+                    </figure>
+                </div>
+                <div class="col-md-10">
+                    <div class="clearfix">
+                        <h3 class="content-title pull-left">{{ $doctor_nombre }}</h3>
+                    </div>
+                    <div class="description">{{ Lang::get('usuarios.disponibility') }}</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <!-- /PAGE HEADER -->
-<?php else : ?>
-<br>
-<?php endif; ?>
 
 <!-- MAIN CONTENT -->
 <div class="row">

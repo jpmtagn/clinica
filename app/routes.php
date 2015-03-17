@@ -146,6 +146,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'UserController@paginaAdminDoctorCitas'
     ));
 
+    Route::get('admin/doctor/{doctor_id}/citas_impresion', array(
+        'as' => 'doctor_citas_impresion',
+        'uses' => 'UserController@paginaAdminDoctorCitasPrint'
+    ));
+
     Route::get('admin/opciones', array(
         'as' => 'admin_config',
         'uses' => 'OpcionController@paginaAdminOpciones'

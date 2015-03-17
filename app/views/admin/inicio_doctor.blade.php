@@ -10,10 +10,32 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="page-header">
-            <div class="clearfix">
-                <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
+            <!-- BREADCRUMBS -->
+            <ul class="breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="{{ URL::route('admin_inicio') }}">{{ Lang::get('global.home') }}</a>
+                </li>
+                <li>{{ Lang::get('global.general_inf') }}</li>
+            </ul>
+            <!-- /BREADCRUMBS -->
+            <div class="row">
+                <div class="col-md-2">
+                    <figure class="avatar">
+                        @if (!empty($doctor->avatar))
+                        <img src="{{ URL::asset('img/avatars/s/' . $doctor->avatar) }}" alt="">
+                        @else
+                        <img src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
+                        @endif
+                    </figure>
+                </div>
+                <div class="col-md-10">
+                    <div class="clearfix">
+                        <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
+                    </div>
+                    <div class="description">{{ Lang::get('global.general_inf') }}</div>
+                </div>
             </div>
-            <div class="description">{{ Lang::get('global.general_inf') }}</div>
         </div>
     </div>
 </div>
@@ -28,7 +50,7 @@
              {{ $frm->infoCountBox('fa-users', $total_citas, Lang::get('citas.done_citas'), URL::route('admin_calendario')) }}
           </div>
           <div class="col-lg-6">
-             {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), URL::route('doctor_citas', array('doctor_id' => $doctor_id) )) }}
+             {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), $total_citas_today > 0 ? URL::route('doctor_citas', array('doctor_id' => $doctor_id)) : 'javascript:;') }}
           </div>
         </div>
         <div class="row">
@@ -53,6 +75,16 @@
         {{ $frm->lineChart(Lang::get('pacientes.per_month'), 'fa-users', $chart_data_patient_month, 'mes', 'total', Lang::get('pacientes.title_plural')) }}
     </div>
     <!-- /COLUMN 2 -->
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group btn-group-lg" role="group">
+            <a class="btn btn-default" href="{{ URL::route('disponibilidad_doctor', array('doctor_id' => $doctor_id)) }}">
+                <i class="fa fa-calendar"></i>&nbsp;
+                {{ Lang::get('usuarios.view_disponibility') }}
+            </a>
+        </div>
+    </div>
 </div>
 <!-- /DASHBOARD CONTENT -->
 @stop
