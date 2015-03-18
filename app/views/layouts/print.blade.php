@@ -11,11 +11,19 @@
     <link href="{{ URL::asset('img/favicon/favicon-48.png') }}" rel="apple-touch-icon" />
     <link href="{{ URL::asset('img/favicon/favicon-120.png') }}" rel="apple-touch-icon" sizes="120x120" />
     <link href="{{ URL::asset('img/favicon/favicon-152.png') }}" rel="apple-touch-icon" sizes="152x152" />
+    {{ HTML::style('css/admin.css') }}
+    <style type="text/css">
+        body {
+            background-color: #fff;
+        }
+    </style>
     @yield('cabecera')
 </head>
 <body>
     @yield('contenido')
     
-    @yield('script')
+    <!-- JQUERY -->
+    {{ HTML::script('js/jquery/jquery-2.0.3.min.js') }}
+    @yield('scripts')
 </body>
 </html>

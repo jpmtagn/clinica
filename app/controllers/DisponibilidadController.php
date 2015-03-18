@@ -24,6 +24,15 @@ class DisponibilidadController extends BaseController {
      * @return mixed
      */
     public function paginaAdminDisponibilidad($doctor_id) {
+        if (User::canChangeDisponibilidadState($doctor_id)) {
+
+        }
+        elseif (User::is(User::ROL_DOCTOR)) {
+            $doctor_id = Auth::user()->id;
+        }
+        else {
+            $doctor_id = 0;
+        }
         $doctor = User::find($doctor_id);
         if ($doctor) {
             $doctor = $doctor->paciente;

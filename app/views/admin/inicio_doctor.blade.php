@@ -46,10 +46,10 @@
     <!-- COLUMN 1 -->
     <div class="col-md-5">
         <div class="row">
-          <div class="col-lg-6">
+          <div class="col-lg-6 col-md-6">
              {{ $frm->infoCountBox('fa-users', $total_citas, Lang::get('citas.done_citas'), URL::route('admin_calendario')) }}
           </div>
-          <div class="col-lg-6">
+          <div class="col-lg-6 col-md-6">
              {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), $total_citas_today > 0 ? URL::route('doctor_citas', array('doctor_id' => $doctor_id)) : 'javascript:;') }}
           </div>
         </div>
@@ -57,10 +57,10 @@
             <div class="col-md-12">
                 <div class="quick-pie panel panel-default">
                     <div class="panel-body">
-                        <div class="col-md-6 text-center">
+                        <div class="col-md-6 col-sm-6 text-center">
                             {{ $frm->pieChart(Lang::get('citas.done'), $total_citas_done, $total_citas, '#9EB37A') }}
                         </div>
-                        <div class="col-md-6 text-center">
+                        <div class="col-md-6 col-sm-6 text-center">
                             {{ $frm->pieChart(Lang::get('citas.cancelled'), $total_citas_cancelled, $total_citas, '#CA5452') }}
                         </div>
                     </div>

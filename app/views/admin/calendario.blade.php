@@ -45,7 +45,10 @@ Panel de Administración
 @stop
 
 @section('contenido')
-<?php $frm = new AForm; ?>
+<?php
+    $user = Auth::user();
+    $frm = new AForm;
+?>
 <?php if (false) : ?>
 <!-- PAGE HEADER-->
 <div class="row">
@@ -79,6 +82,7 @@ Panel de Administración
         {{-- $frm->panelOpen('calendar', Lang::get('citas.calendar'), 'fa-calendar', '', array('collapse')) --}}
         <div class="row">
             <div class="col-md-2">
+                @if (User::canViewAllCitas())
                 <div class="input-group">
                      <input type="text" value="" class="form-control" placeholder="{{ Lang::get('global.insert_search') }}" id="search_event_query" />
                      <span class="input-group-btn">
@@ -105,6 +109,7 @@ Panel de Administración
                         </div>
                     {{ $frm->accordionItemClose() }}
                 {{ $frm->accordionClose() }}
+                @endif
 
                 {{ $frm->accordionOpen('filter_office_accordion') }}
                     {{ $frm->accordionItemOpen(Lang::get('consultorio.title_single')) }}
@@ -239,7 +244,7 @@ Panel de Administración
         <span class="sr-only">Error:</span>
         <span class="msg"></span>
 EOT;
-    if (Auth::user()->admin) {
+    if ($user->admin) {
         $lbl_ignore = Lang::get('citas.ignore_warning');
         $lbl_ignore_all = Lang::get('citas.ignore_all_warnings');
         $custom_footer .= <<<EOT
@@ -330,15 +335,15 @@ EOT;
 {{ $frm->modalOpen('actions_modal', Lang::get('citas.actions')) }}
     <div class="btn-toolbar" role="toolbar">
         <div id="states" class="btn-group btn-group-lg" role="group">
-            <button id="state{{ Cita::CONFIRMED }}" type="button" class="btn btn-default" attr-state_id="{{ Cita::CONFIRMED }}" attr-type="primary">
+            <button id="state{{ Cita::CONFIRMED }}" type="button" class="btn btn-default{{ !User::canConfirmOrCancelCita($user) ? ' disabled' : '' }}" attr-state_id="{{ Cita::CONFIRMED }}" attr-type="primary">
                 <i class="fa fa-4x fa-check-circle-o"></i>
                 <span>{{ Lang::get('citas.confirmed') }}</span>
             </button>
-            <button id="state{{ Cita::CANCELLED }}" type="button" class="btn btn-default" attr-state_id="{{ Cita::CANCELLED }}" attr-type="danger">
+            <button id="state{{ Cita::CANCELLED }}" type="button" class="btn btn-default{{ !User::canConfirmOrCancelCita($user) ? ' disabled' : '' }}" attr-state_id="{{ Cita::CANCELLED }}" attr-type="danger">
                 <i class="fa fa-4x fa-user-times"></i>
                 <span>{{ Lang::get('citas.cancelled') }}</span>
             </button>
-            <button id="state{{ Cita::DONE }}" type="button" class="btn btn-default" attr-state_id="{{ Cita::DONE }}" attr-type="success">
+            <button id="state{{ Cita::DONE }}" type="button" class="btn btn-default{{ !User::canChangeCitaStateToDone($user) ? ' disabled' : '' }}" attr-state_id="{{ Cita::DONE }}" attr-type="success">
                 <i class="fa fa-4x fa-check"></i>
                 <span>{{ Lang::get('citas.done') }}</span>
             </button>
@@ -348,10 +353,12 @@ EOT;
                 <i class="fa fa-4x fa-comment"></i>
                 <span>{{ Lang::get('citas.add_note') }}</span>
             </button>
+            @if (User::canAddCitas($user))
             <button id="edit_cita" type="button" class="btn btn-default">
                 <i class="fa fa-4x fa-pencil"></i>
                 <span>{{ Lang::get('citas.edit') }}</span>
             </button>
+            @endif
         </div>
     </div>
     <form id="frm_action" class="form-horizontal hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('cita_actions_post') }}">
@@ -866,13 +873,13 @@ EOT;
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay'
             },
-            selectable: true,
+            selectable: {{ !$read_only ? 'true' : 'false' }},
+            selectHelper: {{ !$read_only ? 'true' : 'false' }},
             selectConstraint: {
                 start: '00:00',
                 end: '23:59',
                 dow: [ {{ $options['days_to_show_str'] }} ]
             },
-            selectHelper: true,
             eventStartEditable: false,
             eventDurationEditable: false,
             firstDay: 1,
@@ -892,6 +899,7 @@ EOT;
             minTime: '{{ $options['min_time'] }}',
             maxTime: '{{ $options['max_time'] }}',
             events: '{{ URL::route('calendar_source') }}',
+            @if (!$read_only)
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {
                     fn_new_event(start, end, allDay);
@@ -902,6 +910,7 @@ EOT;
                     fn_drop_event(event);
                 }
             },
+            @endif
             eventRender: function( event, element, view ) {
                 if (typeof fn_render_event == 'function') {
                     fn_render_event(event);
@@ -912,7 +921,7 @@ EOT;
                     fn_render_all_events(view);
                 }
             },
-            editable: true,
+            editable: {{ $read_only ? 'false' : 'true' }},
             droppable: false/*, // this allows things to be dropped onto the calendar !!!
             drop: function(date, allDay) { // this function is called when something is dropped
 
@@ -1139,7 +1148,6 @@ EOT;
 
         $('a.doctor-letter-index').click(function(e) {
             var letter = $(this).html();
-            console.log('you want to load doctors with the letter ' + letter);
 
             $.ajax({
                 type: 'GET',

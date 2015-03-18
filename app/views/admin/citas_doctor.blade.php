@@ -69,7 +69,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-lg" role="group">
-            <a class="btn btn-default" href="{{ URL::route('doctor_citas_impresion', array('doctor_id' => $doctor_id)) }}">
+            <a class="btn btn-default" href="{{ URL::route('doctor_citas_impresion', array('doctor_id' => $doctor_id)) }}" target="_blank">
                 <i class="fa fa-print"></i>&nbsp;
                 {{ Lang::get('usuarios.view_citas_print') }}
             </a>

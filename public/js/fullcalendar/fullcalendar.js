@@ -5326,14 +5326,17 @@ var TimeGrid = Grid.extend({
 		var slotDate; // will be on the view's first day, but we only care about its time
 		var minutes;
 		var axisHtml;
+		var time_id;
 
 		// Calculate the time for each slot
 		while (slotTime < this.maxTime) {
 			slotDate = this.start.clone().time(slotTime); // will be in UTC but that's good. to avoid DST issues
 			minutes = slotDate.minutes();
 
+			time_id = minutes == 0 ? (' id="hour_' + slotDate.hours() + '"') : '';
+
 			axisHtml =
-				'<td class="fc-axis fc-time ' + view.widgetContentClass + '" ' + view.axisStyleAttr() + '>' +
+				'<td' + time_id + ' class="fc-axis fc-time ' + view.widgetContentClass + '" ' + view.axisStyleAttr() + '>' +
 					((!slotNormal || !minutes) ? // if irregular slot duration, or on the hour, then display the time
 						'<span>' + // for matchCellWidths
 							htmlEscape(slotDate.format(this.axisFormat)) +
@@ -7000,6 +7003,9 @@ function Calendar(element, instanceOptions) {
 	t.trigger = trigger;
 	t.isValidViewType = isValidViewType;
 	t.getViewButtonText = getViewButtonText;
+	
+	t.scrollTo = scrollTo;
+	t.showCurrentTime = showCurrentTime;
 
 
 
@@ -7496,6 +7502,57 @@ function Calendar(element, instanceOptions) {
 	function refetchEvents() { // can be called as an API method
 		destroyEvents(); // so that events are cleared before user starts waiting for AJAX
 		fetchAndRenderEvents();
+	}
+
+
+	function showCurrentTime() {
+		var d = new Date();
+        var c_time = (d.getHours() * 60) + d.getMinutes();
+        console.log('#7511: CURRENT TIME IN MINUTES: ' + c_time);
+        var max = $('.fc-axis').eq(0).height();
+        //$("#ctime").css("top", ((c_time*max)/(24*60))+"px");
+        //$('#ctime').animate({'top': ((c_time*max)/(24*60))+'px'}, 'slow', 'easeOutExpo');
+    }
+
+
+	function scrollTo(hour, $cal) {
+		console.log('you trying to go to...' + hour);
+		var $target = $cal.find('#hour_' + hour);
+		if ($target.length) {
+
+			var $scroller = $cal.find('.fc-scroller').eq(0);
+
+			var scroll_top = $scroller.scrollTop(); //distance from the first showing hour and the calendar's first hour
+			var scroll_offset = $scroller.offset().top; //constant top of calendar from document
+
+			var target_top = $target.offset().top; //target top from document (up = less | down = more)
+
+			//var first_time = $scroller.find('.fc-axis.fc-time').eq(0);
+
+			//TODO: ...
+
+		}
+
+		console.log($scroller.offset().top);
+		/*var _this = this;
+		var scrollTime = moment.duration(hour);
+		var tg = new timeGrid(this);
+		var top = tg.computeTimeTop(scrollTime);
+		console.log(top);
+
+		// zoom can give weird floating-point values. rather scroll a little bit further
+		top = Math.ceil(top);
+
+		if (top) {
+			top++; // to overcome top border that slots beyond the first have. looks better
+		}
+
+		function scroll() {
+			_this.scrollerEl.scrollTop(top);
+		}
+
+		scroll();
+		setTimeout(scroll, 0); // overrides any previous scroll state made by the browser*/
 	}
 
 

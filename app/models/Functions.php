@@ -9,6 +9,7 @@
 class Functions {
 
     public static function monthName($index, $long = true) {
+      if ($index <= 0) return '';
       if ($long) {
         $months = array(
             Lang::get('global.jan_l'),
@@ -62,7 +63,7 @@ class Functions {
         return Lang::get('global.long_date', array(
             'semana' => $week[date('w', $date)],
             'dia' => date('d', $date),
-            'mes' => Functions::monthName(date('n', $date)-1),
+            'mes' => Functions::monthName(date('n', $date)),
             'ano' => date('Y', $date)
         )) . ($show_time ? (', ' . date(' h:i a', $date)) : '');
     }
@@ -83,7 +84,7 @@ class Functions {
         return Lang::get($show_week ? 'global.short_date_week' : 'global.short_date', array(
             'semana' => $week[date('w', $date)],
             'dia' => date('d', $date),
-            'mes' => Functions::monthName(date('n', $date)-1),
+            'mes' => Functions::monthName(date('n', $date)),
             'ano' => date('Y', $date)
         )) . ($show_time ? date(' h:i a', $date) : '');
     }

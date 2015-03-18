@@ -42,6 +42,10 @@ class UserController extends BaseController {
      * @return mixed
      */
     public function paginaAdminInicio() {
+        $user = Auth::user();
+        if (!$user->admin && User::is(User::ROL_DOCTOR)) {
+            return $this->paginaAdminInicioDoctor($user->id);
+        }
         $total_patients = Paciente::count();
         $total_citas = Cita::count();
         $total_citas_today = Cita::forToday()->count();

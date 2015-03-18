@@ -194,12 +194,19 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         if (!is_array($role)) {
             $roles = array();
             $roles[] = $role;
+            $is_num = is_int($role);
         }
         else {
             $roles = $role;
+            $is_num = is_int(reset($role));
         }
 
-        $user_roles = $user->roles->lists('nombre');
+        if ($is_num) {
+            $user_roles = $user->roles->lists('id');
+        }
+        else {
+            $user_roles = $user->roles->lists('nombre');
+        }
         return in_array($role, $user_roles);
     }
 
@@ -233,6 +240,67 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function canViewDoctorPage($user_id) {
         $user = Auth::user();
         return ($user->admin || $user->id == $user_id || User::is(User::ROL_RECEPCIONIST));
+    }
+
+    public static function canAddCitas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return ($user->admin || User::is(User::ROL_RECEPCIONIST));
+    }
+
+    public static function canViewAllCitas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return ($user->admin || User::is(User::ROL_RECEPCIONIST));
+    }
+
+    public static function canConfirmOrCancelCita($user = null) {
+        if ($user === null) $user = Auth::user();
+        return ($user->admin || User::is(User::ROL_RECEPCIONIST));
+    }
+
+    public static function canChangeCitaStateToDone($user = null) {
+        if ($user === null) $user = Auth::user();
+        return ($user->admin || User::is(array(User::ROL_RECEPCIONIST, User::ROL_DOCTOR)));
+    }
+
+    //menu
+    public static function showMenu($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminPersonas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminUsuarios($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminCitas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminLugares($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminTratamientos($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminEquipos($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canAdminOpciones($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
     }
 
 }

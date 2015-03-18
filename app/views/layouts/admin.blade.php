@@ -13,12 +13,13 @@
         return '';
     }
 
-    $username = Auth::user()->paciente;
+    $user = Auth::user();
+    $username = $user->paciente;
     if ($username) {
     	$username = Functions::firstNameLastName($username->nombre, $username->apellido);
     }
     else {
-    	$username = explode(chr(64), Auth::user()->correo);
+    	$username = explode(chr(64), $user->correo);
     	$username = $username[0];
     }
 ?>
@@ -72,10 +73,11 @@
 			<!-- TEAM STATUS FOR MOBILE -->
 			<div class="visible-xs">
 				<a href="#" class="team-status-toggle switcher btn dropdown-toggle">
-				<i class="fa fa-users"></i>
+				<i class="fa fa-user-md"></i>
 				</a>
 			</div>
 			<!-- /TEAM STATUS FOR MOBILE -->
+            @if (User::showMenu($user))
 			<!-- SIDEBAR COLLAPSE -->
 			<div id="sidebar-collapse" class="sidebar-collapse btn">
 				<i class="fa fa-bars"
@@ -83,6 +85,7 @@
 					data-icon2="fa fa-bars" ></i>
 			</div>
 			<!-- /SIDEBAR COLLAPSE -->
+            @endif
 		</div>
 		<!-- NAVBAR LEFT -->
 		<ul class="nav navbar-nav pull-left hidden-xs" id="navbar-left">
@@ -149,6 +152,7 @@
 <!--/HEADER -->
 <!-- PAGE -->
 <section id="page">
+    @if (User::showMenu($user))
 	<!-- SIDEBAR -->
 	<div id="sidebar" class="sidebar">
 		<div class="sidebar-menu nav-collapse">
@@ -175,6 +179,7 @@
                     </ul>
                 </li>
                 <?php endif; ?>
+                @if (User::canAdminPersonas($user))
 				<!-- personas (no parentescos) -->
 				<li{{ activeClassIf('pacientes', $active_menu) }}>
                     <a href="{{ URL::route('admin_pacientes') }}">
@@ -182,16 +187,20 @@
                         <span class="menu-text">Personas</span>
                     </a>
                 </li>
+                @endif
 
-				<!-- usuarios -->
+				@if (User::canAdminUsuarios($user))
+                <!-- usuarios -->
 				<li{{ activeClassIf('usuarios', $active_menu) }}>
                     <a href="{{ URL::route('admin_usuarios') }}">
                         <i class="fa fa-fw fa-key"></i>
                         <span class="menu-text">Usuarios</span>
                     </a>
                 </li>
+                @endif
 
-				<!-- citas -->
+				@if (User::canAdminCitas($user))
+                <!-- citas -->
 				<li class="has-sub{{ activeClassIf('citas', $active_menu, false) }}">
                     <a href="javascript:;">
                         <i class="fa fa-fw fa-calendar-o"></i>
@@ -203,8 +212,10 @@
                         <li><a href="{{ URL::route('admin_calendario') }}"><span class="sub-menu-text">Calendario</span></a></li>
                     </ul>
                 </li>
+                @endif
 
-				<!-- areas / consultorios -->
+				@if (User::canAdminLugares($user))
+                <!-- areas / consultorios -->
 				<li class="has-sub{{ activeClassIf('area', $active_menu, false) }}">
                     <a href="javascript:;">
                         <i class="fa fa-fw fa-cube"></i>
@@ -216,7 +227,9 @@
                         <li><a href="{{ URL::route('admin_consultorios') }}"><span class="sub-menu-text">{{ Lang::get('consultorio.title_plural') }}</span></a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if (User::canAdminTratamientos($user))
                 <!-- servicios -->
                 <li{{ activeClassIf('servicio', $active_menu) }}>
                     <a href="{{ URL::route('admin_servicios') }}">
@@ -224,7 +237,9 @@
                         <span class="menu-text">{{ Lang::get('servicio.title_plural') }}</span>
                     </a>
                 </li>
+                @endif
 
+                @if (User::canAdminEquipos($user))
                 <!-- equipos -->
                 <li{{ activeClassIf('equipo', $active_menu) }}>
                     <a href="{{ URL::route('admin_equipos') }}">
@@ -232,7 +247,9 @@
                         <span class="menu-text">{{ Lang::get('equipo.title_plural') }}</span>
                     </a>
                 </li>
+                @endif
 
+                @if (User::canAdminOpciones($user))
                 <!-- opciones -->
                 <li{{ activeClassIf('opciones', $active_menu) }}>
                     <a href="{{ URL::route('admin_config') }}">
@@ -240,12 +257,14 @@
                         <span class="menu-text">{{ Lang::get('global.settings') }}</span>
                     </a>
                 </li>
+                @endif
 			</ul>
 			<!-- /SIDEBAR MENU -->
 		</div>
 	</div>
 	<!-- /SIDEBAR -->
-	<div id="main-content">
+    @endif
+	<div id="main-content"{{ !User::showMenu($user) ? ' style="margin-left:0 !important"' : '' }}>
 		<div class="container">
 			<div class="row">
 				<div id="content" class="col-lg-12">

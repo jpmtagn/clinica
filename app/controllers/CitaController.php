@@ -28,12 +28,14 @@ class CitaController extends BaseController {
             $total = $this->getTotalItems();
             $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
             $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+            $estados = Functions::langArray(self::LANG_FILE, Cita::state());
             return View::make('admin.citas')->with(
                 array(
                     'active_menu' => 'citas',
                     'total' => $total,
                     'servicios' => $servicios,
-                    'consultorios' => $consultorios
+                    'consultorios' => $consultorios,
+                    'estados' => $estados
                 )
             );
         }
@@ -45,33 +47,31 @@ class CitaController extends BaseController {
      * @return mixed
      */
     public function paginaCalendario() {
-        if (Auth::user()->admin || User::is('doctor')) {
-            //$total = $this->getTotalItems();
-            //$model = self::MODEL;
-            //$events = $model::with('paciente')->latestOnes()->get();
-            $doctores = Doctor::getAll();
-            $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
-            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
-            $genders = Functions::langArray('pacientes', Paciente::getGenders());
-            $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
-            $doctor_letters = Doctor::getFirstNameLetters();
-            $options = Opcion::load();
-            return View::make('admin.calendario')->with(
-                array(
-                    'active_menu' => 'citas',
-                    //'events' => $events
-                    //'total' => $total,
-                    'doctores' => $doctores,
-                    'servicios' => $servicios,
-                    'consultorios' => $consultorios,
-                    'genders' => $genders,
-                    'marital_statuses' => $marital_statuses,
-                    'doctor_letters' => $doctor_letters,
-                    'options' => $options
-                )
-            );
-        }
-        return View::make('admin.inicio');
+        //$total = $this->getTotalItems();
+        //$model = self::MODEL;
+        //$events = $model::with('paciente')->latestOnes()->get();
+        $doctores = Doctor::getAll();
+        $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
+        $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+        $genders = Functions::langArray('pacientes', Paciente::getGenders());
+        $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
+        $doctor_letters = Doctor::getFirstNameLetters();
+        $options = Opcion::load();
+        return View::make('admin.calendario')->with(
+            array(
+                'active_menu' => 'citas',
+                //'events' => $events
+                //'total' => $total,
+                'doctores' => $doctores,
+                'servicios' => $servicios,
+                'consultorios' => $consultorios,
+                'genders' => $genders,
+                'marital_statuses' => $marital_statuses,
+                'doctor_letters' => $doctor_letters,
+                'options' => $options,
+                'read_only' => !User::canAddCitas()
+            )
+        );
     }
 
     /**
@@ -80,6 +80,12 @@ class CitaController extends BaseController {
     * @return boolean
     */
     public function afterValidation($inputs) {
+        //checking that the user has permission
+        if (!User::canAddCitas()) {
+            $this->setError(Lang::get('global.no_permission'));
+            return false;
+        }
+
 		Session::set('input_fecha', $inputs['fecha']);
         $service = $inputs['servicio_id'];
         if ($service > 0) {
@@ -147,12 +153,28 @@ class CitaController extends BaseController {
                 }
                 //check that the specified office is not busy for the given time
                 if (!($ignore_warning && $warning_key == 3)) {
-                    if ($ol->consultorio_id == $office_id) {
+                    /*if ($ol->consultorio_id == $office_id) {
                         $this->setReturn('warning_key', '3');
                         $this->setReturn('bad', 'office');
                         $this->setReturn('overlapping', $ol->id);
                         $this->setError(Lang::get(self::LANG_FILE . '.overlap_office'));
                         return false;
+                    }*/
+                    $office_in_use = 0;
+                    foreach ($overlapping as $o) {
+                        if ($o->consultorio_id == $office_id) {
+                            $office_in_use++;
+                        }
+                    }
+                    if ($office_in_use > 0) {
+                        $office = Consultorio::find($office_id);
+                        if ($office_in_use >= $office->capacidad) {
+                            $this->setReturn('warning_key', '3');
+                            $this->setReturn('bad', 'office');
+                            $this->setReturn('overlapping', $ol->id);
+                            $this->setError(Lang::get(self::LANG_FILE . '.overlap_office'));
+                            return false;
+                        }
                     }
                 }
             }
@@ -241,7 +263,7 @@ class CitaController extends BaseController {
         return $output;
     }
 
-    public function searchByFields($date, $doctor_id, $paciente_id) {
+    public function searchByFields($date, $doctor_id = 0, $paciente_id = 0, $servicio_id = 0, $consultorio_id = 0) {
         $model = self::MODEL;
         $records = new $model;
 
@@ -257,7 +279,15 @@ class CitaController extends BaseController {
         if ($paciente_id > 0) {
             $records = $records->where('paciente_id', '=', $paciente_id);
         }
-        $records = $records->get();
+        //if the service is specified
+        if ($servicio_id > 0) {
+            $records = $records->where('servicio_id', '=', $servicio_id);
+        }
+        //if the office is specified
+        if ($consultorio_id > 0) {
+            $records = $records->where('consultorio_id', '=', $consultorio_id);
+        }
+        $records = $records->orderBy('hora_inicio', 'DESC')->get();
 
         return $records;
     }
@@ -268,7 +298,9 @@ class CitaController extends BaseController {
                 'search_query'          => '',
                 /*'search_page'           => 'required|integer|min:1',*/
                 'buscar_doctor_id'      => 'integer|min:1',
-                'buscar_paciente_id'    => 'integer|min:1'
+                'buscar_paciente_id'    => 'integer|min:1',
+                'buscar_servicio_id'    => 'integer|min:0',
+                'buscar_consultorio_id' => 'integer|min:0'
             )
         );
         if ($validator->passes()) {
@@ -285,8 +317,10 @@ class CitaController extends BaseController {
             //2. searches by rows
                 $doctor_id = (int)Input::get('buscar_doctor_id');
                 $paciente_id = (int)Input::get('buscar_paciente_id');
+                $servicio_id = (int)Input::get('buscar_servicio_id');
+                $consultorio_id = (int)Input::get('buscar_consultorio_id');
 
-                $records = $this->searchByFields($query, $doctor_id, $paciente_id);
+                $records = $this->searchByFields($query, $doctor_id, $paciente_id, $servicio_id, $consultorio_id);
                 
                 $total = count($records);
                 $match_total = $total;
@@ -385,7 +419,7 @@ EOT;
 
                 //  patient
                 $patient = $record->paciente;//Paciente::find($record->paciente_id);
-                $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' . Functions::firstNameLastName($patient->nombre, $patient->apellido);
+                $row .= '<b>' . Lang::get(self::LANG_FILE . '.patient') . '</b>: ' . Functions::firstNameLastName($patient->nombre, $patient->apellido);
                 
                 //  doctor
                 if ($show_doctor) {
@@ -406,7 +440,7 @@ EOT;
                     $row .= '<br><b>' . Lang::get(self::LANG_FILE . '.office') . '</b>: ' . $office->nombre . ' &nbsp; (' . $area . ')';
                 }
 
-                $output.= '<br>' . $row;
+                $output.= '<br><br>' . $row;
             }
         }
 
@@ -418,7 +452,12 @@ EOT;
         $cal_start = Input::get('start');
         $cal_end = Input::get('end');
         $citas_json = array();
-        $citas = Cita::fromDate($cal_start)->toDate($cal_end)->get();
+        if (User::canViewAllCitas()) {
+            $citas = Cita::fromDate($cal_start)->toDate($cal_end)->get();
+        }
+        else {
+            $citas = Auth::user()->cita()->fromDate($cal_start)->toDate($cal_end)->get();
+        }
 
         $doctor_color = array();
         $doctor_index = Doctor::getIds();
@@ -636,10 +675,27 @@ EOT;
             $item = $model::find($cita_id);
             switch ($action) {
                 case 'set_state':
+                    $allowed = false;
                     $val = (int)$val;
-                    if ($val < 0 || $val > count($item->state())) $val = 0;
-                    $item->estado = $val;
-                    $item->save();
+                    switch ($val) {
+                        case Cita::CONFIRMED:
+                        case Cita::CANCELLED:
+                            if (User::canConfirmOrCancelCita()) {
+                                $allowed = true;
+                            }
+                            break;
+                        
+                        case Cita::DONE:
+                            if (User::canChangeCitaStateToDone()) {
+                                $allowed = true;
+                            }
+                            break;
+                    }
+                    //if ($val < 0 || $val > count($item->state())) $val = 0;
+                    if ($allowed) {
+                        $item->estado = $val;
+                        $item->save();
+                    }
                     $this->setReturn('cita_id', $cita_id);
                     $this->setReturn('state', $item->estado);
                     break;

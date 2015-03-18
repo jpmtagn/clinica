@@ -46,6 +46,8 @@ Panel de Administración
             {{ $frm->date('search', null, Lang::get('citas.date'), 'day') }}
             {{ $frm->remoteSelect('buscar_doctor_id', null, Lang::get('citas.doctor'), URL::route('admin_doctores_list')) }}
             {{ $frm->remoteSelect('buscar_paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
+            {{ $frm->select('buscar_servicio_id', null, Lang::get('servicio.title_single'), array_merge(array(0 => '&nbsp;'), $servicios)) }}
+            {{ $frm->select('buscar_consultorio_id', null, Lang::get('consultorio.title_single'), array_merge(array(0 => '&nbsp;'), $consultorios)) }}
             <div class="vertical-spaced">
             {{ $frm->submit('<i class="fa fa-search"></i>&nbsp;' . Lang::get('global.search')) }}
             </div>
@@ -107,6 +109,7 @@ Panel de Administración
             {{ $frm->remoteSelect('paciente_id', null, Lang::get('citas.patient'), URL::route('admin_pacientes_list')) }}
             {{ $frm->select('servicio_id', null, Lang::get('servicio.title_single'), $servicios) }}
             {{ $frm->select('consultorio_id', null, Lang::get('consultorio.title_single'), $consultorios) }}
+            {{ $frm->select('estado', null, Lang::get('citas.state'), $estados) }}
 
             {{ Form::token() }}
             {{ $frm->submit('Guardar', 'btn-warning') }}

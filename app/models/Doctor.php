@@ -15,7 +15,17 @@ class Doctor /*extends Paciente*/ {
 
         return $items;*/
 
-        $items = DB::table('doctor')->get();
+        $user = Auth::user();
+
+        if (User::canViewDoctorPage(null)) {
+            $items = DB::table('doctor')->get();
+        }
+        elseif (User::is(User::ROL_DOCTOR)) {
+            $items = DB::table('doctor')->where('usuario_id', '=', $user->id)->get();
+        }
+        else {
+            $items = array();
+        }
         /*foreach ($items as $item) {
             //$item = $item->paciente;
             var_dump($item->nombre . ' ' . $item->apellido);
@@ -41,4 +51,4 @@ class Doctor /*extends Paciente*/ {
                 ->lists('inicial');
     }
 
-} 
+}
