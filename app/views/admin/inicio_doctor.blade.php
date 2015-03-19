@@ -76,6 +76,7 @@
     </div>
     <!-- /COLUMN 2 -->
 </div>
+@if (User::canChangeDisponibilidadState())
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-lg" role="group">
@@ -86,6 +87,7 @@
         </div>
     </div>
 </div>
+@endif
 <!-- /DASHBOARD CONTENT -->
 @stop
 

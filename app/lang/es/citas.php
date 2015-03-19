@@ -17,6 +17,7 @@ return array(
     'for_today_single' => 'Cita para hoy',
     'for_today_plural' => 'Citas para hoy',
     'cita_details' => 'Detalles de la Cita',
+    'search_by_dni' => 'C.I. o nombre',
 
     //states
     'realizada' => 'Realizada',

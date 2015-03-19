@@ -23,7 +23,7 @@ class PacienteController extends BaseController {
      * @return mixed
      */
     public function paginaAdmin() {
-        if (Auth::user()->admin) {
+        if (User::canAdminPersonas()) {
             //$model = self::MODEL;
             $total = $this->getTotalItems();
             $genders = Functions::langArray(self::LANG_FILE, Paciente::getGenders());
@@ -82,7 +82,7 @@ class PacienteController extends BaseController {
      * @return boolean
      */
     public function afterValidation($inputs) {
-        if (!Auth::user()->admin) {
+        if (!User::canAdminPersonas()) {
             $id = (int)Input::get('id');
             if ($id > 0) {
                 //if the user to be modified is not the current one, then abort
@@ -110,7 +110,7 @@ class PacienteController extends BaseController {
 
             //telefonos
             $phones = isset($_POST['telefonos']) ? explode(',', Input::get('telefonos')) : false;
-            if ($phones) {
+            if (count($phones)) {
                 foreach ($phones as $key => $val) {
                     if (strlen(trim($val)) > 0) {
                         $phones[$key] = array('tipo_contacto_id' => 1, 'contacto' => $val); //1 = phone
@@ -119,12 +119,14 @@ class PacienteController extends BaseController {
                         unset($phones[$key]);
                     }
                 }
-                $item->tipoContacto()->attach( $phones );
+                if (count($phones)) {
+                    $item->tipoContacto()->attach( $phones );
+                }
             }
 
             //correos
             $emails = isset($_POST['correos']) ? explode(',', Input::get('correos')) : false;
-            if ($emails) {
+            if (count($emails)) {
                 foreach ($emails as $key => $val) {
                     if (strlen(trim($val)) > 0) {
                         $emails[$key] = array('tipo_contacto_id' => 2, 'contacto' => $val); //2 = email
@@ -133,7 +135,9 @@ class PacienteController extends BaseController {
                         unset($emails[$key]);
                     }
                 }
-                $item->tipoContacto()->attach( $emails );
+                if (count($emails)) {
+                    $item->tipoContacto()->attach( $emails );
+                }
             }
         }
 

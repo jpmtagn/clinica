@@ -192,8 +192,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         $user = Auth::user();
         if ($with_id !== null && $user->id != $with_id) return false;
         if (!is_array($role)) {
-            $roles = array();
-            $roles[] = $role;
+            $roles = array($role);
             $is_num = is_int($role);
         }
         else {
@@ -207,7 +206,10 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         else {
             $user_roles = $user->roles->lists('nombre');
         }
-        return in_array($role, $user_roles);
+        foreach ($roles as $role) {
+            if (in_array($role, $user_roles)) return true;
+        }
+        return false;
     }
 
 
@@ -232,9 +234,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
     // ACCESS CONTROL
 
-    public static function canChangeDisponibilidadState($user_id) {
+    public static function canChangeDisponibilidadState($user_id = null) {
         $user = Auth::user();
-        return ($user->admin || $user->id == $user_id);
+        return ($user->admin || $user->id == $user_id || User::is(User::ROL_RECEPCIONIST)); // ¿las recepcionistas pueden editar las disponibilidades de los doctores?
     }
 
     public static function canViewDoctorPage($user_id) {
@@ -270,7 +272,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
     public static function canAdminPersonas($user = null) {
         if ($user === null) $user = Auth::user();
-        return (bool)$user->admin;
+        return ($user->admin || User::is(User::ROL_RECEPCIONIST));
     }
 
     public static function canAdminUsuarios($user = null) {
@@ -280,7 +282,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
     public static function canAdminCitas($user = null) {
         if ($user === null) $user = Auth::user();
-        return (bool)$user->admin;
+        return ($user->admin || User::is(User::ROL_RECEPCIONIST));
     }
 
     public static function canAdminLugares($user = null) {

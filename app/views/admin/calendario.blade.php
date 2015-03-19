@@ -84,7 +84,7 @@ Panel de Administración
             <div class="col-md-2">
                 @if (User::canViewAllCitas())
                 <div class="input-group">
-                     <input type="text" value="" class="form-control" placeholder="{{ Lang::get('global.insert_search') }}" id="search_event_query" />
+                     <input type="text" value="" class="form-control" placeholder="{{ Lang::get('citas.search_by_dni') }}" id="search_event_query" />
                      <span class="input-group-btn">
                         <a href="#" id="search_event_btn" class="btn btn-default"><i class="fa fa-search"></i></a>
                      </span>
@@ -416,6 +416,7 @@ EOT;
 {{ HTML::script('js/pickadate/picker.date.js') }}
 {{ HTML::script('js/pickadate/picker.time.js') }}
 {{ HTML::script('js/bootstrap-inputmask/bootstrap-inputmask.min.js') }}
+{{ HTML::script('js/jquery-easing/jquery.easing.min.js') }}
 {{ HTML::script('js/fullcalendar/lib/moment.min.js') }}
 {{ HTML::script('js/fullcalendar/fullcalendar.js') }} <!-- customized -->
 <?php if (Config::get('app.locale') != 'en') : ?>
@@ -822,8 +823,11 @@ EOT;
     }
 
     function gotoDate(date) {
-        var $cal = $('#main_calendar');
-        $cal.fullCalendar('gotoDate', date);
+        if (typeof date != 'undefined' && date.length) {
+            var $cal = $('#main_calendar');
+            $cal.fullCalendar('gotoDate', date);
+            $cal.fullCalendar('scrollTo', parseInt(date.split('T')[1]), $cal);
+        }
     }
 
     function doFind(query) {
@@ -835,7 +839,7 @@ EOT;
                     gotoDate( data['fecha'] );
                     setTimeout(function() {
                         emphasizeEvent( data['cita_id'] );
-                    }, 1000);
+                    }, 2000);
                 }
             }, null, 'GET');
         }

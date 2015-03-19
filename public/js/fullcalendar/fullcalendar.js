@@ -7516,7 +7516,6 @@ function Calendar(element, instanceOptions) {
 
 
 	function scrollTo(hour, $cal) {
-		console.log('you trying to go to...' + hour);
 		var $target = $cal.find('#hour_' + hour);
 		if ($target.length) {
 
@@ -7525,34 +7524,19 @@ function Calendar(element, instanceOptions) {
 			var scroll_top = $scroller.scrollTop(); //distance from the first showing hour and the calendar's first hour
 			var scroll_offset = $scroller.offset().top; //constant top of calendar from document
 
-			var target_top = $target.offset().top; //target top from document (up = less | down = more)
+			var target_offset = $target.offset().top; //target top from document (up = less | down = more)
 
-			//var first_time = $scroller.find('.fc-axis.fc-time').eq(0);
+			var scroll = ((target_offset - scroll_offset) + scroll_top) - $target.outerHeight();
 
-			//TODO: ...
-
+			/*$scroller.animate({scrollTop: scroll}, {
+				duration: 1000,
+				specialEasing: {
+			      width: "linear",
+			      height: "easeOutBounce"
+			    }
+			});*/
+			$scroller.animate({scrollTop: scroll}, 1600, 'easeInOutElastic'); //easeOutBack
 		}
-
-		console.log($scroller.offset().top);
-		/*var _this = this;
-		var scrollTime = moment.duration(hour);
-		var tg = new timeGrid(this);
-		var top = tg.computeTimeTop(scrollTime);
-		console.log(top);
-
-		// zoom can give weird floating-point values. rather scroll a little bit further
-		top = Math.ceil(top);
-
-		if (top) {
-			top++; // to overcome top border that slots beyond the first have. looks better
-		}
-
-		function scroll() {
-			_this.scrollerEl.scrollTop(top);
-		}
-
-		scroll();
-		setTimeout(scroll, 0); // overrides any previous scroll state made by the browser*/
 	}
 
 
