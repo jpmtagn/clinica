@@ -103,4 +103,22 @@ class AreaController extends BaseController {
         return AForm::searchResults($records, 'nombre');
     }
 
+
+    public function getConsultorios() {
+        $area_id = (int)Input::get('area_id');
+        if ($area_id > 0) {
+            $model = self::MODEL;
+            $area = $model::find($area_id);
+            if ($area) {
+                $offices = $area->consultorios()->get()->toArray();
+                $this->setReturn('consultorios', $offices);
+            }
+        }
+        else {
+            $this->setError(Lang::get('global.wrong_action'));
+        }
+
+        return $this->returnJson();
+    }
+
 }

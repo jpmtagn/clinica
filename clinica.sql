@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2015 at 04:43 AM
+-- Generation Time: Mar 23, 2015 at 03:16 PM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -64,26 +64,8 @@ CREATE TABLE IF NOT EXISTS `cita` (
   KEY `fk_cita_paciente1_idx` (`paciente_id`),
   KEY `fk_cita_servicio1_idx` (`servicio_id`),
   KEY `fk_cita_consultorio1_idx` (`consultorio_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Dumping data for table `cita`
---
-
-INSERT INTO `cita` (`id`, `fecha`, `hora_inicio`, `hora_fin`, `estado`, `doctor_id`, `paciente_id`, `servicio_id`, `consultorio_id`, `created_at`, `updated_at`) VALUES
-(7, '2015-01-26', '2015-01-26 12:30:00', NULL, 1, 1, 9, 2, 1, NULL, NULL),
-(8, '2015-02-27', '2015-02-27 13:00:00', '2015-02-27 13:30:00', 1, 1, 10, 2, 1, '2015-02-26 23:12:52', '2015-02-26 23:12:52'),
-(9, '2015-03-03', '2015-03-03 12:30:00', '2015-03-03 13:30:00', 1, 1, 9, 2, 1, '2015-03-01 01:01:57', '2015-03-01 01:01:57'),
-(10, '2015-03-03', '2015-03-03 13:00:00', '2015-03-03 13:30:00', 1, 3, 8, 2, 1, '2015-03-01 04:43:57', '2015-03-01 14:34:11'),
-(11, '2015-03-05', '2015-03-05 13:30:00', '2015-03-05 14:30:00', 1, 1, 10, 2, 1, '2015-03-01 19:54:24', '2015-03-01 19:54:24'),
-(12, '2015-03-06', '2015-03-06 12:30:00', '2015-03-06 13:30:00', 1, 3, 9, 2, 1, '2015-03-01 20:35:19', '2015-03-01 20:35:19'),
-(13, '2015-03-06', '2015-03-06 13:30:00', '2015-03-06 14:00:00', 1, 1, 9, 2, 1, '2015-03-01 20:35:53', '2015-03-01 20:35:53'),
-(14, '2015-03-04', '2015-03-04 13:00:00', '2015-03-04 13:40:00', 3, 4, 8, 2, 1, '2015-03-02 03:51:22', '2015-03-07 19:59:06'),
-(15, '2015-03-03', '2015-03-03 11:50:00', '2015-03-03 12:50:00', 2, 1, 10, 2, 1, '2015-03-03 04:47:35', '2015-03-06 23:56:27'),
-(16, '2015-03-07', '2015-03-07 11:30:00', '2015-03-07 13:30:00', 2, 1, 13, 4, 2, '2015-03-06 13:39:17', '2015-03-07 21:08:34'),
-(20, '2015-03-07', '2015-03-07 09:50:00', '2015-03-07 10:30:00', 1, 4, 13, 2, 1, '2015-03-06 16:28:55', '2015-03-06 16:28:55'),
-(21, '2015-03-10', '2015-03-10 13:00:00', '2015-03-10 15:00:00', 2, 4, 8, 4, 2, '2015-03-07 22:16:20', '2015-03-08 00:55:06'),
-(22, '2015-03-12', '2015-03-12 12:50:00', '2015-03-12 13:30:00', 0, 1, 10, 2, 1, '2015-03-08 11:34:43', '2015-03-08 12:13:17');
 
 -- --------------------------------------------------------
 
@@ -169,19 +151,11 @@ CREATE TABLE IF NOT EXISTS `disponibilidad` (
   `fin` datetime NOT NULL,
   `disponible` tinyint(1) NOT NULL DEFAULT '1',
   `usuario_id` int(10) unsigned NOT NULL,
+  `fijo` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `fk_disponibilidad_usuario1_idx` (`usuario_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Dumping data for table `disponibilidad`
---
-
-INSERT INTO `disponibilidad` (`id`, `inicio`, `fin`, `disponible`, `usuario_id`) VALUES
-(1, '2015-03-13 08:30:00', '2015-03-13 15:00:00', 1, 1),
-(3, '2015-03-10 08:00:00', '2015-03-10 18:00:00', 1, 4),
-(5, '2015-03-11 08:00:00', '2015-03-11 12:30:00', 0, 1),
-(6, '2015-03-10 08:00:00', '2015-03-10 14:00:00', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -246,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `nota` (
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_nota_cita1_idx` (`cita_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -270,20 +244,8 @@ CREATE TABLE IF NOT EXISTS `paciente` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `dni_UNIQUE` (`dni`),
   KEY `fk_paciente_usuario1_idx` (`usuario_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Dumping data for table `paciente`
---
-
-INSERT INTO `paciente` (`id`, `nombre`, `apellido`, `dni`, `fecha_nacimiento`, `sexo`, `estado_civil`, `direccion`, `avatar`, `created_at`, `updated_at`, `usuario_id`) VALUES
-(8, 'Alfredo Ramón', 'Fleming Cabello', 'V-17339453', '1985-09-15', 1, 0, 'Unare III, Urbanización Yuruani, Calle Botamo, Manzana 4, Casa #1', '54e73175a3859.jpg', '2014-09-07 15:41:41', '2014-09-07 15:41:41', 1),
-(9, 'Alexander José', 'Fleming Cabello', 'V-16164136', '1982-03-02', 1, 0, 'Unare III, Urbanización Yuruani, Calle Botamo, Manzana 4, Casa #1', NULL, NULL, NULL, NULL),
-(10, 'Ramón Antonio', 'Fleming Aleman', 'V-8351547', '1959-02-16', 1, 1, 'Unare III, Urb. Yuruani, Calle Botamo, Mza. 4, #1, Edo. Bolívar, Venezuela', NULL, NULL, NULL, 3),
-(12, 'Omar', 'Acevedo Bernal', 'V-8339453', '1980-01-03', 1, 1, 'Altavista', '54f3c4149e299.jpg', NULL, NULL, 4),
-(13, 'Yanellys Josefína', 'Fleming Cabello', 'V-17339452', '1987-03-01', 0, 0, 'unare iii, calle botamo, manzana 4, #1', NULL, '2015-03-06 11:33:52', '2015-03-06 11:33:52', NULL);
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `paciente_tipo_contacto`
@@ -297,22 +259,7 @@ CREATE TABLE IF NOT EXISTS `paciente_tipo_contacto` (
   PRIMARY KEY (`id`),
   KEY `fk_paciente_tipo_contacto_tipo_contacto1_idx` (`tipo_contacto_id`),
   KEY `fk_paciente_tipo_contacto_paciente1` (`paciente_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
-
---
--- Dumping data for table `paciente_tipo_contacto`
---
-
-INSERT INTO `paciente_tipo_contacto` (`id`, `paciente_id`, `tipo_contacto_id`, `contacto`) VALUES
-(1, 9, 1, '04148927539'),
-(2, 9, 2, 'alexanderfleming19@hotmail.com'),
-(3, 8, 1, '04249440972'),
-(4, 8, 2, 'alfredofleming@msn.com'),
-(5, 10, 1, '04249311408'),
-(6, 10, 1, '04166864167'),
-(7, 10, 2, 'ramonfleming@hotmail.com'),
-(8, 13, 1, '02869530804'),
-(9, 13, 2, 'yanellys_fleming@hotmail.com');
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -328,19 +275,7 @@ CREATE TABLE IF NOT EXISTS `paciente_tipo_pariente` (
   PRIMARY KEY (`id`),
   KEY `fk_paciente_has_tipo_pariente_tipo_pariente1_idx` (`tipo_pariente_id`),
   KEY `fk_paciente_has_tipo_pariente_paciente2_idx` (`paciente_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
-
---
--- Dumping data for table `paciente_tipo_pariente`
---
-
-INSERT INTO `paciente_tipo_pariente` (`id`, `tipo_pariente_id`, `paciente_id`, `pariente_id`) VALUES
-(1, 5, 8, 10),
-(2, 7, 10, 8),
-(3, 7, 10, 9),
-(4, 5, 9, 10),
-(5, 8, 9, 8),
-(6, 8, 8, 9);
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -449,17 +384,14 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `created_at` datetime DEFAULT NULL COMMENT 'Fecha de registro (auto)',
   `updated_at` datetime DEFAULT NULL COMMENT 'Fecha de actualización de datos (auto)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `usuario`
 --
 
 INSERT INTO `usuario` (`id`, `correo`, `password`, `contrasena_tmp`, `activo`, `admin`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'admin@defecto', '$2y$10$SPk9qASck2p7d87YGfLY1eNcJNUUzASa/gvjiIz/wdPqbg7zNgVsi', NULL, 1, 1, 'QZUgaAF2PySFz1PpKE4b3SSWSWGm7cYM9KLr7ldxY56q42bjDCOcnUue8ksH', '2014-09-07 15:41:41', '2015-03-02 04:01:05'),
-(2, 'foo@bar.com', '', NULL, 1, 1, NULL, '2014-10-13 12:41:30', '2014-12-26 15:03:39'),
-(3, 'test@testing.com', '', NULL, 1, 0, NULL, '2014-12-27 15:07:42', '2014-12-27 15:07:42'),
-(4, 'omar@localhost.com', '$2y$10$OYLsVf3acSrqVgc2.Sdm1.zeBpgredHqD97yOl48gzUXM8Prk4lcy', NULL, 1, 0, 'mJdd9kaBjdnlKHIdNzgTfAYVd7W0ZX3htUJN7G0bYAR2iTgXg8LgSYpIk9ES', '2015-03-01 23:06:07', '2015-03-02 03:50:46');
+(1, 'admin', '$2y$10$SPk9qASck2p7d87YGfLY1eNcJNUUzASa/gvjiIz/wdPqbg7zNgVsi', NULL, 1, 1, 'sDbDeDrB2GHsGkbAG87WKBP4c6X5GfmrgydD6qJoBCZrcPJgqaSU5yHtDzZK', '2014-09-07 15:41:41', '2015-03-19 08:43:48');
 
 -- --------------------------------------------------------
 
@@ -473,18 +405,6 @@ CREATE TABLE IF NOT EXISTS `usuario_rol` (
   PRIMARY KEY (`usuario_id`,`rol_id`),
   KEY `fk_usuario_rol_rol1_idx` (`rol_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `usuario_rol`
---
-
-INSERT INTO `usuario_rol` (`usuario_id`, `rol_id`) VALUES
-(1, 1),
-(3, 1),
-(4, 1),
-(1, 2),
-(3, 2),
-(2, 3);
 
 -- --------------------------------------------------------
 
@@ -502,7 +422,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `doctor`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `doctor` AS select `p`.`nombre` AS `nombre`,`p`.`apellido` AS `apellido`,`p`.`dni` AS `dni`,sum((case when ((`c`.`estado` = 1) and (`c`.`fecha` = now())) then 1 else 0 end)) AS `atendidos`,sum((case when (((`c`.`estado` = 2) or (`c`.`estado` = 0)) and (`c`.`fecha` = now())) then 1 else 0 end)) AS `pendientes`,`u`.`id` AS `usuario_id`,`p`.`avatar` AS `avatar` from (((`usuario` `u` join `usuario_rol` `r` on((`r`.`usuario_id` = `u`.`id`))) join `paciente` `p` on((`p`.`usuario_id` = `u`.`id`))) left join `cita` `c` on((`c`.`doctor_id` = `u`.`id`))) where (`r`.`rol_id` = 1) group by `p`.`id`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `doctor` AS select `p`.`nombre` AS `nombre`,`p`.`apellido` AS `apellido`,`p`.`dni` AS `dni`,sum((case when ((`c`.`estado` = 1) and (`c`.`fecha` = date_format(now(),'%Y-%m-%d'))) then 1 else 0 end)) AS `atendidos`,sum((case when (((`c`.`estado` = 2) or (`c`.`estado` = 0)) and (`c`.`fecha` = date_format(now(),'%Y-%m-%d'))) then 1 else 0 end)) AS `pendientes`,`u`.`id` AS `usuario_id`,`p`.`avatar` AS `avatar` from (((`usuario` `u` join `usuario_rol` `r` on((`r`.`usuario_id` = `u`.`id`))) join `paciente` `p` on((`p`.`usuario_id` = `u`.`id`))) left join `cita` `c` on((`c`.`doctor_id` = `u`.`id`))) where (`r`.`rol_id` = 1) group by `p`.`id`;
 
 --
 -- Constraints for dumped tables
@@ -547,7 +467,7 @@ ALTER TABLE `equipo_servicio`
 -- Constraints for table `nota`
 --
 ALTER TABLE `nota`
-  ADD CONSTRAINT `fk_nota_cita1` FOREIGN KEY (`cita_id`) REFERENCES `cita` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_nota_cita1` FOREIGN KEY (`cita_id`) REFERENCES `cita` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `paciente`

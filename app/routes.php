@@ -291,6 +291,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'CitaController@findInCalendar'
     ));
 
+    Route::get('cita/area_consultorio', array(
+        'as' => 'get_area_offices',
+        'uses' => 'AreaController@getConsultorios'
+    ));
+
 
     Route::get('doctores/estado', array(
         'as' => 'update_doctors_status',

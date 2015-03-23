@@ -104,9 +104,10 @@ class DisponibilidadController extends BaseController {
             if ($cal_start_w > 0) { //not a monday
                 $cal_start = strtotime('-' . $cal_start_w . ' days', $cal_start);
             }
+            
+            $color = '#849917';
 
             foreach ($items as $item) {
-                $color = '#849917';
 
                 $start = strtotime($item->inicio);
                 $end = strtotime($item->fin);

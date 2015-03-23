@@ -52,6 +52,7 @@ class CitaController extends BaseController {
         //$events = $model::with('paciente')->latestOnes()->get();
         $doctores = Doctor::getAll();
         $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
+        $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
         $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
         $genders = Functions::langArray('pacientes', Paciente::getGenders());
         $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
@@ -64,6 +65,7 @@ class CitaController extends BaseController {
                 //'total' => $total,
                 'doctores' => $doctores,
                 'servicios' => $servicios,
+                'areas' => $areas,
                 'consultorios' => $consultorios,
                 'genders' => $genders,
                 'marital_statuses' => $marital_statuses,

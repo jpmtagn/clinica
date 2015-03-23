@@ -52,13 +52,13 @@ class="login"
                             <div class="form-group">
                                 <label for="correo">{{ Lang::get('formulario_inicio.email') }}</label>
                                 <i class="fa fa-envelope"></i>
-                                <input value="admin@defecto" type="text" id="correo" name="correo" class="form-control" value="{{ Functions::retrieve('correo') }}" required autofocus>
+                                <input value="" type="text" id="correo" name="correo" class="form-control" value="{{ Functions::retrieve('correo') }}" required autofocus>
                             </div>
                             <!-- contraseña -->
                             <div class="form-group">
                                 <label for="password">{{ Lang::get('formulario_inicio.password') }}</label>
                                 <i class="fa fa-lock"></i>
-                                <input value="cli_0123" type="password" id="password" name="password" class="form-control" required>
+                                <input value="" type="password" id="password" name="password" class="form-control" required>
                             </div>
                             <div class="form-actions">
                                 <!-- recordarme -->

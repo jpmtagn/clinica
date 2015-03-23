@@ -326,7 +326,9 @@ EOT;
     {{ $frm->modalOpen('new_event_office_modal', Lang::get('citas.set') . ' ' . Lang::get('consultorio.title_single')) }}
         <div id="available_offices_holder"></div>
         <form id="frm_new_event_office_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_office_inf_get') }}">
-            {{ $frm->select('consultorio_id', null, Lang::get('consultorio.title_single'), $consultorios) }}
+            <input type="hidden" id="consultorio_id" name="consultorio_id" value="0">
+            {{ $frm->select('area_id', null, Lang::get('area.title_single'), $areas) }}
+            {{ $frm->select('consultorio_id_select', null, Lang::get('consultorio.title_single'), $consultorios) }}
         </form>
     {{ $frm->modalClose() }}
     <!-- /NEW OFFICE FORM -->
@@ -403,6 +405,12 @@ EOT;
     <input type="hidden" name="query" value="">
 </form>
 <!-- /SEARCH EVENT FORM -->
+
+<!-- AREA OFFICES FORM -->
+<form id="frm_get_area_offices" class="hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('get_area_offices') }}">
+    <input type="hidden" name="area_id" value="0">
+</form>
+<!-- /AREA OFFICES FORM -->
 
 {{ $frm->date('goto_date', null, null, 'day', 'hidden') }}
 
@@ -657,7 +665,8 @@ EOT;
             var $btn = $(this);
             var id = parseInt($btn.attr('attr-id')) || 0;
             if (id > 0) {
-                $('#consultorio_id').select2('val', id);
+                $('#consultorio_id_select').select2('val', id);
+                $('#consultorio_id').val(id);
                 submitForm( $('#frm_new_event_office_inf'), submitOfficeFormDone, null, 'GET');
                 $btn.closest('.modal').modal('hide');
             }
@@ -726,6 +735,23 @@ EOT;
         else {
             $new_patient_holder.removeClass('hidden').slideDown();
         }
+    }
+
+    function showAreaOffices(area_id) {
+        var $frm = $('#frm_get_area_offices');
+        $frm.find('input[name=area_id]').val( area_id );
+        submitForm($frm, function($frm, data) {
+            if (data['ok'] == 1) {
+                var $office_select = $('#consultorio_id_select');
+                $office_select.html('');
+                var options = '';
+                $.each(data['consultorios'], function(i, o) {
+                    options += '<option value="' + o.id + '">' + o.nombre + '</option>';
+                });
+                $office_select.html(options);
+                $office_select.select2('val', '');
+            }
+        });
     }
 
     function bindEventClick() {
@@ -1062,6 +1088,14 @@ EOT;
             showHideNewPatient();
         });
 
+        $('#area_id').on("change", function(e) {
+            showAreaOffices( $(this).val() );
+        });
+
+        $('#consultorio_id_select').on("change", function(e) {
+            $('#consultorio_id').val( $(this).val() );
+        }).change();
+
         /*$.each($('.full-calendar'), function(i, o) {
             $(o).fullCalendar( 'addEventSource', {
                  url: '{{-- URL::route('calendar_source') --}}'
@@ -1203,6 +1237,15 @@ EOT;
                 $('#search_event_btn').click();
             }
         });
+
+
+        //auto refreshes every 10 minutes
+        setInterval(function() {
+            var modals_opened = $('.modal.fade.in').length;
+            if (!modals_opened) {
+                $('#main_calendar').fullCalendar('refetchEvents');
+            }
+        }, 600000);
 
     });
 </script>
