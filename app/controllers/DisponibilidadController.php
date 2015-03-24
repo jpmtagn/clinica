@@ -92,9 +92,17 @@ class DisponibilidadController extends BaseController {
     }
 
 
-    public function getDisponibilidad($doctor_id) {
+    public function getDisponibilidad($doctor_id = 0) {
+        if ($doctor_id == 0) {
+            $doctor_id = (int)Input::get('doctor_id');
+            if ($doctor_id == 0) return '[]';
+        }
         $cal_start = strtotime(Input::get('start'));
         $cal_end = strtotime(Input::get('end'));
+        //only fetch if range not larger than a week
+        if ($cal_end - $cal_start > 604800000) { //604800000 = 1000 * 60 * 60 * 24 * 7
+            return '[]';
+        }
         $items_json = array();
         $doctor = User::find($doctor_id);
         if ($doctor) {

@@ -13,6 +13,7 @@ class Paciente extends Eloquent {
     protected $fillable = array(
         'nombre',
         'apellido',
+        'tdni',
         'dni',
         'fecha_nacimiento',
         'sexo',
@@ -73,7 +74,9 @@ class Paciente extends Eloquent {
             'id'                => 'integer|min:0',
             'nombre'            => 'required|alpha_spaces|max:45',
             'apellido'          => 'required|alpha_spaces|max:45',
-            'dni'               => 'required|regex:/^[vejVEJ]{1}-{1}[0-9]{7,9}$/|unique:paciente,dni,' . (int)$ignore_id,
+            //'dni'               => 'required|regex:/^[vejVEJ]{1}-{1}[0-9]{7,9}$/|unique:paciente,dni,' . (int)$ignore_id,
+            'tdni'              => 'in:V,E,J',
+            'dni'               => 'required|regex:/^[0-9]{7,9}$/|unique:paciente,dni,' . (int)$ignore_id,
             'fecha_nacimiento'  => 'date_format:Y-m-d',
             'sexo'              => 'in:0,1',
             'estado_civil'      => 'in:0,1,2,3', //soltero, casado, divorciado, viudo
@@ -103,6 +106,12 @@ class Paciente extends Eloquent {
     public function setSexoAttribute($value)
     {
         $this->attributes['sexo'] = (int)$value;
+    }
+
+    public function getDniAttribute()
+    {
+        $tdni = $this->attributes['tdni'];
+        return (!empty($tdni) ? strtoupper($tdni) : 'V') . '-' . preg_replace('/[^0-9]/', '', $this->attributes['dni']);
     }
 
     public function getNombreAttribute()

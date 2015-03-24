@@ -382,8 +382,15 @@ class BaseController extends Controller {
             }
             elseif (is_array($fields_to_show)) {
                 $name = array();
+                $i = 0;
                 foreach($fields_to_show as $field) {
-                    $name[] = $record->$field;
+                    if ($i < 2) {
+                        $name[] = $record->$field;
+                    }
+                    else {
+                        $name[] = '(' . $record->$field . ')';
+                    }
+                    $i++;
                 }
                 $name = implode($separator, $name);
                 $list[] = json_encode(array(

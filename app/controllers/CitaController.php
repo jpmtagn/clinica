@@ -549,7 +549,7 @@ EOT;
         $patient = Paciente::find($patient_id);
         $num_citas = Cita::total($patient_id)->count();
         //send information
-        $this->setReturn('patient_name_inf', $patient ? Functions::firstNameLastName($patient->nombre, $patient->apellido) : Lang::get('global.not_found'));
+        $this->setReturn('patient_name_inf', $patient ? (Functions::firstNameLastName($patient->nombre, $patient->apellido) . ' <span class="pull-right text-muted">(' . $patient->dni . ')</span>') : Lang::get('global.not_found'));
         $this->setReturn('record_inf', Lang::get(self::LANG_FILE . '.record_date_alt') . ' ' . Functions::longDateFormat($patient->created_at));
         $this->setReturn('num_citas_inf', Functions::singlePlural(Lang::get(self::LANG_FILE . '.title_single'), Lang::get(self::LANG_FILE . '.title_plural'), $num_citas, true));
         //send back data

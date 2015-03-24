@@ -4673,12 +4673,16 @@ DayGrid.mixin({
 		var comment = event.comment;
 		var has_comment = (typeof comment == 'string' && comment.length);
 		var comment_icon = has_comment ? '&nbsp;<i class="fa fa-comment"></i>' : '';
+		var is_cita = !(event.cita === 0);
 
         classes.unshift('fc-day-grid-event');
 
         classes.push('state' + state);
 		if (has_comment) {
 			classes.push('tip');
+		}
+		if (!is_cita) {
+			classes.push('availability');
 		}
 
 		// Only display a timed events time if it is the starting segment
@@ -5881,12 +5885,16 @@ TimeGrid.mixin({
 		var comment = event.comment;
 		var has_comment = (typeof comment == 'string' && comment.length);
 		var comment_icon = has_comment ? '&nbsp;<i class="fa fa-comment"></i>' : '';
+		var is_cita = !(event.cita === 0);
 
         classes.unshift('fc-time-grid-event');
 
         classes.push('state' + state);
 		if (has_comment) {
 			classes.push('tip');
+		}
+		if (!is_cita) {
+			classes.push('availability');
 		}
 
 		if (view.isMultiDayEvent(event)) { // if the event appears to span more than one day...

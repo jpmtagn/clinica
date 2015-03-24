@@ -94,6 +94,12 @@ var Panel = {
                                 else if (o.hasClass('input-slider') && (typeof o.attr('data') != 'undefined')) {
                                     o.slider('setValue', parseInt(value));
                                 }
+                                //dni
+                                else if (o.hasClass('input-dni')) {
+                                    var dni = value.split('-');
+                                    o.parent().find('button').find('span').html( dni[0] + '-' );
+                                    o.val( dni[1] );
+                                }
                                 else {
                                     o.val( value );
                                 }

@@ -233,6 +233,7 @@ CREATE TABLE IF NOT EXISTS `paciente` (
   `nombre` varchar(45) NOT NULL,
   `apellido` varchar(45) NOT NULL,
   `dni` varchar(10) NOT NULL,
+  `tdni` CHAR(1) NULL DEFAULT 'V',
   `fecha_nacimiento` date DEFAULT NULL,
   `sexo` tinyint(1) DEFAULT NULL,
   `estado_civil` tinyint(1) unsigned DEFAULT '0' COMMENT '0: Soltero, 1: Casado, 2:Divorciado, 3:Viudo',

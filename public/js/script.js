@@ -78,7 +78,7 @@ var App = function () {
                 jQuery(this).parent().removeClass("open");
 				sub.slideUp(slideSpeed, function () {
 					if ($('#sidebar').hasClass('sidebar-fixed') == false) {
-						App.scrollTo(thisElement, slideOffeset);
+						//App.scrollTo(thisElement, slideOffeset);
 					}
 					handleSidebarAndContentHeight();
                 });
@@ -87,7 +87,7 @@ var App = function () {
                 jQuery(this).parent().addClass("open");
                 sub.slideDown(slideSpeed, function () {
 					if ($('#sidebar').hasClass('sidebar-fixed') == false) {
-						App.scrollTo(thisElement, slideOffeset);
+						//App.scrollTo(thisElement, slideOffeset);
 					}
 					handleSidebarAndContentHeight();
                 });
@@ -789,7 +789,7 @@ var App = function () {
 			format: 'yyyy-mm-dd',
 			formatSubmit: 'yyyy-mm-dd',
 			editable: true,
-			selectYears: true,
+			selectYears: 200,
   			selectMonths: true,
   			container: 'body'
 		});

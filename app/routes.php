@@ -235,7 +235,7 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'CitaController@getCitas'
     ));
 
-    Route::get('calendario_disponibilidad/{doctor_id}', array(
+    Route::get('calendario_disponibilidad/{doctor_id?}', array(
         'as' => 'disponibilidad_calendar_source',
         'uses' => 'DisponibilidadController@getDisponibilidad'
     ));

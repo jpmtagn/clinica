@@ -61,6 +61,82 @@ EOT;
         }
     }
 
+    public function dni($name, $id = null, $label = null, $classes = "", $required = false, $validation_pattern = null) {
+        if ($id == null) $id = $name;
+        if ($label === null) $label = ucfirst($name);
+        if ($this->edit) $id = $id . '_edit';
+        $required = $required ? ' required' : '';
+        $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
+        if ($validation_pattern === null) {
+            $validation_pattern = array('[0-9]{7,9}', '123456789');
+        }
+        if (is_array($validation_pattern)) {
+            $vp = ' pattern="' . $validation_pattern[0] . '" title="' . $validation_pattern[1] . '"';
+        } else $vp = '';
+
+        $ds = '$';
+
+        $this->script.= <<<EOT
+            $('#{$id}_options').find('a').click(function(e) {
+                var {$ds}a = $(this);
+                $('#{$id}_options').parent().removeClass('open').find('button').find('span').html( {$ds}a.html() );
+                $('#t{$id}').val( {$ds}a.html().split('-')[0] );
+                e.preventDefault();
+                return false;
+            });
+EOT;
+
+        if ($this->show_labels) {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                                <span>V-</span>
+                            </button>
+                            <ul id="{$id}_options" class="dropdown-menu" role="menu">
+                                <li><a href="#">V-</a></li>
+                                <li><a href="#">E-</a></li>
+                                <li><a href="#">J-</a></li>
+                            </ul>
+                        </div>
+                        <input type="hidden" id="t{$id}" name="t{$name}" value="V">
+                        <input type="text" id="{$id}" name="{$name}" class="form-control input-dni" placeholder="{$label}"{$vp}{$value}{$required}>
+                    </div>
+
+                </div>
+            </div>
+EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                                <span class="">V-</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">V-</a></li>
+                                <li><a href="#">E-</a></li>
+                                <li><a href="#">J-</a></li>
+                            </ul>
+                        </div>
+                        <input type="hidden" id="t{$id}" name="t{$name}" value="V">
+                        <input type="text" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$vp}{$value}{$required}>
+                    </div>
+
+                </div>
+            </div>
+EOT;
+        }
+    }
+
     public function textarea($name, $id = null, $label = null, $classes = "", $required = false) {
         if ($id == null) $id = $name;
         if ($label === null) $label = ucfirst($name);

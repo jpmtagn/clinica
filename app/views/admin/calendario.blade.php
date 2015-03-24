@@ -41,6 +41,24 @@ Panel de Administración
     .bring-to-front {
         z-index: 1000 !important;
     }
+
+    .ampm-separation {
+        border-top-style: double !important;
+        border-top-width: 4px !important;
+    }
+
+    a.fc-event.availability {
+        opacity: .3;
+        border-radius: 0;
+        border: 0;
+        z-index: -200 !important;
+        pointer-events: none !important;
+        width: 100% !important;
+    }
+
+    a.fc-event.availability .fc-time {
+        display: none;
+    }
 </style>
 @stop
 
@@ -301,7 +319,8 @@ EOT;
             <form id="frm_data_new_patient" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_pacientes_registrar_post') }}">
                 {{ $frm->text('nombre', null, Lang::get('pacientes.name'), "", true) }}
                 {{ $frm->text('apellido', null, Lang::get('pacientes.lastname'), "", true) }}
-                {{ $frm->text('dni', null, Lang::get('pacientes.dni'), "", true, array('[vejVEJ]{1}-{1}[0-9]{7,9}', 'Ej. V-123456789')); }}
+                {{-- $frm->text('dni', null, Lang::get('pacientes.dni'), "", true, array('[vejVEJ]{1}-{1}[0-9]{7,9}', 'Ej. V-123456789')); --}}
+                {{ $frm->dni('dni', null, Lang::get('pacientes.dni'), "", true); }}
                 {{ $frm->date('fecha_nacimiento', null, Lang::get('pacientes.birthdate')) }}
                 {{ $frm->select('sexo', null, Lang::get('pacientes.gender'), $genders) }}
                 {{ $frm->select('estado_civil', null, Lang::get('pacientes.marital_status'), $marital_statuses) }}
@@ -400,6 +419,14 @@ EOT;
 </form>
 <!-- /GET EDIT EVENT FORM -->
 
+<!-- GET AVAILABILITY FORM -->
+<form id="frm_get_availability" class="hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('disponibilidad_calendar_source') }}">
+    <input type="hidden" name="doctor_id" value="0">
+    <input type="hidden" name="start" value="">
+    <input type="hidden" name="end" value="">
+</form>
+<!-- /GET AVAILABILITY FORM -->
+
 <!-- SEARCH EVENT FORM -->
 <form id="frm_get_search" class="hidden" role="form" method="get" autocomplete="off" action="{{ URL::route('calendar_search') }}">
     <input type="hidden" name="query" value="">
@@ -438,7 +465,11 @@ EOT;
 
     var cita_ID;
 
+    var availability_items;
+
     var creating_new_event = false;
+    var showing_availability = false;
+    var loading_availability_timer = false;
 
     function setDateTime(start, end) {
         var $frm = $('#frm_new_event_date_time_inf');
@@ -516,7 +547,7 @@ EOT;
     }*/
 
     function updateCountPer(name) {
-        //updates count of events per doctors
+        //updates count of events per doctors or offices
         var $a = $('a.filter-' + name);
         $.each($a, function(i, o) {
             var id = $(o).attr('attr-id') || '0';
@@ -524,8 +555,11 @@ EOT;
         });
         var $events = $('a.fc-event');
         $.each($events, function(i, o) {
-            var id = $(o).find('input.' + name + '_id').val();
-            window['total_' + id] = (parseInt(window['total_' + id]) || 0) + 1;
+            var $o = $(o);
+            if (!$o.hasClass('availability')) {
+                var id = $o.find('input.' + name + '_id').val();
+                window['total_' + id] = (parseInt(window['total_' + id]) || 0) + 1;
+            }
         });
         $.each($a, function(i, o) {
             var $o = $(o);
@@ -552,6 +586,8 @@ EOT;
             highlightActive('office');
             bindEventClick();
     		$('.tip').tooltip();
+            //styling morning / afternoon separation
+            $('#main_calendar').find('#hour_12').siblings('.fc-widget-content').addClass('ampm-separation');
         }
         else {
             window.creating_new_event = false;
@@ -702,28 +738,92 @@ EOT;
             $('a.fc-event').removeClass('event-faded wide');
         }
         else {
-            $('a.group-filter').not('.filter-' + name).removeClass('active');
-            $('a.fc-event').addClass('event-faded');
-            $.each($actives, function(i, o) {
-                var $o = $(o);
-                var $events = $('a.fc-event');
-                $.each($events, function(j, e) {
-                    var $e = $(e);
-                    if ($e.find('input.' + name + '_id').val() == $o.attr('attr-id')) {
-                        $e.removeClass('event-faded');
-                        if ($actives.length == 1) {
-                            $e.addClass('wide');
+            setTimeout(function() {
+                $('a.group-filter').not('.filter-' + name).removeClass('active');
+                $('a.fc-event').addClass('event-faded');
+                $.each($actives, function(i, o) {
+                    var $o = $(o);
+                    var $events = $('a.fc-event');
+                    $.each($events, function(j, e) {
+                        var $e = $(e);
+                        if ($e.find('input.' + name + '_id').val() == $o.attr('attr-id')) {
+                            $e.removeClass('event-faded');
+                            if ($actives.length == 1) {
+                                $e.addClass('wide');
+                            }
+                            else {
+                                $e.removeClass('wide');
+                            }
                         }
-                        else {
-                            $e.removeClass('wide');
-                        }
-                    }
+                    });
                 });
-            });
+            }, 100);
             /*$('a.fc-event.event-faded').mouseenter(function() {
                 $(this).hide();
             });*/
         }
+    }
+
+    function removeActive() {
+        $('a.filter-doctor').removeClass('active');
+        $('a.filter-office').removeClass('active');
+    }
+
+    function twoDigits(number) {
+        if (number < 10) {
+            return '0' + number;
+        }
+        return number;
+    }
+
+    function loadAvailability(id) {
+        //remove old ones
+        $('a.fc-event.availability').remove();
+        $('#main_calendar').fullCalendar('removeEvents', 0);
+
+        //fetch new ones
+        if (id > 0) {
+            var d = $('#main_calendar').fullCalendar('getDate')._d;
+            var e = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 6);
+            var $frm = $('#frm_get_availability');
+            $frm.find('input[name=doctor_id]').val(id);
+            $frm.find('input[name=start]').val(d.getUTCFullYear() + '-' + twoDigits(d.getUTCMonth()+1) + '-' + twoDigits(d.getUTCDate()) + ' 00:00:00');
+            $frm.find('input[name=end]').val(e.getUTCFullYear() + '-' + twoDigits(e.getUTCMonth()+1) + '-' + twoDigits(e.getUTCDate()) + ' 23:59:59');
+
+            if (window.loading_availability_timer) {
+                clearTimeout(window.loading_availability_timer);
+            }
+            window.loading_availability_timer = setTimeout(function() {
+                submitForm($frm, function($frm, data) {
+                    window.availability_items = data;
+                    showAvailability(data);
+                    window.loading_availability_timer = false;
+                });
+            }, 2000);
+        }
+    }
+
+    function showAvailability(data) {
+        window.showing_availability = true;
+        if (typeof data == 'undefined') data = window.availability_items;
+        var $cal = $('#main_calendar');
+        $.each(data, function(i, o) {
+            if (o.state_id == 1) {
+                $cal.fullCalendar('renderEvent', {
+                        id: 0,
+                        title: '',
+                        start: o.start,
+                        end: o.end,
+                        backgroundColor: o.backgroundColor,
+                        state_id: 10,
+                        cita: 0
+                    }//,
+                    //true // make the event "stick"
+                );
+            }
+        });
+        window.showing_availability = false;
+        highlightActive('doctor');
     }
 
     function showHideNewPatient() {
@@ -851,7 +951,9 @@ EOT;
     function gotoDate(date) {
         if (typeof date != 'undefined' && date.length) {
             var $cal = $('#main_calendar');
+            var top = $cal.find('.fc-scroller').eq(0).scrollTop();
             $cal.fullCalendar('gotoDate', date);
+            $cal.find('.fc-scroller').eq(0).scrollTop(top);
             $cal.fullCalendar('scrollTo', parseInt(date.split('T')[1]), $cal);
         }
     }
@@ -862,6 +964,7 @@ EOT;
             $frm.find('input[name=query]').val( query );
             submitForm($frm, function($frm, data) {
                 if (data['ok'] == 1) {
+                    removeActive();
                     gotoDate( data['fecha'] );
                     setTimeout(function() {
                         emphasizeEvent( data['cita_id'] );
@@ -1120,7 +1223,7 @@ EOT;
             }
         });
 
-        $('#dni').blur(function() {
+        /*$('#dni').blur(function() {
             var $this = $(this);
             var val = $this.val();
             if (val.length > 3) {
@@ -1128,7 +1231,7 @@ EOT;
                     $this.val( 'V-' + val.replace(/\D/g,'') );
                 }
             }
-        });
+        });*/
 
         $('#edit_cita').click(function() {
             var $btn = $(this);
@@ -1206,9 +1309,15 @@ EOT;
         });
 
         $('a.filter-doctor').click(function(e) {
+            var view = $('#main_calendar').fullCalendar('getView').name;
             var $a = $(this);
-            var id = $a.attr('attr-id');
+            var id = parseInt($a.attr('attr-id')) || 0;
             $a.toggleClass('active').siblings().removeClass('active');
+
+            if (view == 'agendaWeek' || view == 'agendaDay') {
+                loadAvailability($a.hasClass('active') ? id : 0);
+            }
+
             highlightActive('doctor');
             e.preventDefault();
             return false;

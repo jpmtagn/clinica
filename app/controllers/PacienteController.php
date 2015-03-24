@@ -241,7 +241,7 @@ class PacienteController extends BaseController {
         //$output .= $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative') . '<br>';
         $output .= $frm->halfPanelClose(true);
 
-        //$output .= $frm->controlButtons(null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
+        $output .= $frm->controlButtons();//null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
 
         //$this->setReturn('script', $frm->script());
 
@@ -330,7 +330,7 @@ class PacienteController extends BaseController {
 
 
     public function listSeekAlt() {
-        return $this->listSeek(array('nombre', 'apellido'), ' ');
+        return $this->listSeek(array('nombre', 'apellido', 'dni'), ' ');
     }
 
     public function listSeekDoctor() {
