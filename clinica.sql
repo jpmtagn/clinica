@@ -322,7 +322,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
-INSERT INTO `usuario` (`id`, `correo`, `password`, `contrasena_tmp`, `activo`, `admin`, `remember_token`, `created_at`, `updated_at`) VALUES
+INSERT INTO `usuario` (`id`, `nombre`, `password`, `contrasena_tmp`, `activo`, `admin`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'admin', '$2y$10$SPk9qASck2p7d87YGfLY1eNcJNUUzASa/gvjiIz/wdPqbg7zNgVsi', NULL, 1, 1, 'sDbDeDrB2GHsGkbAG87WKBP4c6X5GfmrgydD6qJoBCZrcPJgqaSU5yHtDzZK', '2014-09-07 15:41:41', '2015-03-19 08:43:48');
 
 -- --------------------------------------------------------
