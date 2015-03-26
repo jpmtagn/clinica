@@ -106,7 +106,8 @@ class ConsultorioController extends BaseController {
      * @return string
      */
     public function buscarReturnHtml($records, $search_fields) {
-        return AForm::searchResults($records, 'nombre');
+        //return AForm::searchResults($records, 'nombre');
+        return Aform::searchResultsRelational($records, 'nombre', 'area', 'nombre');
     }
 
 }

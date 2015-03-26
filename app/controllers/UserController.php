@@ -91,13 +91,21 @@ class UserController extends BaseController {
                                         ->take(12)
                                         ->get();
 
+            $doctor_name = $doctor->nombre; //username
+            $doctor = $doctor->paciente;
+            if ($doctor) {
+                $doctor_name = Functions::firstNameLastName($doctor->nombre, $doctor->apellido); //full name
+            }
+            $doctor_avatar = URL::asset('img/avatars/s/' . ($doctor && !empty($doctor->avatar) ?  $doctor->avatar : 'default.jpg'));
+
             return View::make('admin.inicio_doctor')->with(array(
                 'total_citas' => $total_citas,
                 'total_citas_today' => $total_citas_today,
                 'total_citas_done' => $total_citas_done,
                 'total_citas_cancelled' => $total_citas_cancelled,
                 'chart_data_patient_month' => $chart_data_patient_month,
-                'doctor' => $doctor->paciente,
+                'doctor_name' => $doctor_name,
+                'doctor_avatar' => $doctor_avatar,
                 'doctor_id' => $doctor_id
             ));
         }
@@ -194,13 +202,13 @@ class UserController extends BaseController {
     public function iniciarSesionPost() {
         $validator = Validator::make(Input::all(),
             array(
-                'correo'        => 'required',
+                'nombre'        => 'required',
                 'password'      => 'required'
             )
         );
         if ($validator->passes()) {
             $credentials = array(
-                'correo'        => Input::get('correo'),
+                'nombre'        => Input::get('nombre'),
                 'password'      => Input::get('password'),
                 'activo'        => 1
             );
@@ -242,7 +250,7 @@ class UserController extends BaseController {
         $output = "";
         $output .= $frm->id( $item->id );
         $output .= $frm->hidden('action');
-        $output .= $frm->view('correo', Lang::get(self::LANG_FILE . '.email'), $item->correo);
+        $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.username'), $item->nombre);
         $output .= $frm->view('admin', Lang::get(self::LANG_FILE . '.admin'), $item->admin ? Lang::get('global.yes') : Lang::get('global.no'));
         $output .= $frm->view('activo', Lang::get(self::LANG_FILE . '.active'), $item->activo ? Lang::get('global.yes') : Lang::get('global.no'));
         $output .= $frm->view('creado_el', Lang::get(self::LANG_FILE . '.record_date'), Functions::longDateFormat($item->created_at));
@@ -313,7 +321,7 @@ EOT;
         if ($validator->passes()) {
             $user = Auth::user();
             $credentials = array(
-                'correo'        => Auth::user()->correo,
+                'nombre'        => Auth::user()->nombre,
                 'password'      => Input::get('password_current'),
                 'activo'        => 1
             );
@@ -348,7 +356,7 @@ EOT;
         if (!$user) {
             User::create(array(
                 'id'        => 1,
-                'correo'    => 'admin@defecto',
+                'nombre'    => 'admin',
                 'password'  => 'cli_0123', //<-- cambiar
                 'activo'    => 1,
                 'admin'     => 1
@@ -357,4 +365,4 @@ EOT;
         return Redirect::route('inicio_sesion');
     }
 
-} 
+}

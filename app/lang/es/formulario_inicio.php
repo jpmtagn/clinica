@@ -3,6 +3,7 @@ return array(
     'title' => 'Acceso al panel de administrador',
     'sing_in' => 'Iniciar Sesión',
     'email' => 'Correo',
+    'username' => 'Nombre de usuario',
     'password' => 'Contraseña',
     'remember_me' => 'Recordarme',
     'submit' => 'Iniciar',
@@ -13,5 +14,5 @@ return array(
     'back_login' => 'Regresar a iniciar sesión',
 
     //messages
-    'fail_login' => 'La contraseña y correo no son válidos'
+    'fail_login' => 'El usuario y contraseña no son válidos'
 );

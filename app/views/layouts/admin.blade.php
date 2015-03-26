@@ -19,8 +19,8 @@
     	$username = Functions::firstNameLastName($username->nombre, $username->apellido);
     }
     else {
-    	$username = explode(chr(64), $user->correo);
-    	$username = $username[0];
+    	$username = explode(chr(64), $user->nombre);
+    	$username = $username[0] . ' &nbsp; &nbsp; <i class="fa fa-exclamation-triangle"></i> (' . Lang::get('usuarios.hint_my_account') . ')';
     }
 ?>
 <!DOCTYPE html>

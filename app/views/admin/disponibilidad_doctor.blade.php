@@ -91,13 +91,17 @@ Panel de Administración
 <!-- ACTIONS FORM -->
 {{ $frm->modalOpen('actions_modal', Lang::get('citas.actions')) }}
     <div class="btn-toolbar" role="toolbar">
-        <div id="states" class="btn-group btn-group-lg" role="group">
+        <!--div id="states" class="btn-group btn-group-lg" role="group">
             <button id="state0" type="button" class="btn btn-default" attr-state_id="0" attr-type="danger">
                 <i class="fa fa-4x fa-minus-circle"></i>
                 <span>{{ Lang::get('disponibilidad.disable') }}</span>
             </button>
-        </div>
+        </div-->
         <div class="btn-group btn-group-lg" role="group">
+            <button id="duplicate_disponible" type="button" class="btn btn-default">
+                <i class="fa fa-4x fa-copy"></i>
+                <span>{{ Lang::get('disponibilidad.duplicate') }}</span>
+            </button>
             <button id="delete_disponible" type="button" class="btn btn-default">
                 <i class="fa fa-4x fa-trash"></i>
                 <span>{{ Lang::get('disponibilidad.delete') }}</span>
@@ -114,6 +118,20 @@ Panel de Administración
 {{ $frm->modalClose(null, null, false) }}
 <!-- /ACTIONS FORM -->
 
+<!-- DUPLICATE MODAL -->
+{{ $frm->modalOpen('duplicate_modal', Lang::get('disponibilidad.duplicate_to')) }}
+    <form id="frm_duplicate" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('disponibilidad_duplicate_post') }}">
+        {{ $frm->date('fecha', null, Lang::get('global.date')) }}
+        <input type="hidden" name="disponibilidad_id" id="disponibilidad_id_duplicate" value="0">
+        <input type="hidden" name="usuario_id" id="usuario_id" value="{{ $doctor_id }}">
+        {{ Form::token() }}
+        {{-- $frm->submit( Lang::get('global.ok') ) --}}
+    </form>
+{{ $frm->modalClose() }}
+<!-- /DUPLICATE MODAL -->
+
+{{ $frm->date('goto_date', null, null, 'day', 'hidden') }}
+
 <!-- /MAIN CONTENT -->
 @stop
 
@@ -123,6 +141,7 @@ Panel de Administración
 {{ HTML::script('js/pickadate/picker.date.js') }}
 {{ HTML::script('js/pickadate/picker.time.js') }}
 {{ HTML::script('js/bootstrap-inputmask/bootstrap-inputmask.min.js') }}
+{{ HTML::script('js/jquery-easing/jquery.easing.min.js') }}
 {{ HTML::script('js/fullcalendar/lib/moment.min.js') }}
 {{ HTML::script('js/fullcalendar/fullcalendar.js') }} <!-- customized -->
 <?php if (Config::get('app.locale') != 'en') : ?>
@@ -142,6 +161,16 @@ Panel de Administración
 
     function dateToString(date) {
         return date.getUTCFullYear() + '-' + twoDigits(date.getUTCMonth()+1) + '-' + twoDigits(date.getUTCDate()) + ' ' + twoDigits(date.getUTCHours()) + ':' + twoDigits(date.getUTCMinutes()) + ':00';
+    }
+
+    function gotoDate(date) {
+        if (typeof date != 'undefined' && date.length) {
+            var $cal = $('#disponible_calendar');
+            var top = $cal.find('.fc-scroller').eq(0).scrollTop();
+            $cal.fullCalendar('gotoDate', date);
+            $cal.find('.fc-scroller').eq(0).scrollTop(top);
+            $cal.fullCalendar('scrollTo', parseInt(date.split('T')[1]), $cal);
+        }
     }
 
     function fn_new_event(start, end, allDay) {
@@ -331,6 +360,40 @@ Panel de Administración
             var $btn = $(this);
             $btn.addClass('disabled');
             deleteDisponibilidad(dis_ID, $btn);
+        });
+
+        $('#duplicate_disponible').click(function() {
+            var $modal = $('#duplicate_modal');
+            $modal.modal('show');
+        });
+
+        $('#duplicate_modal').find('button.modal-btn-ok').click(function() {
+            var $frm = $('#frm_duplicate');
+            $frm.find('input[name=disponibilidad_id]').val( dis_ID );
+            submitForm( $frm, function($frm, data) {
+                if (data['ok'] == 1) {
+                    alert(data['msg']);
+                }
+                submitFormDoneDefault($frm, data);
+            });
+        });
+
+        //go to date button
+        $('#disponible_calendar').find('.fc-toolbar').find('.fc-left').append($('<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right" type="button">{{ Lang::get('citas.goto') }}</button>'));
+        
+        $('#goto_date_btn').click(function() {
+            setTimeout(function() {
+                $('#goto_date').pickadate('picker').open();
+            }, 300);
+        }).mouseenter(function() {
+            $(this).addClass('fc-state-hover');
+        }).mouseleave(function() {
+            $(this).removeClass('fc-state-hover');
+        });
+
+        $('#goto_date').pickadate('picker').on('set', function() {
+            var $dp = $('#goto_date').pickadate('picker');
+            gotoDate( $dp.get('select', 'yyyy-mm-dd') );
         });
 
     });

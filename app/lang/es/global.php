@@ -60,6 +60,8 @@ return array(
     'minute' => 'minuto',
     'second' => 'segundo',
 
+    'date' => 'Fecha',
+
     'yes' => 'sí',
     'no' => 'no',
 

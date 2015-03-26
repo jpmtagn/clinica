@@ -33,5 +33,6 @@ return array(
 
     //messages
     'wrong_current_password' => 'La contraseña actual ingresada no es correcta.',
-    'password_changed' => 'La contraseña ha sido cambiada.'
+    'password_changed' => 'La contraseña ha sido cambiada.',
+    'hint_my_account' => 'registre sus datos'
 );

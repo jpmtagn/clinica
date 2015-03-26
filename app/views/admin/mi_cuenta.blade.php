@@ -84,7 +84,8 @@ Panel de Administración
 		            
 		            {{ $frm->text('nombre', null, Lang::get('pacientes.name'), "", true) }}
 		            {{ $frm->text('apellido', null, Lang::get('pacientes.lastname'), "", true) }}
-		            {{ $frm->text('dni', null, Lang::get('pacientes.dni'), "", true, array('[vejVEJ]{1}-{1}[0-9]{7,9}', 'Ej. V-123456789')); }}
+		            {{-- $frm->text('dni', null, Lang::get('pacientes.dni'), "", true, array('[vejVEJ]{1}-{1}[0-9]{7,9}', 'Ej. V-123456789')); --}}
+                    {{ $frm->dni('dni', null, Lang::get('pacientes.dni'), "", true); }}
 		            {{ $frm->date('fecha_nacimiento', null, Lang::get('pacientes.birthdate')) }}
 		            {{ $frm->select('sexo', null, Lang::get('pacientes.gender'), $genders) }}
 		            {{ $frm->select('estado_civil', null, Lang::get('pacientes.marital_status'), $marital_statuses) }}

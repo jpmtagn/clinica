@@ -69,6 +69,10 @@ class Servicio extends Eloquent {
 
 
     //GETTERS:
+    public static function getWithEquipments() {
+        return DB::table('servicios_equipos')->get();
+    }
+
     public function getSearchable() {
         return $this->searchable;
     }

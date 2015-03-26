@@ -22,16 +22,12 @@
             <div class="row">
                 <div class="col-md-2">
                     <figure class="avatar">
-                        @if (!empty($doctor->avatar))
-                        <img src="{{ URL::asset('img/avatars/s/' . $doctor->avatar) }}" alt="">
-                        @else
-                        <img src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
-                        @endif
+                        <img src="{{ $doctor_avatar }}" alt="">
                     </figure>
                 </div>
                 <div class="col-md-10">
                     <div class="clearfix">
-                        <h3 class="content-title pull-left">{{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido) }}</h3>
+                        <h3 class="content-title pull-left">{{ $doctor_name }}</h3>
                     </div>
                     <div class="description">{{ Lang::get('global.general_inf') }}</div>
                 </div>

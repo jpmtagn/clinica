@@ -667,6 +667,12 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'DisponibilidadController@calendarActionPost'
         ));
 
+        //duplicate
+        Route::post('admin/disponibilidad/duplicar', array(
+            'as' => 'disponibilidad_duplicate_post',
+            'uses' => 'DisponibilidadController@duplicarPost'
+        ));
+
 
         // PAGINA OPCIONES
 

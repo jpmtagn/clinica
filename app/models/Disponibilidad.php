@@ -79,7 +79,7 @@ class Disponibilidad extends Eloquent {
 
 
     //FILTROS:
-    public function scopeFromDateToDate($query, $start, $end) {
+    /*public function scopeFromDateToDate($query, $start, $end) {
         //$date = Functions::explodeDateTime($start, true);
         //if (checkdate($date['month'], $date['day'], $date['year'])) {
             return $query->whereRaw('fijo = 1 OR (inicio <= ? AND fin >= ?)', array(
@@ -88,6 +88,12 @@ class Disponibilidad extends Eloquent {
             ));
         //}
         return $query;
+    }*/
+    public function scopeFromDateToDate($query, $start, $end) {
+        return $query->whereRaw('(inicio >= ? AND fin <= ?)', array(
+            $start,
+            $end
+        ));
     }
 
     /*public function scopeToDate($query, $val) {
@@ -98,7 +104,7 @@ class Disponibilidad extends Eloquent {
         return $query;
     }*/
 
-    public function scopeForDateTime($query, $start, $end, $user_id) {
+    /*public function scopeForDateTime($query, $start, $end, $user_id) {
         $start = strtotime($start);
         $end = strtotime($end);
         $dow = date('N', $start) - 1;
@@ -131,6 +137,14 @@ class Disponibilidad extends Eloquent {
             $dow,
             $start_time,
             $end_time,
+            $start,
+            $end
+        ));
+    }*/
+
+    public function scopeForDateTime($query, $start, $end, $user_id) {
+        return $query->whereRaw('(usuario_id = ? AND inicio <= ? AND fin >= ?)', array(
+            $user_id,
             $start,
             $end
         ));

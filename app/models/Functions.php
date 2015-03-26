@@ -333,10 +333,10 @@ class Functions {
     public static function langArray($lang_file, $array, $field_name = null, $field_id = null) {
         $return_array = array();
         if (is_array($array)) {
-            foreach ($array as $a) {
+            foreach ($array as $key => $a) {
                 if ($field_name == null) {
                     if ($field_id == null) {
-                        $return_array[] = Lang::get($lang_file . '.' . $a);
+                        $return_array[$key] = Lang::get($lang_file . '.' . $a);
                     }
                     else {
                         $return_array[$a[$field_id]] = Lang::get($lang_file . '.' . $a);
@@ -344,7 +344,7 @@ class Functions {
                 }
                 else {
                     if ($field_id == null) {
-                        $return_array[] = Lang::get($lang_file . '.' . $a[$field_name]);
+                        $return_array[$key] = Lang::get($lang_file . '.' . $a[$field_name]);
                     }
                     else {
                         $return_array[$a[$field_id]] = Lang::get($lang_file . '.' . $a[$field_name]);
@@ -355,10 +355,23 @@ class Functions {
         return $return_array;
     }
 
-    public static function arrayIt($objects, $key, $value) {
+    public static function arrayIt($objects, $key, $value, $rel = null) {
         $arr = array();
+        $has_rel = is_array($rel) && count($rel) > 1;
         foreach($objects as $item) {
-            $arr[$item->$key] = $item->$value;
+            if ($has_rel) {
+              $rel_model = $rel[0];
+              $rel_field = $rel[1];
+              $rel_value = $item->$rel_model->$rel_field;
+              //$arr[$item->$key] = $item->$value . ' &nbsp; <span class="text-muted">' . $rel_value . '</span>';
+              $arr[$item->$key] = $item->$value . ' - ' . $rel_value;
+            }
+            elseif ($rel !== null) {
+              $arr[$item->$key] = $item->$value . ' - ' . $item->$rel;
+            }
+            else {
+              $arr[$item->$key] = $item->$value;
+            }
         }
         return $arr;
     }

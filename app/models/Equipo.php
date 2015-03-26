@@ -14,14 +14,16 @@ class Equipo extends Eloquent {
         'nombre',
         'cantidad',
         'descripcion',
-        'inamovible'
+        'inamovible',
+        'serial'
     );
 
     protected $table = 'equipo';
 
     protected $searchable = array(
         'nombre',
-        'descripcion'
+        'descripcion',
+        'serial'
     );
 
     protected $booleans = array(
@@ -43,7 +45,8 @@ class Equipo extends Eloquent {
             'nombre'        => 'required|max:45',
             'cantidad'      => 'integer|min:0',
             'descripcion'   => 'max:255',
-            'inamovible'    => 'in:0,1'
+            'inamovible'    => 'in:0,1',
+            'serial'        => 'max:255'
         );
         if ($field === null) {
             return $rules;

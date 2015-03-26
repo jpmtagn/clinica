@@ -6,6 +6,7 @@ return array(
     'description' => 'Descripción',
     'quantity' => 'Cantidad',
     'immovable' => 'Inamovible',
+    'serial' => 'Serial',
 
     'new_event' => 'Nuevo Equipo'
 

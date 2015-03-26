@@ -9179,3 +9179,18 @@ a.fc-event:hover {
         width: 650px !important;
     }
 }
+
+h4.flash {
+  background-color: #f00;
+  border-radius: 4px;
+  padding: 2px !important;
+  color: #ff0 !important;
+}
+
+h4.flash i {
+  color: #ff0 !important;
+}
+
+.fc-today {
+  background: none !important;
+}

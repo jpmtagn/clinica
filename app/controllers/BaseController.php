@@ -267,7 +267,7 @@ class BaseController extends Controller {
         $first = true;
         foreach($query as $q) {
             $q = trim($q);
-            if (strlen($q) > 1) {
+            if (strlen($q) > 0) { //if (strlen($q) > 1 || is_numeric($q)) {
                 $records = $records->where(function ($sql_query) use ($search_fields, $q) {
                     $first_query = true;
                     foreach($search_fields as $attr) {

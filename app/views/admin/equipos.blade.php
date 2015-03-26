@@ -78,7 +78,8 @@ Panel de Administración
         <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_' . $key . '_registrar_post') }}">
             {{ $frm->text('nombre', null, Lang::get('equipo.name'), '', true) }}
             {{ $frm->text('descripcion', null, Lang::get('equipo.description')) }}
-            {{ $frm->number('cantidad', null, Lang::get('equipo.quantity')) }}
+            {{ $frm->text('serial', null, Lang::get('equipo.serial')) }}
+            {{-- $frm->number('cantidad', null, Lang::get('equipo.quantity')) --}}
             {{ $frm->checkbox('inamovible', null, Lang::get('equipo.immovable')) }}
             {{ $frm->multiselect('servicios[]', 'servicios', Lang::get('servicio.title_plural'), $servicios) }}
             <br>
@@ -94,7 +95,8 @@ Panel de Administración
             {{ $frm->id() }}
             {{ $frm->text('nombre', null, Lang::get('equipo.name'), '', true) }}
             {{ $frm->text('descripcion', null, Lang::get('equipo.description')) }}
-            {{ $frm->number('cantidad', null, Lang::get('equipo.quantity')) }}
+            {{ $frm->text('serial', null, Lang::get('equipo.serial')) }}
+            {{-- $frm->number('cantidad', null, Lang::get('equipo.quantity')) --}}
             {{ $frm->checkbox('inamovible', null, Lang::get('equipo.immovable')) }}
             {{ $frm->multiselect('servicios[]', 'servicios', Lang::get('servicio.title_plural'), $servicios) }}
 

@@ -48,11 +48,11 @@ class="login"
                         @endif
 
                         <form role="form" method="post" action="{{ URL::route('inicio_sesion_post') }}">
-                            <!-- correo -->
+                            <!-- nombre -->
                             <div class="form-group">
-                                <label for="correo">{{ Lang::get('formulario_inicio.email') }}</label>
-                                <i class="fa fa-envelope"></i>
-                                <input value="" type="text" id="correo" name="correo" class="form-control" value="{{ Functions::retrieve('correo') }}" required autofocus>
+                                <label for="nombre">{{ Lang::get('formulario_inicio.username') }}</label>
+                                <i class="fa fa-user"></i>
+                                <input value="" type="text" id="nombre" name="nombre" class="form-control" value="{{ Functions::retrieve('nombre') }}" required autofocus>
                             </div>
                             <!-- contraseña -->
                             <div class="form-group">

@@ -1,3 +1,19 @@
-[ ] Disable edit when cita is done
-[ ] Don't allow scrolling when in calendar mode (doesn't do it in all displays though)
-[ ] Reset ignore all options after submitting
+[X] Actualizar automatica a eliminar algun elementos (Tratamiento,Personas, etc..)
+[X] Permitir agregar los datos de usuario cuando se inicie la sesion.
+[X] No permitir espacios en nombre de usuario.
+[X] Agregar funcion para horarios de terapeutas, cargar de horario semanal con opciones a replicas. Consultar al cliente.
+[X] Mostrar el area en cada seleccion de cabina.
+[ ] Agregar compartidos.
+[ ] Validar Equipos para agregar el tratamiento.
+[X] Mostrar el equipo al seleccionar el tratamiento.
+[X] Quitar la opcion de cantidad a los equipos (agregar serial).
+[X] Resaltar advertencias.
+[ ] Revisar la validacion del agendamiento (esta agregando en horas permitidas de otros dias (!) )
+[ ] Borrar el error/advertencia cuando se cierre el modal
+[ ] Permitir mover las citas agendadas. Ultimo.
+[ ] Agregar una cita en un horario de una cita que ha sido cancelada.
+[X] Filtro para los estados de las citas.
+[ ] Opcion de eliminar la cita en el candelario. Pedir confirmacion para cada eliminar. (admin)
+[ ] Resaltar solo el dia actual (fecha en negrita solamente).
+[ ] Crear log para todas las acciones
+[X] Redireccionar a la carpeta public

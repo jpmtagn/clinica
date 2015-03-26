@@ -110,6 +110,7 @@ Panel de Administración
 
                 <div class="divide-20"></div>
 
+                <!-- terapeutas -->
                 {{ $frm->accordionOpen('filter_accordion') }}
                     {{ $frm->accordionItemOpen(Lang::get('usuarios.doctor')) }}
                         <div class="list-group">
@@ -129,6 +130,21 @@ Panel de Administración
                 {{ $frm->accordionClose() }}
                 @endif
 
+                <!-- estados -->
+                {{ $frm->accordionOpen('filter_state_accordion') }}
+                    {{ $frm->accordionItemOpen(Lang::get('citas.state')) }}
+                        <div class="list-group">
+                            @foreach ($estados as $id => $nombre)
+                                <a href="#" class="list-group-item group-filter filter-state" attr-id="{{ $id }}">
+                                    {{ $nombre }}
+                                    <span class="badge hidden">0</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    {{ $frm->accordionItemClose() }}
+                {{ $frm->accordionClose() }}
+
+                <!-- cabinas -->
                 {{ $frm->accordionOpen('filter_office_accordion') }}
                     {{ $frm->accordionItemOpen(Lang::get('consultorio.title_single')) }}
                         <div class="list-group">
@@ -547,25 +563,25 @@ EOT;
     }*/
 
     function updateCountPer(name) {
-        //updates count of events per doctors or offices
+        //updates count of events per filter
         var $a = $('a.filter-' + name);
         $.each($a, function(i, o) {
             var id = $(o).attr('attr-id') || '0';
-            window['total_' + id] = 0;
+            window['total_' + name + id] = 0;
         });
         var $events = $('a.fc-event');
         $.each($events, function(i, o) {
             var $o = $(o);
             if (!$o.hasClass('availability')) {
                 var id = $o.find('input.' + name + '_id').val();
-                window['total_' + id] = (parseInt(window['total_' + id]) || 0) + 1;
+                window['total_' + name + id] = (parseInt(window['total_' + name + id]) || 0) + 1;
             }
         });
         $.each($a, function(i, o) {
             var $o = $(o);
             var id = $o.attr('attr-id') || '0';
-            var total = window['total_' + id];
-            if (total > 0 && id > 0) {
+            var total = window['total_' + name + id];
+            if (total > 0 && id >= 0) {
                 $o.find('span.badge').html(total).removeClass('hidden');
             }
             else {
@@ -582,8 +598,10 @@ EOT;
         if (!window.creating_new_event) {
             updateCountPer('doctor');
             updateCountPer('office');
+            updateCountPer('state');
             highlightActive('doctor');
             highlightActive('office');
+            highlightActive('state');
             bindEventClick();
     		$('.tip').tooltip();
             //styling morning / afternoon separation
@@ -767,6 +785,7 @@ EOT;
     function removeActive() {
         $('a.filter-doctor').removeClass('active');
         $('a.filter-office').removeClass('active');
+        $('a.filter-state').removeClass('active');
     }
 
     function twoDigits(number) {
@@ -1013,7 +1032,7 @@ EOT;
                 end: '23:59',
                 dow: [ {{ $options['days_to_show_str'] }} ]
             },
-            eventStartEditable: false,
+            eventStartEditable: {{ !$read_only ? 'true' : 'false' }},
             eventDurationEditable: false,
             firstDay: 1,
             weekends: true,
@@ -1024,8 +1043,8 @@ EOT;
             slotDuration: '00:10:00',
             hiddenDays: [{{ $options['days_to_hide_str'] }}],
             businessHours: {
-                start: '{{ $options['start_time'] }}',
-                end: '{{ $options['end_time'] }}',
+                start: '00:00:00',//'{{ $options['start_time'] }}',
+                end: '00:00:00',//'{{ $options['end_time'] }}',
                 dow: [ {{ $options['days_to_show_str'] }} ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
@@ -1332,6 +1351,15 @@ EOT;
             return false;
         });
 
+        $('a.filter-state').click(function(e) {
+            var $a = $(this);
+            var id = $a.attr('attr-id');
+            $a.toggleClass('active').siblings().removeClass('active');
+            highlightActive('state');
+            e.preventDefault();
+            return false;
+        });
+
         $('#search_event_btn').click(function(e) {
             var query = $('#search_event_query').val();
             if (query.length > 0) {
@@ -1346,6 +1374,8 @@ EOT;
                 $('#search_event_btn').click();
             }
         });
+
+        $('#area_id').select2('val', '');
 
 
         //auto refreshes every 10 minutes

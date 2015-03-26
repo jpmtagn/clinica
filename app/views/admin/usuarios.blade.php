@@ -72,7 +72,7 @@ Panel de Administración
         <!-- CREATE NEW -->
         {{ $frm->panelOpen('create', Lang::get('global.new'), 'fa-plus', 'primary hidden', array('collapse','remove')) }}
             <form id="frm_data_new" class="form-horizontal" role="form" method="post" action="{{ URL::route('admin_usuarios_registrar_post') }}">
-                {{ $frm->text('correo', null, Lang::get('usuarios.username'), "", true) }}
+                {{ $frm->username('nombre', null, Lang::get('usuarios.username'), "", true) }}
                 {{ $frm->password('password', null, Lang::get('usuarios.password')) }}
                 {{ $frm->password('password2', null, Lang::get('usuarios.password_again')) }}
                 {{ $frm->checkbox('admin', null, Lang::get('usuarios.admin')) }}
@@ -88,7 +88,7 @@ Panel de Administración
         {{ $frm->panelOpen('edit', Lang::get('global.modify'), 'fa-pencil', 'orange hidden', array('collapse','remove')) }}
             <form id="frm_data_edit" class="form-horizontal" role="form" action="{{ URL::route('admin_usuarios_editar_post') }}">
                 {{ $frm->id() }}
-                {{ $frm->text('correo', null, Lang::get('usuarios.username'), "", true) }}
+                {{ $frm->username('nombre', null, Lang::get('usuarios.username'), "", true) }}
                 {{ $frm->password('password', null, Lang::get('usuarios.password')) }}
                 {{ $frm->password('password2', null, Lang::get('usuarios.password_again')) }}
                 {{ $frm->checkbox('admin', null, Lang::get('usuarios.admin')) }}
@@ -141,6 +141,8 @@ Panel de Administración
     $(document).ready(function() {
         //App.setPage("index");  //Set current page
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
+
+        {{ $frm->script() }}
     });
 </script>
 @stop

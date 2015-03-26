@@ -4716,6 +4716,7 @@ DayGrid.mixin({
                         '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
                         '<input type="hidden" class="service_id" value="' + service_id + '">' +
                         '<input type="hidden" class="office_id" value="' + office_id + '">' +
+                        '<input type="hidden" class="state_id" value="' + state + '">' +
 				'</div>' +
 				(isResizable ?
 					'<div class="fc-resizer"/>' :
@@ -5945,6 +5946,7 @@ TimeGrid.mixin({
                     '<input type="hidden" class="patient_id" value="' + patient_id + '">' +
                     '<input type="hidden" class="service_id" value="' + service_id + '">' +
                     '<input type="hidden" class="office_id" value="' + office_id + '">' +
+                    '<input type="hidden" class="state_id" value="' + state + '">' +
 				'</div>' +
 				'<div class="fc-bg"/>' +
 				(isResizable ?

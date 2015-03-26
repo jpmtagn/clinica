@@ -51,9 +51,9 @@ class CitaController extends BaseController {
         //$model = self::MODEL;
         //$events = $model::with('paciente')->latestOnes()->get();
         $doctores = Doctor::getAll();
-        $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
+        $servicios = Functions::arrayIt(Servicio::getWithEquipments(), 'id', 'nombre', 'equipos');
         $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
-        $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+        $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre', array('area', 'nombre'));
         $genders = Functions::langArray('pacientes', Paciente::getGenders());
         $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
         $doctor_letters = Doctor::getFirstNameLetters();
@@ -67,6 +67,7 @@ class CitaController extends BaseController {
                 'servicios' => $servicios,
                 'areas' => $areas,
                 'consultorios' => $consultorios,
+                'estados' => Functions::langArray( self::LANG_FILE, Cita::state() ),
                 'genders' => $genders,
                 'marital_statuses' => $marital_statuses,
                 'doctor_letters' => $doctor_letters,
@@ -549,7 +550,7 @@ EOT;
         $patient = Paciente::find($patient_id);
         $num_citas = Cita::total($patient_id)->count();
         //send information
-        $this->setReturn('patient_name_inf', $patient ? (Functions::firstNameLastName($patient->nombre, $patient->apellido) . ' <span class="pull-right text-muted">(' . $patient->dni . ')</span>') : Lang::get('global.not_found'));
+        $this->setReturn('patient_name_inf', $patient ? (Functions::firstNameLastName($patient->nombre, $patient->apellido) . ' <span class="pull-right text-muted">' . $patient->dni . '</span>') : Lang::get('global.not_found'));
         $this->setReturn('record_inf', Lang::get(self::LANG_FILE . '.record_date_alt') . ' ' . Functions::longDateFormat($patient->created_at));
         $this->setReturn('num_citas_inf', Functions::singlePlural(Lang::get(self::LANG_FILE . '.title_single'), Lang::get(self::LANG_FILE . '.title_plural'), $num_citas, true));
         //send back data
@@ -559,7 +560,14 @@ EOT;
     private function infoService($service_id) {
         $service = Servicio::find($service_id);
         //send information
-        $this->setReturn('service_name_inf', $service ? ucfirst($service->nombre) : Lang::get('global.not_found'));
+        $equipment = $service->equipos->lists('nombre');
+        if ($equipment) {
+            $equipment = ' <span class="pull-right text-muted">' . reset($equipment) . '</span>';
+        }
+        else {
+            $equipment = '';
+        }
+        $this->setReturn('service_name_inf', $service ? (ucfirst($service->nombre) . $equipment) : Lang::get('global.not_found'));
         $this->setReturn('duration_inf', $service ? Functions::minToHours($service->duracion) : '0');
         //send back data
         $this->setReturn('duration', $service ? $service->duracion : '0');
@@ -652,7 +660,7 @@ EOT;
                             $badge = !in_array($office->id, $busy_offices) ? Lang::get(self::LANG_FILE . '.available') : ('<i class="fa fa-exclamation-triangle"></i> &nbsp;' . Lang::get(self::LANG_FILE . '.not_available'));
                             $offices .= <<<EOT
                                 <a href="#" class="list-group-item office-btn" attr-id="{$office->id}">
-                                    {$office->nombre}
+                                    {$office->nombre} - {$office->area->nombre}
                                     <span class="badge">{$badge}</span>
                                 </a>
 EOT;

@@ -61,12 +61,63 @@ EOT;
         }
     }
 
-    public function dni($name, $id = null, $label = null, $classes = "", $required = false, $validation_pattern = null) {
+    public function username($name, $id = null, $label = null, $classes = "", $required = true) {
         if ($id == null) $id = $name;
         if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $required = $required ? ' required' : '';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
+
+        $ds = '$';
+        $this->script.= <<<EOT
+            $('#{$id}').blur(function() {
+                var {$ds}in = $(this);
+                {$ds}in.val( {$ds}in.val().toLowerCase() );
+            });
+EOT;
+
+        if ($this->show_labels) {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <label for="{$id}" class="col-md-2 control-label">{$label}</label>
+                <div class="col-md-10">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$value}{$required}>
+                </div>
+            </div>
+EOT;
+        }
+        else {
+            return <<<EOT
+            <div class="form-group {$classes}">
+                <div class="col-md-12">
+                    <input type="text" id="{$id}" name="{$name}" class="form-control" placeholder="{$label}"{$value}{$required}>
+                </div>
+            </div>
+EOT;
+        }
+    }
+
+    public function dni($name, $id = null, $label = null, $classes = "", $required = false, $validation_pattern = null) {
+        if ($id == null) $id = $name;
+        if ($label === null) $label = ucfirst($name);
+        if ($this->edit) $id = $id . '_edit';
+        $required = $required ? ' required' : '';
+        $tvalue = 'V';
+        if (isset($this->values[$name])) {
+            $dni = $this->values[$name];
+            $dni = explode('-', $dni);
+            if (count($dni) > 1) {
+                $tvalue = strtoupper($dni[0]);
+                if (!in_array($tvalue, array('V', 'E', 'J'))) $tvalue = 'V';
+                $value = ' value="' . $dni[1] . '"';
+            }
+            else {
+                $value = ' value="' . $dni[0] . '"';
+            }
+        }
+        else {
+            $value = '';
+        }
         if ($validation_pattern === null) {
             $validation_pattern = array('[0-9]{7,9}', '123456789');
         }
@@ -95,7 +146,7 @@ EOT;
                     <div class="input-group">
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" tabindex="-1">
-                                <span>V-</span>
+                                <span>{$tvalue}-</span>
                             </button>
                             <ul id="{$id}_options" class="dropdown-menu" role="menu">
                                 <li><a href="#">V-</a></li>
@@ -103,7 +154,7 @@ EOT;
                                 <li><a href="#">J-</a></li>
                             </ul>
                         </div>
-                        <input type="hidden" id="t{$id}" name="t{$name}" value="V">
+                        <input type="hidden" id="t{$id}" name="t{$name}" value="{$tvalue}">
                         <input type="text" id="{$id}" name="{$name}" class="form-control input-dni" placeholder="{$label}"{$vp}{$value}{$required}>
                     </div>
 
@@ -742,6 +793,26 @@ EOT;
                 }
                 $output.= '</a>';
             }
+        }
+
+        return $output;
+    }
+
+
+    public static function searchResultsRelational($results, $field, $rel_model, $rel_field) {
+        $output = "";
+
+        foreach ($results as $result) {
+            $row = $result->$field;
+            $id = $result->id;
+            $output.= <<<EOT
+                <a class="list-group-item search-result" data-id="{$id}">{$row}
+EOT;
+            $badge_lbl = $result->$rel_model->$rel_field;
+            $output.= <<<EOT
+                &nbsp;<span class="badge">{$badge_lbl}</span>
+EOT;
+            $output.= '</a>';
         }
 
         return $output;

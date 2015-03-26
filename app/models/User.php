@@ -18,7 +18,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 
     protected $fillable = array(
-        'correo',
+        'nombre',
         'password',
         'contrasena_tmp',
         'activo',
@@ -26,7 +26,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     );
 
     protected $searchable = array(
-        'correo'
+        'nombre'
     );
 
     protected $booleans = array(
@@ -48,7 +48,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
             'id'        => 'integer|min:1',
-            'correo'    => 'required|max:255|unique:usuario,correo,' . (int)$ignore_id,
+            'nombre'    => 'required|alpha_dash|max:255|unique:usuario,nombre,' . (int)$ignore_id,
             'password'  => 'required',
             'password2' => 'same:password',
             'activo'    => 'in:on,1,0',
@@ -99,6 +99,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public function setAdminAttribute($value)
     {
         $this->attributes['admin'] = $value ? 1 : 0;
+    }
+
+    public function setNombreAttribute($value)
+    {
+        $this->attributes['nombre'] = strtolower($value);
     }
 
 
@@ -179,7 +184,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function getReminderEmail()
 	{
-		return $this->correo;
+		return $this->nombre;//correo;
 	}
 
     

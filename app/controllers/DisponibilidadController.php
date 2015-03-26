@@ -92,7 +92,7 @@ class DisponibilidadController extends BaseController {
     }
 
 
-    public function getDisponibilidad($doctor_id = 0) {
+    /*public function getDisponibilidad($doctor_id = 0) {
         if ($doctor_id == 0) {
             $doctor_id = (int)Input::get('doctor_id');
             if ($doctor_id == 0) return '[]';
@@ -113,7 +113,7 @@ class DisponibilidadController extends BaseController {
                 $cal_start = strtotime('-' . $cal_start_w . ' days', $cal_start);
             }
             
-            $color = '#849917';
+            $color = '#849917';//'#fff';
 
             foreach ($items as $item) {
 
@@ -141,6 +141,80 @@ EOT;
         }
 
         return '[' . implode(',', $items_json) . ']';
+    }*/
+
+
+    public function getDisponibilidad($doctor_id = 0) {
+        if ($doctor_id == 0) {
+            $doctor_id = (int)Input::get('doctor_id');
+            if ($doctor_id == 0) return '[]';
+        }
+        
+        $cal_start = Input::get('start');
+        $cal_end = Input::get('end');
+        
+        $items_json = array();
+        $doctor = User::find($doctor_id);
+        if ($doctor) {
+            $items = $doctor->disponibilidad()->fromDateToDate($cal_start, $cal_end)->get();
+
+            $color = '#849917';//'#fff';
+
+            foreach ($items as $item) {
+
+                $start = $item->inicio;
+                $end = $item->fin;
+
+                $items_json[] = <<<EOT
+                {
+                    "id": "{$item->id}",
+                    "title": "",
+                    "start": "{$start}",
+                    "end": "{$end}",
+                    "allDay": false,
+                    "backgroundColor": "{$color}",
+                    "state_id": "{$item->disponible}"
+                }
+EOT;
+            }
+        }
+
+        return '[' . implode(',', $items_json) . ']';
+    }
+
+
+    public function duplicar($disponibilidad_id, $fecha) {
+        $model = self::MODEL;
+        $item = $model::find($disponibilidad_id);
+        if ($item) {
+            $date_start = strtotime($item->inicio);
+            $date_end = strtotime($item->fin);
+            $diff = $date_end - $date_start;
+
+            $end_date = strtotime($fecha . ' 23:59:59');
+
+            if ($date_start < $end_date) {
+                $new_items = array();
+                $next_date = strtotime('+1 week', $date_start);
+                while ($next_date <= $end_date) {
+                    $new_item = array(
+                        'inicio' => date('Y-m-d H:i:s', $next_date),
+                        'fin' => date('Y-m-d H:i:s', $next_date + $diff),
+                        'usuario_id' => $item->usuario_id,
+                        'disponible' => $item->disponible,
+                        'fijo'  => $item->fijo
+                    );
+                    $new_items[] = $new_item;
+                    $next_date = strtotime('+1 week', $next_date);
+                }
+                $times = count($new_items);
+                if ($times) {
+                    Disponibilidad::insert($new_items);
+                }
+                return $times;
+            }
+        }
+        return false;
     }
 
 
@@ -175,6 +249,30 @@ EOT;
             }
         }
         return $this->returnJson();
+    }
+
+
+    public function duplicarPost() {
+         $validator = Validator::make(Input::all(),
+            array(
+                'disponibilidad_id' => 'required|integer|min:1',
+                'fecha'             => 'required|date_format:Y-m-d'
+            )
+        );
+        if ($validator->passes()) {
+            $disponibilidad_id = (int)Input::get('disponibilidad_id');
+            $fecha = Input::get('fecha');
+
+            $times = $this->duplicar($disponibilidad_id, $fecha);
+
+            if ($times !== false) {
+                return $this->setSuccess( Lang::get('disponibilidad.duplicated_msg') . ' ' . Functions::singlePlural(Lang::get('disponibilidad.times_single'), Lang::get('disponibilidad.times_plural'), $times, true) );
+            }
+            else {
+                return $this->setError( Lang::get('global.unable_perform_action') );
+            }
+        }
+        return $this->setError( Lang::get('global.wrong_action') );
     }
 
 }

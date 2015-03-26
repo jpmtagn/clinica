@@ -88,7 +88,10 @@ class EquipoController extends BaseController {
         if (!empty($item->descripcion)) {
             $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
         }
-        $output .= $frm->view('cantidad', Lang::get(self::LANG_FILE . '.quantity'), $item->cantidad);
+        if (!empty($item->serial)) {
+            $output .= $frm->view('serial', Lang::get(self::LANG_FILE . '.serial'), $item->serial);
+        }
+        //$output .= $frm->view('cantidad', Lang::get(self::LANG_FILE . '.quantity'), $item->cantidad);
         $output .= $frm->view('inamovible', Lang::get(self::LANG_FILE . '.immovable'), ucfirst(Lang::get('global.' . ($item->inamovible ? 'yes' : 'no'))));
         $output .= $frm->view('servicio', Lang::get('servicio.title_' . Functions::singlePlural('single', 'plural', count($servicios))), implode(', ', $servicios));
         //$output .= $frm->halfPanelClose();

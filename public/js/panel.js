@@ -253,25 +253,28 @@ var Panel = {
             });
 
             //pagination links
-            $panel.find('ul.search-results-pagination').find('a').click(function() {
+            $panel.find('ul.search-results-pagination').find('a').click(function(e) {
                 if ($(this).parent().is('.disabled,.active')) return false;
                 var query = Panel.search.form().find('input.search-query').val();
                 var page;
                 var link = $(this);
                 //page number
                 if (link.hasClass('search-results-page')) {
-                    page = $(this).prop('data-id');
+                    page = $(this).attr('page-num');
                 }
                 //previous page
                 else if (link.hasClass('search-results-prev-page')) {
-                    page = Panel.search.form().find('input.search-page').val() - 1;
+                    page = (parseInt(Panel.search.form().find('input.search-page').val()) || 2) - 1;
                 }
                 //next page
                 else {
-                    page = Panel.search.form().find('input.search-page').val() + 1;
+                    page = (parseInt(Panel.search.form().find('input.search-page').val()) || 1) + 1;
                 }
 
                 Panel.search.find( query, page );
+
+                e.preventDefault();
+                return false;
             });
         },
 
@@ -284,13 +287,14 @@ var Panel = {
 
         //sends a look up string to the server and retrieves data
         find: function(query, page, fn) {
+            console.log(page);
             Panel.search.clearResults();
             Panel.search.status.loading();
 
             var $frm = Panel.search.form();
             var url = $frm.attr('action');
             if (typeof query == "undefined") query = $frm.find('input[name=search]').val();
-            if (typeof page != "number") page = 1;
+            if (!(parseInt(page) > 1)) page = 1;
 
             $frm.find('input.search-query').val( query );
             $frm.find('input.search-page').val( page );
@@ -315,17 +319,18 @@ var Panel = {
                             $sr.html((query != '*' ? '<p>Resultados de la búsqueda:</p>' : '') + '<div class="list-group search-results">' + data['results'] + '</div>');
 
                             //pagination:
+                            var total_per_page = 5;
                             var pag = '';
                             if (page > 1 || data['total'] > data['total_page']) {
                                 var pag = '<ul class="pagination search-results-pagination">' +
                                     '<li' + (page == 1 ? ' class="disabled"':'') + '><a class="search-results-prev-page" href="#">&laquo;</a></li>' +
                                     '<li' + (page == 1 ? ' class="active"':'') + '><a class="search-results-page" page-num="1" href="#">1</a></li>';
                                 var p = 2;
-                                for (var i = 1;  i < data['total'];  i += data['total_page']) {
+                                for (var i = total_per_page;  i < data['total'];  i += total_per_page) {
                                     pag += '<li' + (page == p ? ' class="active"':'') + '><a class="search-results-page" page-num="' + p + '" href="#">' + p + '</a></li>';
                                     p++;
                                 }
-                                pag += '<li' + (page >= p-1 ? ' class="disabled"':'') + '><a class="search-results-prev-page" href="#">&raquo;</a></li>' +
+                                pag += '<li' + (page >= p-1 ? ' class="disabled"':'') + '><a class="search-results-next-page" href="#">&raquo;</a></li>' +
                                     '</ul>';
                             }
 
@@ -379,7 +384,7 @@ var Panel = {
                 App.unblockUI( $('#search_panel') );
             },
             restore: function() {
-                $('#search_icon').removeClass(Panel.allIcons()).addClass('fa-search');
+                $('#search_icon').removeClass(Panel.allIcons()).addClass('fa-search').parent().removeClass('flash');
                 $('#search_lbl').html('Buscar');
                 App.unblockUI( $('#search_panel') );
             }
@@ -483,6 +488,7 @@ var Panel = {
                     if (data['deleted'] == 1) {
                         Panel.view.status.cleared('Eliminado.');
                         Panel.counter.update();
+                        Panel.search.update();
                     }
                 }
                 else {
@@ -517,7 +523,7 @@ var Panel = {
                 App.unblockUI( $('#view_panel') );
             },
             restore: function(expand) {
-                $('#view_icon').removeClass(Panel.allIcons()).addClass('fa-info-circle');
+                $('#view_icon').removeClass(Panel.allIcons()).addClass('fa-info-circle').parent().removeClass('flash');;
                 $('#view_lbl').html('Información');
                 if (typeof expand == "undefined" || expand) {
                     Panel.view.expand();
@@ -648,7 +654,7 @@ var Panel = {
             },
             restore: function(expand) {
                 if (typeof expand != 'boolean') expand = true;
-                $('#create_icon').removeClass(Panel.allIcons()).addClass('fa-plus');
+                $('#create_icon').removeClass(Panel.allIcons()).addClass('fa-plus').parent().removeClass('flash');;
                 $('#create_lbl').html('Nuevo');
                 if (expand) {
                     Panel.create.expand();
@@ -800,7 +806,7 @@ var Panel = {
             },
             restore: function(title) {
                 title_lbl = typeof title != 'string' ? 'Modificar' : title;
-                $('#edit_icon').removeClass(Panel.allIcons()).addClass('fa-pencil');
+                $('#edit_icon').removeClass(Panel.allIcons()).addClass('fa-pencil').parent().removeClass('flash');;
                 $('#edit_lbl').html( title_lbl );
                 Panel.edit.expand();
                 App.unblockUI( $('#edit_panel') );
@@ -836,7 +842,7 @@ var Panel = {
             App.unblockUI( $panel );
         },
         restore: function($panel, title, fa_icon) {
-            $panel.find('.panel_icon').removeClass(Panel.allIcons()).addClass(fa_icon);
+            $panel.find('.panel_icon').removeClass(Panel.allIcons()).addClass(fa_icon).parent().removeClass('flash');;
             $panel.find('.panel_lbl').html( title );
             Panel.expand( $panel );
             App.unblockUI( $panel );

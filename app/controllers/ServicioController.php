@@ -25,7 +25,7 @@ class ServicioController extends BaseController {
     public function paginaAdmin() {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
-            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre', array('area', 'nombre'));
             $duraciones = array(
                 '0' => '',
                 '10' => '10m',
