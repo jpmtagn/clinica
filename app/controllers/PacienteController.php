@@ -212,7 +212,7 @@ class PacienteController extends BaseController {
         $output .= $frm->halfPanelOpen(true, 7);
         $output .= $frm->view('name', Lang::get(self::LANG_FILE . '.name'), strtoupper($item->apellido) . ', ' . $item->nombre);
         $output .= $frm->view('dni', Lang::get(self::LANG_FILE . '.dni'), $item->dni);
-        $output .= $frm->view('birthdate', Lang::get(self::LANG_FILE . '.birthdate'), Functions::shortDateFormat($item->fecha_nacimiento) . ' (' . Functions::ageFromDate($item->fecha_nacimiento) . ' ' . Lang::get('global.years') . ')');
+        if ($item->fecha_nacimiento > 0) $output .= $frm->view('birthdate', Lang::get(self::LANG_FILE . '.birthdate'), Functions::shortDateFormat($item->fecha_nacimiento) . ' (' . Functions::ageFromDate($item->fecha_nacimiento) . ' ' . Lang::get('global.years') . ')');
         $output .= $frm->view('gender', Lang::get(self::LANG_FILE . '.gender'), Lang::get(self::LANG_FILE . '.' . Paciente::getGenders($item->sexo)));
         $output .= $frm->view('marital_status', Lang::get(self::LANG_FILE . '.marital_status'), Lang::get(self::LANG_FILE . '.' . Paciente::getMaritalStatuses($item->estado_civil)));
         $output .= $frm->view('address', Lang::get(self::LANG_FILE . '.address'), $item->direccion);

@@ -1284,7 +1284,7 @@ class Validator implements MessageProviderInterface {
 			return $value;
 		}
 
-		return $this->getInlineMessage(
+        return $this->getInlineMessage(
 			$attribute, $lowerRule, $this->fallbackMessages
 		) ?: $key;
 	}
@@ -1382,7 +1382,7 @@ class Validator implements MessageProviderInterface {
 			$message = $this->$replacer($message, $attribute, $rule, $parameters);
 		}
 
-		return $message;
+		return str_replace(' id ', ' ', $message);
 	}
 
 	/**

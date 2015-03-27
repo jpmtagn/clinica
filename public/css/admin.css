@@ -6656,7 +6656,7 @@ fieldset[disabled] .btn-yellow.active {
   color: #FFFFFF !important;
 }
 .box.border.orange > .box-title h4 i {
-  color: #FFFFFF !important;
+  color: #FFFFFF;
 }
 .box.border.orange > .box-title .tools > a {
   color: #f4f4f4 !important;
@@ -9180,17 +9180,15 @@ a.fc-event:hover {
     }
 }
 
-h4.flash {
-  background-color: #f00;
-  border-radius: 4px;
-  padding: 2px !important;
-  color: #ff0 !important;
-}
-
-h4.flash i {
-  color: #ff0 !important;
+h4.flash i.fa-exclamation-triangle {
+    color: #ff0 !important;
+    text-shadow: 2px 2px 4px #f00;
 }
 
 .fc-today {
   background: none !important;
+}
+
+.today-header {
+    background-color: #f6f6c8;
 }

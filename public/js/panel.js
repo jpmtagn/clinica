@@ -139,7 +139,7 @@ var Panel = {
 
                         case 'SELECT':
                             var sels;
-                            if ( typeof value == 'object' || typeof value == 'array' ) {
+                            if ( (typeof value == 'object' &&  value != null) || typeof value == 'array') {
                                 sels = [];
                                 $.each(value, function(k, v) {
                                     //o.find('option[value=' + k + ']').attr('selected', 'selected');
@@ -152,7 +152,7 @@ var Panel = {
                             }
                             /*o.select2("destroy");
                             o.select2();*/
-                            if (typeof Select2 != 'undefined') {
+                            if (typeof Select2 != 'undefined' && sels != null) {
                                 console.log('selecting ' + sels);
                                 o.select2('val', sels);
                             }
@@ -912,11 +912,14 @@ bindNumberInputs();
 
 //setting time and date inputs
 function setDatePicker(o, value) {
-    if (typeof value == 'object') {
+    if (typeof value == 'object' && value != null) {
         o.pickadate('picker').set('select', new Date(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()));
     }
-    else {
+    else if (value != '0000-00-00') {
         o.pickadate('picker').set('select', value);
+    }
+    else {
+        o.pickadate('picker').set('clear');
     }
 }
 

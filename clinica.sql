@@ -254,6 +254,15 @@ CREATE TABLE IF NOT EXISTS `rol` (
 -- --------------------------------------------------------
 
 --
+-- Dumping data for table `rol`
+--
+
+INSERT INTO `rol` (`id`, `nombre`, `descripcion`) VALUES
+(1, 'doctor', NULL),
+(2, 'recepcionista', NULL),
+(3, 'paciente', NULL);
+
+--
 -- Table structure for table `servicio`
 --
 
@@ -286,6 +295,14 @@ CREATE TABLE IF NOT EXISTS `tipo_contacto` (
   `tipo` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `tipo_contacto`
+--
+
+INSERT INTO `tipo_contacto` (`id`, `tipo`) VALUES
+  (1, 'phone'),
+  (2, 'email');
 
 -- --------------------------------------------------------
 

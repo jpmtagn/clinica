@@ -43,10 +43,10 @@
     <div class="col-md-5">
         <div class="row">
           <div class="col-lg-6 col-md-6">
-             {{ $frm->infoCountBox('fa-users', $total_citas, Lang::get('citas.done_citas'), URL::route('admin_calendario')) }}
+             {{ $frm->infoCountBox('fa-users', $total_citas, Lang::get('citas.done_citas'), 'javascript:;') }}
           </div>
           <div class="col-lg-6 col-md-6">
-             {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), $total_citas_today > 0 ? URL::route('doctor_citas', array('doctor_id' => $doctor_id)) : 'javascript:;') }}
+             {{ $frm->infoCountBox('fa-calendar-o', $total_citas_today, Functions::singlePlural(Lang::get('citas.for_today_single'), Lang::get('citas.for_today_plural'), $total_citas_today), $total_citas_today > 0 ? URL::route('doctor_citas', array('doctor_id' => $doctor_id)) : URL::route('admin_calendario')) }}
           </div>
         </div>
         <div class="row">

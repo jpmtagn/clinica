@@ -78,7 +78,7 @@ class Paciente extends Eloquent {
             'tdni'              => 'in:V,E,J',
             'dni'               => 'required|regex:/^[0-9]{7,9}$/|unique:paciente,dni,' . (int)$ignore_id,
             'fecha_nacimiento'  => 'date_format:Y-m-d',
-            'sexo'              => 'in:0,1',
+            'sexo'              => 'required|in:0,1',
             'estado_civil'      => 'in:0,1,2,3', //soltero, casado, divorciado, viudo
             'direccion'         => 'max:255',
             'usuario_id'        => 'integer|exists:usuario,id|unique:paciente,usuario_id,' . (int)$ignore_id,

@@ -59,6 +59,12 @@ Panel de Administración
     a.fc-event.availability .fc-time {
         display: none;
     }
+
+    @if (!Auth::user()->admin)
+    a.fc-event.state3 {
+        pointer-events: none !important;
+    }
+    @endif
 </style>
 @stop
 
@@ -610,6 +616,11 @@ EOT;
         else {
             window.creating_new_event = false;
         }
+        //highlighting today
+        var $today = $('.fc-today');
+        if ($today.length) {
+            $('.fc-day-header:nth-child(' + ($today.index() + 1) + ')').addClass('today-header');
+        }
     }
 
     function submitDateTimeFormDone($frm, data) {
@@ -1032,7 +1043,7 @@ EOT;
                 end: '23:59',
                 dow: [ {{ $options['days_to_show_str'] }} ]
             },
-            eventStartEditable: {{ !$read_only ? 'true' : 'false' }},
+            eventStartEditable: false{{-- !$read_only ? 'true' : 'false' --}},
             eventDurationEditable: false,
             firstDay: 1,
             weekends: true,
@@ -1043,8 +1054,8 @@ EOT;
             slotDuration: '00:10:00',
             hiddenDays: [{{ $options['days_to_hide_str'] }}],
             businessHours: {
-                start: '00:00:00',//'{{ $options['start_time'] }}',
-                end: '00:00:00',//'{{ $options['end_time'] }}',
+                start: '{{ $options['start_time'] }}',
+                end: '{{ $options['end_time'] }}',
                 dow: [ {{ $options['days_to_show_str'] }} ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },

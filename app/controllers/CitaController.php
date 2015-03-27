@@ -26,8 +26,10 @@ class CitaController extends BaseController {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
             $total = $this->getTotalItems();
-            $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
-            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+            //$servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
+            $servicios = Functions::arrayIt(Servicio::getWithEquipments(), 'id', 'nombre', 'equipos');
+            //$consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre');
+            $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre', array('area', 'nombre'));
             $estados = Functions::langArray(self::LANG_FILE, Cita::state());
             return View::make('admin.citas')->with(
                 array(
@@ -560,8 +562,14 @@ EOT;
     private function infoService($service_id) {
         $service = Servicio::find($service_id);
         //send information
-        $equipment = $service->equipos->lists('nombre');
-        if ($equipment) {
+        if ($service) {
+            $equipment = $service->equipos;
+            if ($equipment) $equipment->lists('nombre');
+        }
+        else {
+            $equipment = false;
+        }
+        if ($equipment && is_array($equipment)) {
             $equipment = ' <span class="pull-right text-muted">' . reset($equipment) . '</span>';
         }
         else {

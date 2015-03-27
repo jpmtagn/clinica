@@ -36,9 +36,11 @@ class DisponibilidadController extends BaseController {
         $doctor = User::find($doctor_id);
         if ($doctor) {
             $doctor = $doctor->paciente;
+            $options = Opcion::load();
             return View::make('admin.disponibilidad_doctor')->with(array(
                 'doctor_id' => $doctor_id,
-                'doctor_nombre' => Functions::firstNameLastName($doctor->nombre, $doctor->apellido)
+                'doctor_nombre' => Functions::firstNameLastName($doctor->nombre, $doctor->apellido),
+                'options' => $options
             ));
         }
         return Redirect::route('inicio');

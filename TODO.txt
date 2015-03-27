@@ -8,12 +8,16 @@
 [X] Mostrar el equipo al seleccionar el tratamiento.
 [X] Quitar la opcion de cantidad a los equipos (agregar serial).
 [X] Resaltar advertencias.
-[ ] Revisar la validacion del agendamiento (esta agregando en horas permitidas de otros dias (!) )
-[ ] Borrar el error/advertencia cuando se cierre el modal
+[X] Revisar la validacion del agendamiento (esta agregando en horas permitidas de otros dias (!) )
+[X] Borrar el error/advertencia cuando se cierre el modal
 [ ] Permitir mover las citas agendadas. Ultimo.
-[ ] Agregar una cita en un horario de una cita que ha sido cancelada.
+[X] Agregar una cita en un horario de una cita que ha sido cancelada.
 [X] Filtro para los estados de las citas.
 [ ] Opcion de eliminar la cita en el candelario. Pedir confirmacion para cada eliminar. (admin)
-[ ] Resaltar solo el dia actual (fecha en negrita solamente).
+[X] Resaltar solo el dia actual (fecha en negrita solamente).
 [ ] Crear log para todas las acciones
 [X] Redireccionar a la carpeta public
+[ ] No permitir al recepcionista editar los horarios de los terapeutas ni eliminar registros
+[X] Revisar error de base de datos para los telefonos y correos
+[X] Quitar 'id' de los mensajes de errores
+[X] Mostrar 'domingos' en calendario de disponibilidad

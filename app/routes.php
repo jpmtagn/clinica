@@ -1,6 +1,32 @@
 <?php
 
 /*
+ * 404 ERROR without including 'index.php' in the URL solution:
+ *
+ * [C:\wamp\bin\apache\apache2.4.9\conf\httpd.conf]
+ *
+ * find the line:
+ * #LoadModule rewrite_module modules/mod_rewrite.so
+ *
+ * remove the # from the line.
+ *
+ *
+ * Showing /public in the URL solution:
+ *
+ * Change your document root in your apache config from "your/path/to/laravel" to "your/path/to/laravel/public"
+ *
+ * another way, though not as good, is: (ACTUALLY DID NOT WORK, RETURNED A NOT FOUND ERROR)
+ *
+ * create a .htaccess file in your laravel root directory, then add this into the file:
+ *
+ *       <IfModule mod_rewrite.c>
+ *           RewriteEngine On
+ *
+ *           RewriteRule ^(.*)$ public/$1 [L]
+ *       </IfModule>
+ */
+
+/*
 |--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------

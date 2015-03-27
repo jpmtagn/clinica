@@ -364,10 +364,10 @@ class Functions {
               $rel_field = $rel[1];
               $rel_value = $item->$rel_model->$rel_field;
               //$arr[$item->$key] = $item->$value . ' &nbsp; <span class="text-muted">' . $rel_value . '</span>';
-              $arr[$item->$key] = $item->$value . ' - ' . $rel_value;
+              $arr[$item->$key] = $item->$value . (!empty($rel_value) ? (' - ' . $rel_value) : '');
             }
             elseif ($rel !== null) {
-              $arr[$item->$key] = $item->$value . ' - ' . $item->$rel;
+              $arr[$item->$key] = $item->$value . (!empty($item->$rel) ? (' - ' . $item->$rel) : '');
             }
             else {
               $arr[$item->$key] = $item->$value;

@@ -203,6 +203,11 @@ Panel de Administración
 
     function fn_render_all_events(view) {
         bindEventClick();
+        //highlighting today
+        var $today = $('.fc-today');
+        if ($today.length) {
+            $('.fc-day-header:nth-child(' + ($today.index() + 1) + ')').addClass('today-header');
+        }
     }
 
     function bindEventClick() {
@@ -294,7 +299,7 @@ Panel de Administración
             selectConstraint: {
                 start: '00:00',
                 end: '23:59',
-                dow: [ 1, 2, 3, 4, 5, 6 ]
+                dow: [ {{ $options['days_to_show_str'] }} ]
             },
             selectHelper: true,
             eventStartEditable: true,
@@ -306,15 +311,15 @@ Panel de Administración
             timeFormat: 'h(:mm)t',
             axisFormat: 'h(:mm)t',
             slotDuration: '00:30:00',
-            hiddenDays: [0],
+            hiddenDays: [{{ $options['days_to_hide_str'] }}],
             businessHours: {
-                start: '08:00',
-                end: '20:00',
-                dow: [ 1, 2, 3, 4, 5, 6 ]
+                start: '{{ $options['start_time'] }}',
+                end: '{{ $options['end_time'] }}',
+                dow: [ {{ $options['days_to_show_str'] }} ]
                 // days of week. an array of zero-based day of week integers (0=Sunday)
             },
-            minTime: '06:00:00',
-            maxTime: '22:00:00',
+            minTime: '{{ $options['min_time'] }}',
+            maxTime: '{{ $options['max_time'] }}',
             events: '{{ URL::route('disponibilidad_calendar_source', array('doctor_id'=>$doctor_id)) }}',
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {

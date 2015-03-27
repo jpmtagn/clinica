@@ -14,7 +14,7 @@ class UserController extends BaseController {
     
     const LANG_FILE = 'usuarios';
 
-    const TITLE_FIELD = 'correo';
+    const TITLE_FIELD = 'nombre';
 
     /** Navegacion **/
 
