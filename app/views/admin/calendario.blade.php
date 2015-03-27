@@ -581,17 +581,24 @@ EOT;
             if (!$o.hasClass('availability')) {
                 var id = $o.find('input.' + name + '_id').val();
                 window['total_' + name + id] = (parseInt(window['total_' + name + id]) || 0) + 1;
+                window['color_' + name + id] = $o.css('background-color');
             }
         });
         $.each($a, function(i, o) {
             var $o = $(o);
             var id = $o.attr('attr-id') || '0';
             var total = window['total_' + name + id];
+            var color = window['color_' + name + id];
             if (total > 0 && id >= 0) {
-                $o.find('span.badge').html(total).removeClass('hidden');
+                if (name == 'doctor') {
+                    $o.find('span.badge').html(total).css('background-color', color).css('color', '#fff').removeClass('hidden');
+                }
+                else {
+                    $o.find('span.badge').html(total).removeClass('hidden');
+                }
             }
             else {
-                $o.find('span.badge').addClass('hidden')
+                $o.find('span.badge').addClass('hidden');
             }
         });
     }
