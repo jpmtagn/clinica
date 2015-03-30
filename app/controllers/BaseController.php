@@ -128,6 +128,7 @@ class BaseController extends Controller {
                 case 'action_delete':
                     $this->delete( $id );
                     $this->setReturn('deleted', 1);
+                    $this->setReturn('record', $id);
                     return $this->setSuccess(Lang::get('global.del_msg'));
                     break;
 

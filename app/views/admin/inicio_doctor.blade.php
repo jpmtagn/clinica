@@ -72,13 +72,17 @@
     </div>
     <!-- /COLUMN 2 -->
 </div>
-@if (User::canChangeDisponibilidadState())
+@if (User::canViewDisponibilidadState())
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-lg" role="group">
             <a class="btn btn-default" href="{{ URL::route('disponibilidad_doctor', array('doctor_id' => $doctor_id)) }}">
                 <i class="fa fa-calendar"></i>&nbsp;
+                @if (User::canChangeDisponibilidadState())
+                {{ Lang::get('usuarios.view_edit_disponibility') }}
+                @else
                 {{ Lang::get('usuarios.view_disponibility') }}
+                @endif
             </a>
         </div>
     </div>

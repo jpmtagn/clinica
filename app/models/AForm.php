@@ -687,8 +687,8 @@ EOT;
     }
 
     public function controlButtons($edit_lbl = null, $delete_lbl = null, $html = '') {
-        if ($edit_lbl == null) $edit_lbl = 'Editar';
-        if ($delete_lbl == null) $delete_lbl = 'Eliminar';
+        if ($edit_lbl == null) $edit_lbl = Lang::get('global.edit');
+        if ($delete_lbl == null) $delete_lbl = Lang::get('global.delete');
         return <<<EOT
             <div class="col-sm-offset-2 col-xs-offset-0 col-sm-3 col-xs-12 btn-group" style="margin-bottom:10px">
                 <button type="submit" name="action_edit" class="btn btn-default">

@@ -6803,7 +6803,7 @@ fieldset[disabled] .btn-yellow.active {
   color: #FFFFFF !important;
 }
 .box.border.primary > .box-title h4 i {
-  color: #FFFFFF !important;
+  color: #FFFFFF;
 }
 .box.border.primary > .box-title .tools > a {
   color: #f4f4f4 !important;
@@ -9174,11 +9174,11 @@ a.fc-event:hover {
     display: block;
 }
 
-@media (min-width: 660px) {
+/*@media (min-width: 660px) {
     #actions_modal .modal-dialog {
         width: 650px !important;
     }
-}
+}*/
 
 h4.flash i.fa-exclamation-triangle {
     color: #ff0 !important;

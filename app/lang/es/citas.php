@@ -25,6 +25,7 @@ return array(
     'confirmada' => 'Confirmada',
     'cancelada' => 'Cancelada',
 
+    'unconfirmed' => 'Por confirmar',
     'confirmed' => 'Confirmada',
     'cancelled' => 'Cancelada',
     'done' => 'Realizada',
@@ -54,5 +55,7 @@ return array(
     'time_mismatch' => 'El intervalo de tiempo elegido es inválido',
     'overlap_doctor' => 'El terapeuta ya tiene una cita registrada durante el intervalo seleccionado',
     'overlap_office' => 'La cabina no está disponible para la hora y fecha seleccionada',
-    'unavailable_doctor' => 'El terapeuta no está disponible para la hora y fecha seleccionada'
+    'unavailable_doctor' => 'El terapeuta no está disponible para la hora y fecha seleccionada',
+    'overlap_equipment' => 'No hay un equipo disponible para realizar el tratamiento seleccionado',
+    'overlap_patient' => 'El paciente ya tiene una cita registrada en la hora seleccionada'
 );

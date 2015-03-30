@@ -241,7 +241,12 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
     public static function canChangeDisponibilidadState($user_id = null) {
         $user = Auth::user();
-        return ($user->admin || $user->id == $user_id || User::is(User::ROL_RECEPCIONIST)); // ¿las recepcionistas pueden editar las disponibilidades de los doctores?
+        return ($user->admin || $user->id == $user_id);
+    }
+
+    public static function canViewDisponibilidadState($user_id = null) {
+        $user = Auth::user();
+        return ($user->admin || $user->id == $user_id || User::is(User::ROL_RECEPCIONIST));
     }
 
     public static function canViewDoctorPage($user_id) {
@@ -252,6 +257,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function canAddCitas($user = null) {
         if ($user === null) $user = Auth::user();
         return ($user->admin || User::is(User::ROL_RECEPCIONIST));
+    }
+
+    public static function canDeleteCitas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
     }
 
     public static function canViewAllCitas($user = null) {
@@ -267,6 +277,16 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     public static function canChangeCitaStateToDone($user = null) {
         if ($user === null) $user = Auth::user();
         return ($user->admin || User::is(array(User::ROL_RECEPCIONIST, User::ROL_DOCTOR)));
+    }
+
+    public static function canSelectUnavailableOffices($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canEditDeletePersonas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
     }
 
     //menu

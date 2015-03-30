@@ -211,13 +211,21 @@ Panel de Administración
     }
 
     function bindEventClick() {
+        @if (!$read_only)
         $('a.fc-event').click(function() {
             dis_ID = parseInt($(this).find('input.id').val()) || 0;
             if (dis_ID > 0) {
                 getState(dis_ID);
-                $('#actions_modal').modal('show');
+                var $modal = $('#actions_modal');
+                $modal.css('visibility', 'hidden');
+                $modal.modal('show');
+                setTimeout(function() {
+                    setActionsModalWidth();
+                    $modal.css('visibility', 'visible');
+                }, 300);
             }
         });
+        @endif
     }
 
     function showState(state) {
@@ -281,6 +289,18 @@ Panel de Administración
         });
     }
 
+    function setActionsModalWidth() {
+        var $modal = $('#actions_modal').find('.modal-dialog');
+        var $btns = $modal.find('.btn-toolbar').find('.btn-group');
+        var width = 0;
+
+        $.each($btns, function(i, o) {
+          width += $(o).outerWidth();
+        });
+
+        if (width > 0) $modal.width( width + 50 );
+    }
+
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
@@ -295,15 +315,15 @@ Panel de Administración
                 center: 'title'/*,
                 right: 'month,agendaWeek,agendaDay'*/
             },
-            selectable: true,
+            selectable: {{ !$read_only ? 'true' : 'false' }},
+            selectHelper: {{ !$read_only ? 'true' : 'false' }},
             selectConstraint: {
                 start: '00:00',
                 end: '23:59',
                 dow: [ {{ $options['days_to_show_str'] }} ]
             },
-            selectHelper: true,
-            eventStartEditable: true,
-            eventDurationEditable: true,
+            eventStartEditable: {{ !$read_only ? 'true' : 'false' }},
+            eventDurationEditable: {{ !$read_only ? 'true' : 'false' }},
             firstDay: 1,
             weekends: true,
             allDaySlot: false,
@@ -321,6 +341,7 @@ Panel de Administración
             minTime: '{{ $options['min_time'] }}',
             maxTime: '{{ $options['max_time'] }}',
             events: '{{ URL::route('disponibilidad_calendar_source', array('doctor_id'=>$doctor_id)) }}',
+            @if (!$read_only)
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {
                     fn_new_event(start, end, allDay);
@@ -336,6 +357,7 @@ Panel de Administración
                   fn_drop_event(event);
               }
             },
+            @endif
             eventRender: function( event, element, view ) {
                 if (typeof fn_render_event == 'function') {
                     fn_render_event(event);
@@ -346,8 +368,8 @@ Panel de Administración
                     fn_render_all_events(view);
                 }
             },
-            editable: true,
-            droppable: false
+            editable: {{ $read_only ? 'false' : 'true' }},
+            droppable: {{ $read_only ? 'false' : 'true' }}
         });
         //----- End calendar Initialization -----
 

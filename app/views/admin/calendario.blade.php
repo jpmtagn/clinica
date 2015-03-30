@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('titulo')
-Panel de Administración
+Calendario
 @stop
 
 @section('cabecera')
@@ -366,7 +366,7 @@ EOT;
     <!-- NEW OFFICE FORM -->
     {{ $frm->modalOpen('new_event_office_modal', Lang::get('citas.set') . ' ' . Lang::get('consultorio.title_single')) }}
         <div id="available_offices_holder"></div>
-        <form id="frm_new_event_office_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_office_inf_get') }}">
+        <form id="frm_new_event_office_inf" class="form-horizontal{{ !User::canSelectUnavailableOffices() ? ' hidden': '' }}" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_office_inf_get') }}">
             <input type="hidden" id="consultorio_id" name="consultorio_id" value="0">
             {{ $frm->select('area_id', null, Lang::get('area.title_single'), $areas) }}
             {{ $frm->select('consultorio_id_select', null, Lang::get('consultorio.title_single'), $consultorios) }}
@@ -378,6 +378,10 @@ EOT;
 {{ $frm->modalOpen('actions_modal', Lang::get('citas.actions')) }}
     <div class="btn-toolbar" role="toolbar">
         <div id="states" class="btn-group btn-group-lg" role="group">
+            <button id="state{{ Cita::UNCONFIRMED }}" type="button" class="btn btn-default" attr-state_id="{{ Cita::UNCONFIRMED }}" attr-type="warning">
+                <i class="fa fa-4x fa-circle-o"></i>
+                <span>{{ Lang::get('citas.unconfirmed') }}</span>
+            </button>
             <button id="state{{ Cita::CONFIRMED }}" type="button" class="btn btn-default{{ !User::canConfirmOrCancelCita($user) ? ' disabled' : '' }}" attr-state_id="{{ Cita::CONFIRMED }}" attr-type="primary">
                 <i class="fa fa-4x fa-check-circle-o"></i>
                 <span>{{ Lang::get('citas.confirmed') }}</span>
@@ -402,20 +406,33 @@ EOT;
                 <span>{{ Lang::get('citas.edit') }}</span>
             </button>
             @endif
+            @if (User::canDeleteCitas($user))
+            <button id="delete_cita" type="button" class="btn btn-default">
+                <i class="fa fa-4x fa-trash"></i>
+                <span>{{ Lang::get('global.delete') }}</span>
+            </button>
+            @endif
         </div>
     </div>
-    <form id="frm_action" class="form-horizontal hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('cita_actions_post') }}">
+    <form id="frm_action" class="hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('cita_actions_post') }}">
         {{ $frm->hidden('cita_id', 'cita_id_action') }}
         {{ $frm->hidden('action', 'cita_action') }}
         {{ $frm->hidden('val', 'action_val') }}
         {{ Form::token() }}
     </form>
+    @if (User::canDeleteCitas($user))
+    <form id="frm_action_delete" class="hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_citas_accion_post') }}">
+        {{ $frm->hidden('id', 'cita_id_delete') }}
+        {{ $frm->hidden('action', 'delete_action', '', 'action_delete') }}
+        {{ Form::token() }}
+    </form>
+    @endif
 {{ $frm->modalClose(null, null, false) }}
 <!-- /ACTIONS FORM -->
 
 <!-- NOTE FORM -->
 {{ $frm->modalOpen('note_modal', Lang::get('citas.notes')) }}
-    <form id="frm_action" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_cita_editar_nota_post') }}">
+    <form id="frm_note" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('admin_cita_editar_nota_post') }}">
         <?php $frm->displayLabels(false); ?>
         {{ $frm->hidden('id', 'note_id') }}
         {{ $frm->textarea('contenido', null, '') }}
@@ -523,7 +540,7 @@ EOT;
     }
 
     function hideNewEventPlaceHolder() {
-        var $cal = $('#main_calendar');
+        var $cal = $main_calendar;
         $cal.fullCalendar( 'removeEvents', 0);
         $('a.stateundefined').remove();
 
@@ -531,7 +548,7 @@ EOT;
 
     function fn_new_event(start, end, allDay) {
         window.creating_new_event = true;
-        var $cal = $('#main_calendar');
+        var $cal = $main_calendar;
         $cal.fullCalendar('renderEvent', {
                 id: 0,
                 title: '*',
@@ -545,6 +562,7 @@ EOT;
         $modal.find('input[name=id]').val('0');
         setDateTime(start, end);
         setDoctor();
+        $modal.find('.modal-alert').hide();
         $modal.modal('show');
     }
 
@@ -618,7 +636,7 @@ EOT;
             bindEventClick();
     		$('.tip').tooltip();
             //styling morning / afternoon separation
-            $('#main_calendar').find('#hour_12').siblings('.fc-widget-content').addClass('ampm-separation');
+            $main_calendar.find('#hour_12').siblings('.fc-widget-content').addClass('ampm-separation');
         }
         else {
             window.creating_new_event = false;
@@ -683,7 +701,7 @@ EOT;
         submitFormDoneDefault($frm, data);
         if (data['ok'] == 1) {
             $frm.closest('.modal').modal('hide');
-            $('#main_calendar').fullCalendar('refetchEvents');
+            $main_calendar.fullCalendar('refetchEvents');
         }
     }
 
@@ -691,7 +709,7 @@ EOT;
         submitFormDoneDefault($frm, data);
         $('.status-icon').removeClass('bad');
         if (data['ok'] == 1) {
-            var $cal = $('#main_calendar');
+            var $cal = $main_calendar;
             /*$cal.fullCalendar('renderEvent',
                 {
                     title: data['titulo'],
@@ -757,7 +775,12 @@ EOT;
                 console.log(data);
                 if (data['ok']) {
                     $holder.html( data['office_btns'] );
-                    bindOfficeButtons();
+                    if ($('.office-btn').length == 0) {
+                        $holder.html('<p class="text-center">Para ver las cabinas disponibles debe seleccionar el tratamiento.</p>');
+                    }
+                    else {
+                        bindOfficeButtons();
+                    }
                 }
                 else {
                     $holder.html('');
@@ -816,11 +839,11 @@ EOT;
     function loadAvailability(id) {
         //remove old ones
         $('a.fc-event.availability').remove();
-        $('#main_calendar').fullCalendar('removeEvents', 0);
+        $main_calendar.fullCalendar('removeEvents', 0);
 
         //fetch new ones
         if (id > 0) {
-            var d = $('#main_calendar').fullCalendar('getDate')._d;
+            var d = $main_calendar.fullCalendar('getDate')._d;
             var e = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 6);
             var $frm = $('#frm_get_availability');
             $frm.find('input[name=doctor_id]').val(id);
@@ -843,7 +866,7 @@ EOT;
     function showAvailability(data) {
         window.showing_availability = true;
         if (typeof data == 'undefined') data = window.availability_items;
-        var $cal = $('#main_calendar');
+        var $cal = $main_calendar;
         $.each(data, function(i, o) {
             if (o.state_id == 1) {
                 $cal.fullCalendar('renderEvent', {
@@ -896,20 +919,26 @@ EOT;
             cita_ID = parseInt($(this).find('input.id').val()) || 0;
             if (cita_ID > 0) {
                 getState(cita_ID);
-                $('#actions_modal').modal('show');
+                var $modal = $('#actions_modal')
+                $modal.css('visibility', 'hidden');
+                $modal.modal('show');
+                setTimeout(function() {
+                    setActionsModalWidth();
+                    $modal.css('visibility', 'visible');
+                }, 300);
             }
         });
     }
 
     function showState(state) {
         var $btns = $('#states').find('button');
-        $btns.removeClass('active btn-primary btn-danger btn-success').addClass('btn-default');
+        $btns.removeClass('active btn-primary btn-danger btn-success btn-warning').addClass('btn-default');
         var $btn = $('#state' + state);
         if ($btn.length) {
             $btn.removeClass('btn-default').addClass('active btn-' + $btn.attr('attr-type'));
         }
         //disable edit if state equal done (1), confirmed (2) or cancelled (3)
-        $btn_edit = $('#edit_cita');
+        var $btn_edit = $('#edit_cita');
         if (state != 0) {
             $btn_edit.addClass('disabled');
         }
@@ -927,7 +956,7 @@ EOT;
         submitForm( $frm, function($frm, data) {
             if (data['ok']) {
                 showState( data['state'] );
-                /*var $cal = $('#main_calendar');
+                /*var $cal = $main_calendar;
                 $cal.fullCalendar( 'refetchEvents' );*/
                 var $events = $('a.fc-event');
                 $.each($events, function(i, e) {
@@ -951,6 +980,29 @@ EOT;
             }
         });
     }
+
+    @if (User::canDeleteCitas($user))
+    function delCita(cita_id) {
+        var $frm = $('#frm_action_delete');
+        $frm.find('input[name=id]').val( cita_id );
+        //$frm.find('input[name=action]').val( 'action_delete' );
+        submitForm( $frm, function($frm, data) {
+            if (data['ok'] && data['deleted']) {
+                /*var $cal = $main_calendar;
+                $cal.fullCalendar( 'refetchEvents' );*/
+                var $events = $('a.fc-event');
+                $.each($events, function(i, e) {
+                    var $e = $(e);
+                    if ($e.find('input.id').val() == data['record']) {
+                        $e.remove();
+                        $main_calendar.fullCalendar('removeEvents', cita_id);
+                        return false;
+                    }
+                });
+            }
+        });
+    }
+    @endif
 
     function bindDoctorByLetter() {
         var $holder = $('#doctors_by_letter_holder');
@@ -987,7 +1039,7 @@ EOT;
 
     function gotoDate(date) {
         if (typeof date != 'undefined' && date.length) {
-            var $cal = $('#main_calendar');
+            var $cal = $main_calendar;
             var top = $cal.find('.fc-scroller').eq(0).scrollTop();
             $cal.fullCalendar('gotoDate', date);
             $cal.find('.fc-scroller').eq(0).scrollTop(top);
@@ -1010,6 +1062,18 @@ EOT;
             }, null, 'GET');
         }
     }
+    
+    function setActionsModalWidth() {
+        var $modal = $('#actions_modal').find('.modal-dialog');
+        var $btns = $modal.find('.btn-toolbar').find('.btn-group');
+        var width = 0;
+        
+        $.each($btns, function(i, o) {
+          width += $(o).outerWidth();
+        });
+
+        if (width > 0) $modal.width( width + 50 );
+    }
 
     /*function checkAvailability() {
         var $frm = $('#frm_data_new_event');
@@ -1029,6 +1093,9 @@ EOT;
         });
     }*/
 
+
+    var $main_calendar = $('#main_calendar');
+
     $(document).ready(function() {
         App.init('{{ Config::get('app.locale') }}'); //Initialise plugins and elements
 
@@ -1036,7 +1103,7 @@ EOT;
 
         /* initialize the calendar
         -----------------------------------------------------------------*/
-        $('#main_calendar').fullCalendar({
+        $main_calendar.fullCalendar({
             'lang': '{{ Config::get('app.locale') }}',
             header: {
                 left: 'prev,next today',
@@ -1121,13 +1188,13 @@ EOT;
         //----- End calendar Initialization -----
 
         $(window).resize(function() {
-            var $cal = $('#main_calendar');
+            var $cal = $main_calendar;
             var height = Math.floor( $(this).height() - $cal.offset().top ) - 80;
             $cal.fullCalendar('option', 'contentHeight', height);
         }).resize();
 
         //go to date button
-        $('#main_calendar').find('.fc-toolbar').find('.fc-left').append($('<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right" type="button">{{ Lang::get('citas.goto') }}</button>'));
+        $main_calendar.find('.fc-toolbar').find('.fc-left').append($('<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right" type="button">{{ Lang::get('citas.goto') }}</button>'));
         
         $('#goto_date_btn').click(function() {
             setTimeout(function() {
@@ -1299,6 +1366,16 @@ EOT;
 
         });
 
+        $('#delete_cita').click(function() {
+            if (confirm('¿Está seguro que quiere eliminar la cita?')) {
+                var $btn = $(this);
+                $btn.addClass('disabled');
+                delCita(cita_ID);
+                $btn.closest('.modal').modal('hide');
+                $btn.removeClass('disabled');
+            }
+        });
+
         $('#add_note').click(function() {
             var $btn = $(this);
             var $modal = $('#note_modal');
@@ -1346,7 +1423,7 @@ EOT;
         });
 
         $('a.filter-doctor').click(function(e) {
-            var view = $('#main_calendar').fullCalendar('getView').name;
+            var view = $main_calendar.fullCalendar('getView').name;
             var $a = $(this);
             var id = parseInt($a.attr('attr-id')) || 0;
             $a.toggleClass('active').siblings().removeClass('active');
@@ -1394,13 +1471,13 @@ EOT;
         });
 
         $('#area_id').select2('val', '');
-
-
+        
+        
         //auto refreshes every 10 minutes
         setInterval(function() {
             var modals_opened = $('.modal.fade.in').length;
             if (!modals_opened) {
-                $('#main_calendar').fullCalendar('refetchEvents');
+                $main_calendar.fullCalendar('refetchEvents');
             }
         }, 600000);
 

@@ -108,6 +108,7 @@ class CitaController extends BaseController {
             $doctor_id = $inputs['doctor_id'];
             $service_id = $inputs['servicio_id'];
             $office_id = $inputs['consultorio_id'];
+            $patient_id = $inputs['paciente_id'];
             $cita_id = (int)$inputs['id'];
             //check that the End Time is greater than the Start Time
             /*if (strtotime($start) > strtotime($end)) {
@@ -141,6 +142,12 @@ class CitaController extends BaseController {
                 }
             }
 
+            $equipments = Servicio::find($service_id);
+            if ($equipments) $equipments = $equipments->equipos;
+            $equipments = $equipments ? $equipments->lists('id') : false;
+
+            $uses_equipment = (is_array($equipments) && count($equipments)) ? true : false;
+
             //get overlapping
             //$overlapping = $model::whereRaw('estado <> 3 AND ((hora_inicio < ? AND hora_inicio > ?) OR (hora_fin > ? AND hora_fin < ?))', array($end, $start, $start, $end))->get();
             $overlapping = $model::notCancelled()->between($start, $end)->get();
@@ -158,13 +165,6 @@ class CitaController extends BaseController {
                 }
                 //check that the specified office is not busy for the given time
                 if (!($ignore_warning && $warning_key == 3)) {
-                    /*if ($ol->consultorio_id == $office_id) {
-                        $this->setReturn('warning_key', '3');
-                        $this->setReturn('bad', 'office');
-                        $this->setReturn('overlapping', $ol->id);
-                        $this->setError(Lang::get(self::LANG_FILE . '.overlap_office'));
-                        return false;
-                    }*/
                     $office_in_use = 0;
                     foreach ($overlapping as $o) {
                         if ($o->consultorio_id == $office_id) {
@@ -182,6 +182,40 @@ class CitaController extends BaseController {
                         }
                     }
                 }
+                //check that the specified service's equipment is available
+                if ($uses_equipment && is_array($equipments) && count($equipments) && !($ignore_warning && $warning_key == 4)) {
+                    //find the overlapping service's equipments
+                    $ol_equipments = $ol->equipos;
+                    $ol_equipments = $ol_equipments ? $ol_equipments->lists('id') : false;
+
+                    if (is_array($ol_equipments)) {
+                        //will check each equipment with the posible ones for the selected service
+                        foreach ($ol_equipments as $ol_equipment) {
+                            if (in_array($ol_equipment, $equipments)) {
+                                //if found will then remove it from the selected service's equipment list
+                                $equipments = array_diff($equipments, array($ol_equipment));
+                                break;
+                            }
+                        }
+                    }
+                }
+                //check that the specified patient is not overlapping himself
+                if (!($ignore_warning && $warning_key == 5)) {
+                    if ($ol->paciente_id == $patient_id) {
+                        $this->setReturn('warning_key', '5');
+                        $this->setReturn('bad', 'patient');
+                        $this->setReturn('overlapping', $ol->id);
+                        $this->setError(Lang::get(self::LANG_FILE . '.overlap_patient'));
+                        return false;
+                    }
+                }
+            }
+
+            if ($uses_equipment && count($equipments) == 0) {
+                $this->setReturn('warning_key', '4');
+                $this->setReturn('bad', 'service');
+                $this->setError(Lang::get(self::LANG_FILE . '.overlap_equipment'));
+                return false;
             }
         }
         return true;
@@ -564,7 +598,7 @@ EOT;
         //send information
         if ($service) {
             $equipment = $service->equipos;
-            if ($equipment) $equipment->lists('nombre');
+            if ($equipment) $equipment = $equipment->lists('nombre');
         }
         else {
             $equipment = false;
@@ -653,12 +687,12 @@ EOT;
         if ($service_id) {
             $service = Servicio::find($service_id);
             if ($service) {
-                $now = new DateTime('now', new DateTimeZone( Config::get('app.timezone') ));
-                $now = $now->getTimestamp();//strtotime($now->date);
+                //$now = new DateTime('now', new DateTimeZone( Config::get('app.timezone') ));
+                //$now = $now->getTimestamp();//strtotime($now->date);
 
                 $start = $date . ' ' . Functions::ampmto24($start);
                 $start_time = strtotime($start);
-                if ($start_time >= $now) {
+                //if ($start_time >= $now) {
                     $duration = $service->duracion;
                     $end = Functions::addMinutes($start_time, $duration);
                     $busy_offices = Cita::notCancelled()->between($start, $end)->lists('consultorio_id');
@@ -675,7 +709,7 @@ EOT;
                         }
                         $offices .= '</div>';
                     }
-                }
+                //}
             }
         }
         $this->setReturn('office_btns', $offices);
@@ -696,6 +730,10 @@ EOT;
                     $allowed = false;
                     $val = (int)$val;
                     switch ($val) {
+                        case Cita::UNCONFIRMED:
+                            $allowed = true;
+                            break;
+
                         case Cita::CONFIRMED:
                         case Cita::CANCELLED:
                             if (User::canConfirmOrCancelCita()) {
@@ -717,6 +755,7 @@ EOT;
                     $this->setReturn('cita_id', $cita_id);
                     $this->setReturn('state', $item->estado);
                     break;
+
                 case 'get_state':
                     $this->setReturn('cita_id', $cita_id);
                     $this->setReturn('state', $item->estado);

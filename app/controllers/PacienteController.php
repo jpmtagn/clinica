@@ -186,7 +186,7 @@ class PacienteController extends BaseController {
 
         $user = $item->usuario;
         if ($user) {
-            $this->setReturn('usuario_id_lbl', $item->usuario->correo);
+            $this->setReturn('usuario_id_lbl', $item->usuario->nombre);
         }
         $this->setReturn('telefonos', $telefonos);
         $this->setReturn('correos', $correos);
@@ -241,7 +241,9 @@ class PacienteController extends BaseController {
         //$output .= $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative') . '<br>';
         $output .= $frm->halfPanelClose(true);
 
-        $output .= $frm->controlButtons();//null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
+        if (User::canEditDeletePersonas()) {
+            $output .= $frm->controlButtons();//null, null, $frm->dropDownButton(Lang::get(self::LANG_FILE . '.add_relative'), TipoPariente::get()->toArray(), 'dropDown_addRelative'));
+        }
 
         //$this->setReturn('script', $frm->script());
 

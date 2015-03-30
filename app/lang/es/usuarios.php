@@ -27,7 +27,8 @@ return array(
     'secretaria' => 'Secretaria',
 
     'view_doctor' => 'Ver terapeutas',
-    'view_disponibility' => 'Ver y editar horario del terapeuta',
+    'view_edit_disponibility' => 'Ver y editar horario del terapeuta',
+    'view_disponibility' => 'Ver horario del terapeuta',
     'view_citas_print' => 'Versión de impresión',
     'disponibility' => 'Disponibilidad',
 

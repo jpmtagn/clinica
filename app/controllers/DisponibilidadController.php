@@ -24,7 +24,7 @@ class DisponibilidadController extends BaseController {
      * @return mixed
      */
     public function paginaAdminDisponibilidad($doctor_id) {
-        if (User::canChangeDisponibilidadState($doctor_id)) {
+        if (User::canViewDisponibilidadState($doctor_id)) {
 
         }
         elseif (User::is(User::ROL_DOCTOR)) {
@@ -40,6 +40,7 @@ class DisponibilidadController extends BaseController {
             return View::make('admin.disponibilidad_doctor')->with(array(
                 'doctor_id' => $doctor_id,
                 'doctor_nombre' => Functions::firstNameLastName($doctor->nombre, $doctor->apellido),
+                'read_only' => !User::canChangeDisponibilidadState($doctor_id),
                 'options' => $options
             ));
         }

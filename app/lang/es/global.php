@@ -82,6 +82,8 @@ return array(
     'save' => 'Guardar',
     'cancel' => 'Cancelar',
     'close' => 'Cerrar',
+    'edit' => 'Editar',
+    'delete' => 'Eliminar',
 
     'loading' => 'cargando...',
     'saving' => 'guardando...',
