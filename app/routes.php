@@ -152,6 +152,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ServicioController@paginaAdmin'
     ));
 
+    Route::get('admin/servicio_categorias', array(
+        'as' => 'admin_servicio_categorias',
+        'uses' => 'ServicioCategoriaController@paginaAdmin'
+    ));
+
     Route::get('admin/equipos', array(
         'as' => 'admin_equipos',
         'uses' => 'EquipoController@paginaAdmin'
@@ -219,6 +224,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'ServicioController@totalGet'
     ));
 
+    Route::get('admin/servicio_categoria/total', array(
+        'as' => 'admin_servicio_categoria_count_get',
+        'uses' => 'ServicioCategoriaController@totalGet'
+    ));
+
     Route::get('admin/equipo/total', array(
         'as' => 'admin_equipo_count_get',
         'uses' => 'EquipoController@totalGet'
@@ -264,6 +274,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('calendario_disponibilidad/{doctor_id?}', array(
         'as' => 'disponibilidad_calendar_source',
         'uses' => 'DisponibilidadController@getDisponibilidad'
+    ));
+
+    Route::get('calendario_disponibilidad_editable/{doctor_id?}', array(
+        'as' => 'disponibilidad_calendar_source_editable',
+        'uses' => 'DisponibilidadController@getDisponibilidadEditable'
     ));
 
     //information requests
@@ -622,6 +637,45 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/servicio/registrar', array(
             'as' => 'admin_servicio_registrar_post',
             'uses' => 'ServicioController@registrarPost'
+        ));
+
+
+        // PAGINA CATEGORIAS SERVICIOS
+
+        //buscar
+        Route::get('admin/servicio_categoria/buscar', array(
+            'as' => 'admin_servicio_categoria_buscar_get',
+            'uses' => 'ServicioCategoriaController@buscarGet'
+        ));
+
+        //info
+        Route::get('admin/servicio_categoria/info', array(
+            'as' => 'admin_servicio_categoria_info_get',
+            'uses' => 'ServicioCategoriaController@infoGet'
+        ));
+
+        //datos para editar
+        Route::get('admin/servicio_categoria/datos', array(
+            'as' => 'admin_servicio_categoria_datos_get',
+            'uses' => 'ServicioCategoriaController@datosGet'
+        ));
+
+        //acciones (eliminar)
+        Route::post('admin/servicio_categoria/accion', array(
+            'as' => 'admin_servicio_categoria_accion_post',
+            'uses' => 'ServicioCategoriaController@accionPost'
+        ));
+
+        //editar
+        Route::post('admin/servicio_categoria/editar', array(
+            'as' => 'admin_servicio_categoria_editar_post',
+            'uses' => 'ServicioCategoriaController@editarPost'
+        ));
+
+        //registrar
+        Route::post('admin/servicio_categoria/registrar', array(
+            'as' => 'admin_servicio_categoria_registrar_post',
+            'uses' => 'ServicioCategoriaController@registrarPost'
         ));
 
 

@@ -13,7 +13,8 @@ class Servicio extends Eloquent {
     protected $fillable = array(
         'nombre',
         'descripcion',
-        'duracion'
+        'duracion',
+        'categoria_servicio_id'
     );
 
     protected $table = 'servicio';
@@ -36,11 +37,12 @@ class Servicio extends Eloquent {
      */
     public static function getValidationRules($field = null, $ignore_id = 0) {
         $rules = array(
-            'id'            => 'integer|min:1',
-            'nombre'        => 'required|max:45',
-            'descripcion'   => 'max:255',
-            'duracion'      => 'integer|min:0|max:1440',
-            'consultorios'  => 'array'
+            'id'                    => 'integer|min:1',
+            'nombre'                => 'required|max:45',
+            'descripcion'           => 'max:255',
+            'duracion'              => 'integer|min:0|max:1440',
+            'consultorios'          => 'array',
+            'categoria_servicio_id' => 'integer|min:1'
         );
         if ($field === null) {
             return $rules;
@@ -59,6 +61,10 @@ class Servicio extends Eloquent {
 
     public function equipos() {
         return $this->belongsToMany('Equipo', 'equipo_servicio', 'servicio_id', 'equipo_id');
+    }
+
+    public function categoria() {
+        return $this->belongsTo('ServicioCategoria', 'categoria_servicio_id', 'id');
     }
 
 

@@ -147,7 +147,7 @@ EOT;
     }*/
 
 
-    public function getDisponibilidad($doctor_id = 0) {
+    public function getDisponibilidad($doctor_id = 0, $editable = false) {
         if ($doctor_id == 0) {
             $doctor_id = (int)Input::get('doctor_id');
             if ($doctor_id == 0) return '[]';
@@ -161,28 +161,41 @@ EOT;
         if ($doctor) {
             $items = $doctor->disponibilidad()->fromDateToDate($cal_start, $cal_end)->get();
 
-            $color = '#849917';//'#fff';
+            if (count($items)) {
+                $render_type = $editable ? "event" : "inverse-background";
 
-            foreach ($items as $item) {
+                foreach ($items as $item) {
 
-                $start = $item->inicio;
-                $end = $item->fin;
+                    $start = $item->inicio;
+                    $end = $item->fin;
 
+                    $items_json[] = <<<EOT
+                    {
+                        "id": "{$item->id}",
+                        "start": "{$start}",
+                        "end": "{$end}",
+                        "rendering": "{$render_type}"
+                    }
+EOT;
+                }
+            }
+            elseif (!$editable) {
+                //nothing available, disable all calendar
                 $items_json[] = <<<EOT
                 {
-                    "id": "{$item->id}",
-                    "title": "",
-                    "start": "{$start}",
-                    "end": "{$end}",
-                    "allDay": false,
-                    "backgroundColor": "{$color}",
-                    "state_id": "{$item->disponible}"
+                    "start": "{$cal_start} 00:00:00",
+                    "end": "{$cal_end} 23:59:59",
+                    "rendering": "background"
                 }
 EOT;
             }
         }
 
         return '[' . implode(',', $items_json) . ']';
+    }
+
+    public function getDisponibilidadEditable($doctor_id) {
+        return $this->getDisponibilidad($doctor_id, true);
     }
 
 

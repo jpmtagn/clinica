@@ -6,7 +6,11 @@ return array(
     'description' => 'Descripción',
     'duration' => 'Duración',
 
-    'new_event' => 'Nuevo Tratamiento'
+    'new_event' => 'Nuevo Tratamiento',
+
+    'category' => 'Categoría',
+    'categories' => 'Categorías',
+    'category_name' => 'Nombre'
 
     //errors
 

@@ -509,6 +509,7 @@ EOT;
     var creating_new_event = false;
     var showing_availability = false;
     var loading_availability_timer = false;
+    var availability_source = '';
 
     function setDateTime(start, end) {
         var $frm = $('#frm_new_event_date_time_inf');
@@ -840,50 +841,15 @@ EOT;
         //remove old ones
         $('a.fc-event.availability').remove();
         $main_calendar.fullCalendar('removeEvents', 0);
-
-        //fetch new ones
-        if (id > 0) {
-            var d = $main_calendar.fullCalendar('getDate')._d;
-            var e = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 6);
-            var $frm = $('#frm_get_availability');
-            $frm.find('input[name=doctor_id]').val(id);
-            $frm.find('input[name=start]').val(d.getUTCFullYear() + '-' + twoDigits(d.getUTCMonth()+1) + '-' + twoDigits(d.getUTCDate()) + ' 00:00:00');
-            $frm.find('input[name=end]').val(e.getUTCFullYear() + '-' + twoDigits(e.getUTCMonth()+1) + '-' + twoDigits(e.getUTCDate()) + ' 23:59:59');
-
-            if (window.loading_availability_timer) {
-                clearTimeout(window.loading_availability_timer);
-            }
-            window.loading_availability_timer = setTimeout(function() {
-                submitForm($frm, function($frm, data) {
-                    window.availability_items = data;
-                    showAvailability(data);
-                    window.loading_availability_timer = false;
-                });
-            }, 2000);
+        if (window['availability_source'].length) {
+            $main_calendar.fullCalendar( 'removeEventSource', window['availability_source'] );
         }
-    }
 
-    function showAvailability(data) {
-        window.showing_availability = true;
-        if (typeof data == 'undefined') data = window.availability_items;
-        var $cal = $main_calendar;
-        $.each(data, function(i, o) {
-            if (o.state_id == 1) {
-                $cal.fullCalendar('renderEvent', {
-                        id: 0,
-                        title: '',
-                        start: o.start,
-                        end: o.end,
-                        backgroundColor: o.backgroundColor,
-                        state_id: 10,
-                        cita: 0
-                    }//,
-                    //true // make the event "stick"
-                );
-            }
-        });
-        window.showing_availability = false;
-        highlightActive('doctor');
+        if (id > 0) {
+            window['availability_source'] = '{{ URL::route('disponibilidad_calendar_source') }}/' + id;
+
+            $main_calendar.fullCalendar( 'addEventSource', window['availability_source'] );
+        }
     }
 
     function showHideNewPatient() {
@@ -1117,7 +1083,7 @@ EOT;
                 end: '23:59',
                 dow: [ {{ $options['days_to_show_str'] }} ]
             },
-            eventStartEditable: false{{-- !$read_only ? 'true' : 'false' --}},
+            eventStartEditable: {{ !$read_only ? 'true' : 'false' }},
             eventDurationEditable: false,
             firstDay: 1,
             weekends: true,
@@ -1291,15 +1257,15 @@ EOT;
             showHideNewPatient();
         });
 
-        $('#paciente_id').on("change", function(e) {
+        $('#paciente_id').on('change', function() {
             showHideNewPatient();
         });
 
-        $('#area_id').on("change", function(e) {
+        $('#area_id').on('change', function() {
             showAreaOffices( $(this).val() );
-        });
+        }).select2('val', '');
 
-        $('#consultorio_id_select').on("change", function(e) {
+        $('#consultorio_id_select').on('change', function() {
             $('#consultorio_id').val( $(this).val() );
         }).change();
 
@@ -1470,7 +1436,6 @@ EOT;
             }
         });
 
-        $('#area_id').select2('val', '');
         
         
         //auto refreshes every 10 minutes

@@ -340,7 +340,7 @@ Panel de Administración
             },
             minTime: '{{ $options['min_time'] }}',
             maxTime: '{{ $options['max_time'] }}',
-            events: '{{ URL::route('disponibilidad_calendar_source', array('doctor_id'=>$doctor_id)) }}',
+            events: '{{ URL::route('disponibilidad_calendar_source_editable', array('doctor_id'=>$doctor_id)) }}',
             @if (!$read_only)
             select: function(start, end, allDay) {
                 if (typeof fn_new_event == 'function') {

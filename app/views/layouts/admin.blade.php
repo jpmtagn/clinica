@@ -231,11 +231,16 @@
 
                 @if (User::canAdminTratamientos($user))
                 <!-- servicios -->
-                <li{{ activeClassIf('servicio', $active_menu) }}>
-                    <a href="{{ URL::route('admin_servicios') }}">
+                <li class="has-sub{{ activeClassIf('servicio', $active_menu, false) }}">
+                    <a href="javascript:;">
                         <i class="fa fa-fw fa-check-square-o"></i>
                         <span class="menu-text">{{ Lang::get('servicio.title_plural') }}</span>
+                        <span class="arrow"></span>
                     </a>
+                    <ul class="sub">
+                        <li><a href="{{ URL::route('admin_servicio_categorias') }}"><span class="sub-menu-text">{{ Lang::get('servicio.categories') }}</span></a></li>
+                        <li><a href="{{ URL::route('admin_servicios') }}"><span class="sub-menu-text">{{ Lang::get('servicio.title_plural') }}</span></a></li>
+                    </ul>
                 </li>
                 @endif
 

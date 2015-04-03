@@ -26,6 +26,7 @@ class ServicioController extends BaseController {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
             $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre', array('area', 'nombre'));
+            $categorias = Functions::arrayIt(ServicioCategoria::get(), 'id', 'nombre');
             $duraciones = array(
                 '0' => '',
                 '10' => '10m',
@@ -53,7 +54,8 @@ class ServicioController extends BaseController {
                     'active_menu' => 'servicio',
                     'total' => $total,
                     'consultorios' => $consultorios,
-                    'duraciones' => $duraciones
+                    'duraciones' => $duraciones,
+                    'categorias' => $categorias
                 )
             );
         }
@@ -107,6 +109,9 @@ class ServicioController extends BaseController {
         //left panel
         //$output .= $frm->halfPanelOpen(true);
         $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.name'), $item->nombre);
+        if ($item->categoria) {
+            $output .= $frm->view('categoria', Lang::get(self::LANG_FILE . '.category'), $item->categoria->nombre);
+        }
         if (!empty($item->descripcion)) {
             $output .= $frm->view('descripcion', Lang::get(self::LANG_FILE . '.description'), $item->descripcion);
         }
