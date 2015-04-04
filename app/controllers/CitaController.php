@@ -53,12 +53,12 @@ class CitaController extends BaseController {
         //$model = self::MODEL;
         //$events = $model::with('paciente')->latestOnes()->get();
         $doctores = Doctor::getAll();
-        $servicios = Functions::arrayIt(Servicio::getWithEquipments(), 'id', 'nombre', 'equipos');
         $areas = Functions::arrayIt(Area::get(), 'id', 'nombre');
         $consultorios = Functions::arrayIt(Consultorio::get(), 'id', 'nombre', array('area', 'nombre'));
         $genders = Functions::langArray('pacientes', Paciente::getGenders());
         $marital_statuses = Functions::langArray('pacientes', Paciente::getMaritalStatuses());
         $doctor_letters = Doctor::getFirstNameLetters();
+        $categorias_servicios = ServicioCategoria::get();
         $options = Opcion::load();
         return View::make('admin.calendario')->with(
             array(
@@ -66,13 +66,13 @@ class CitaController extends BaseController {
                 //'events' => $events
                 //'total' => $total,
                 'doctores' => $doctores,
-                'servicios' => $servicios,
                 'areas' => $areas,
                 'consultorios' => $consultorios,
                 'estados' => Functions::langArray( self::LANG_FILE, Cita::state() ),
                 'genders' => $genders,
                 'marital_statuses' => $marital_statuses,
                 'doctor_letters' => $doctor_letters,
+                'categorias_servicios' => $categorias_servicios,
                 'options' => $options,
                 'read_only' => !User::canAddCitas()
             )
@@ -812,6 +812,16 @@ EOT;
             return $this->setError( Lang::get('global.not_found') );
         }
         return $this->returnJson();
+    }
+
+
+    public function getFullDate() {
+        $date = Input::get('date');
+        if (count(explode('-', $date)) == 3) {
+            $this->setReturn('date', Functions::longDateFormat($date));
+            return $this->returnJson();
+        }
+        return $this->setError(Lang::get('global.wrong_action'));
     }
 
 }

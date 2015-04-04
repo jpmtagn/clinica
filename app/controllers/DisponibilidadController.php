@@ -162,21 +162,28 @@ EOT;
             $items = $doctor->disponibilidad()->fromDateToDate($cal_start, $cal_end)->get();
 
             if (count($items)) {
-                $render_type = $editable ? "event" : "inverse-background";
-
                 foreach ($items as $item) {
-
                     $start = $item->inicio;
                     $end = $item->fin;
 
-                    $items_json[] = <<<EOT
-                    {
-                        "id": "{$item->id}",
-                        "start": "{$start}",
-                        "end": "{$end}",
-                        "rendering": "{$render_type}"
-                    }
+                    if ($editable) {
+                        $items_json[] = <<<EOT
+                        {
+                            "id": "{$item->id}",
+                            "start": "{$start}",
+                            "end": "{$end}"
+                        }
 EOT;
+                    }
+                    else {
+                        $items_json[] = <<<EOT
+                        {
+                            "start": "{$start}",
+                            "end": "{$end}",
+                            "rendering": "inverse-background"
+                        }
+EOT;
+                    }
                 }
             }
             elseif (!$editable) {

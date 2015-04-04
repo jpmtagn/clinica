@@ -97,7 +97,7 @@ return array(
     'saved_msg' => 'Datos guardados.',
     'del_msg' => 'Registro eliminado.',
     'not_found' => 'No encontrado.',
-    'wrong_action' => 'Solicitud no reconicida.',
+    'wrong_action' => 'Solicitud no reconocida.',
     'unable_perform_action' => 'Error. No se pudo completar la operación.',
     'no_permission' => 'No tiene permisos para realizar la operación',
     'error_request' => 'Error de conexión.'

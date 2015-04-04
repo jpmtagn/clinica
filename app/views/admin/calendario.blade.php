@@ -358,8 +358,18 @@ EOT;
     <!-- NEW SERVICE FORM -->
     {{ $frm->modalOpen('new_event_service_modal', Lang::get('citas.set') . ' ' . Lang::get('servicio.title_single')) }}
         <form id="frm_new_event_service_inf" class="form-horizontal" role="form" method="get" autocomplete="off" action="{{ URL::route('cita_service_inf_get') }}">
-            {{ $frm->select('servicio_id', null, Lang::get('citas.service'), $servicios) }}
+            {{ $frm->remoteSelect('servicio_id', null, Lang::get('citas.service'), URL::route('admin_servicios_list')) }}
+            <nav>
+                <ul class="pagination pagination-sm">
+                @foreach ($categorias_servicios as $cat)
+                    <li>
+                        <a class="service-category-index" attr-id="{{ $cat->id }}" href="#">{{ $cat->nombre }}</a>
+                    </li>
+                @endforeach
+                </ul>
+            </nav>
         </form>
+        <div id="service_by_category_holder"></div>
     {{ $frm->modalClose() }}
     <!-- /NEW SERVICE FORM -->
 
@@ -511,6 +521,9 @@ EOT;
     var loading_availability_timer = false;
     var availability_source = '';
 
+    var cal_top = 0;
+    var loading_new_view = false;
+
     function setDateTime(start, end) {
         var $frm = $('#frm_new_event_date_time_inf');
         //setting date
@@ -638,6 +651,16 @@ EOT;
     		$('.tip').tooltip();
             //styling morning / afternoon separation
             $main_calendar.find('#hour_12').siblings('.fc-widget-content').addClass('ampm-separation');
+            if (window['cal_top'] > 0) {
+                $main_calendar.find('.fc-scroller').eq(0).scrollTop( window['cal_top'] );
+            }
+            window['loading_new_view'] = false;
+            //gets the calendar top after scrolling
+            $main_calendar.find('.fc-scroller').scroll(function() {
+                if (!window['loading_new_view']) {
+                    window['cal_top'] = $main_calendar.find('.fc-scroller').eq(0).scrollTop();
+                }
+            });
         }
         else {
             window.creating_new_event = false;
@@ -777,7 +800,12 @@ EOT;
                 if (data['ok']) {
                     $holder.html( data['office_btns'] );
                     if ($('.office-btn').length == 0) {
-                        $holder.html('<p class="text-center">Para ver las cabinas disponibles debe seleccionar el tratamiento.</p>');
+                        if (parseInt($('#servicio_id_hidden').val()) > 0) {
+                            $holder.html('<p class="text-center">{{ Lang::get('servicio.no_offices_attached_to_service') }}</p>');
+                        }
+                        else {
+                            $holder.html('<p class="text-center">{{ Lang::get('servicio.no_offices_select_service_first') }}</p>');
+                        }
                     }
                     else {
                         bindOfficeButtons();
@@ -986,6 +1014,22 @@ EOT;
         });
     }
 
+    function bindServiceByCategory() {
+        var $holder = $('#service_by_category_holder');
+        $holder.find('a').click(function() {
+            var $a = $(this);
+            var id = parseInt($a.attr('data-id')) || 0;
+            if (id > 0) {
+                var $frm = $('#frm_new_event_service_inf');
+                $frm.find('input[name=servicio_id]').val(id);
+                submitForm( $frm, function($frm, data) {
+                    submitServiceFormDone($frm, data);
+                    $holder.closest('.modal').modal('hide');
+                }, null, 'GET');
+            }
+        });
+    }
+
     function emphasizeEvent(event_id) {
         var $events = $('a.fc-event');
         $.each($events, function(i, o) {
@@ -1123,6 +1167,9 @@ EOT;
                 if (typeof fn_render_all_events == 'function') {
                     fn_render_all_events(view);
                 }
+            },
+            viewDestroy: function() {
+                window['loading_new_view'] = true;
             },
             editable: {{ $read_only ? 'false' : 'true' }},
             droppable: false/*, // this allows things to be dropped onto the calendar !!!
@@ -1388,6 +1435,27 @@ EOT;
             return false;
         });
 
+        $('a.service-category-index').click(function(e) {
+            var cat = $(this).attr('attr-id');
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ URL::route('get_service_by_category') }}',
+                dataType: 'json',
+                data: { 'category_id' : cat }
+            }).done(function(data) {
+                if (data['ok'] == 1) {
+                    $('#service_by_category_holder').html( data['html'] );
+                    bindServiceByCategory();
+                }
+            }).fail(function(data) {
+                console.log(data); //failed
+            });
+
+            e.preventDefault();
+            return false;
+        });
+
         $('a.filter-doctor').click(function(e) {
             var view = $main_calendar.fullCalendar('getView').name;
             var $a = $(this);
@@ -1436,8 +1504,8 @@ EOT;
             }
         });
 
-        
-        
+
+
         //auto refreshes every 10 minutes
         setInterval(function() {
             var modals_opened = $('.modal.fade.in').length;

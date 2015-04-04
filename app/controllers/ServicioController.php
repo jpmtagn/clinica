@@ -141,4 +141,42 @@ class ServicioController extends BaseController {
         return AForm::searchResults($records, 'nombre');
     }
 
+
+    public function listSeekAlt() {
+        $query = Input::get('q');
+        $query = explode(' ', $query);
+
+        $search_fields = array('nombre', 'equipos');
+
+        $records = DB::table('servicios_equipos');
+
+        foreach($query as $q) {
+            $q = trim($q);
+            $records = $records->where(function ($sql_query) use ($search_fields, $q) {
+                $first_query = true;
+                foreach($search_fields as $attr) {
+                    if ($first_query) {
+                        $sql_query->where($attr, 'LIKE', '%' . $q . '%');
+                        $first_query = false;
+                    }
+                    else {
+                        $sql_query->orWhere($attr, 'LIKE', '%' . $q . '%');
+                    }
+                }
+            });
+        }
+
+        $records = $records->get();
+
+        $list = array();
+        foreach($records as $record) {
+            $list[] = json_encode(array(
+                'name' => $record->nombre . ' - ' . $record->equipos,
+                '_id' => $record->id
+            ));
+        }
+
+        return '[' . implode(',', $list) . ']';
+    }
+
 }

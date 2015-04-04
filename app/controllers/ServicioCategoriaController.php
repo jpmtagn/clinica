@@ -60,10 +60,12 @@ class ServicioCategoriaController extends BaseController {
      */
     public function outputInf( $item ) {
         $frm = new AForm;
+        $total = $item->servicios->count();
         $output = "";
         $output .= $frm->id( $item->id );
         $output .= $frm->hidden('action');
         $output .= $frm->view('nombre', Lang::get(self::LANG_FILE . '.category'), $item->nombre);
+        $output .= $frm->view('total', Lang::get(self::LANG_FILE . '.total_services'), $total);
         $output .= $frm->controlButtons();
 
         return $output;
@@ -77,6 +79,25 @@ class ServicioCategoriaController extends BaseController {
      */
     public function buscarReturnHtml($records, $search_fields) {
         return AForm::searchResults($records, reset($search_fields));
+    }
+
+
+    public function getServices() {
+        $id = (int)Input::get('category_id');
+        $html = '';
+        if ($id > 0) {
+            $items = DB::table('servicios_equipos')->where('categoria_id', '=', $id)->get();
+            if ($items) {
+                foreach ($items as $item) {
+                    $nombre = $item->nombre . ($item->equipos ? (' - ' . $item->equipos) : '');
+                    $html.= <<<EOT
+                <a class="list-group-item search-result" data-id="{$item->id}">{$nombre}</a>
+EOT;
+                }
+            }
+        }
+        $this->setReturn('html', $html);
+        return $this->returnJson();
     }
 
 }

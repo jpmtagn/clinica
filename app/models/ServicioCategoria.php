@@ -49,7 +49,7 @@ class ServicioCategoria extends Eloquent {
     }
 
     //RELACIONES:
-    public function servicio() {
+    public function servicios() {
         return $this->hasMany('Servicio', 'categoria_servicio_id', 'id');
     }
 

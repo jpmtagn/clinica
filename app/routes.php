@@ -262,7 +262,7 @@ Route::group(array('before' => 'auth'), function() {
 
     Route::get('admin/servicios/list', array(
         'as' => 'admin_servicios_list',
-        'uses' => 'ServicioController@listSeek'
+        'uses' => 'ServicioController@listSeekAlt'
     ));
 
     //calendar
@@ -327,6 +327,11 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'UserController@getDoctorByLetter'
     ));
 
+    Route::get('cita/service_indice', array(
+        'as' => 'get_service_by_category',
+        'uses' => 'ServicioCategoriaController@getServices'
+    ));
+
     Route::get('calendario/buscar', array(
         'as' => 'calendar_search',
         'uses' => 'CitaController@findInCalendar'
@@ -335,6 +340,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('cita/area_consultorio', array(
         'as' => 'get_area_offices',
         'uses' => 'AreaController@getConsultorios'
+    ));
+
+    Route::get('fecha_completa', array(
+        'as' => 'full_date',
+        'uses' => 'CitaController@getFullDate'
     ));
 
 

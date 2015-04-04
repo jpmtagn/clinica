@@ -310,6 +310,24 @@ EOT;
         if ($label === null) $label = ucfirst($name);
         if ($this->edit) $id = $id . '_edit';
         $value = isset($this->values[$name]) ? ' value="' . $this->values[$name] . '"' : '';
+
+        $url = URL::route('full_date');
+
+        $this->script .= <<<EOT
+            $('#{$id}').change(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: '{$url}',
+                    dataType: 'json',
+                    data: { date : $(this).val() }
+                }).done(function(data) {
+                    if (data['ok']) {
+                        $('#{$id}_str').html( data['date'] );
+                    }
+                });
+            });
+EOT;
+
         if ($this->show_labels) {
             return <<<EOT
           <div class="form-group {$classes}">
@@ -317,11 +335,11 @@ EOT;
              <div class="col-md-10">
                 <div class="input-group">
                     <input type="text" id="{$id}" name="{$name}" class="form-control input-calendar-{$type}" data-mask="9999-99-99" placeholder="{$label}"{$value}>
-                    <!--span class="input-group-btn">
-                        <button class="btn btn-primary" type="button">
-                            <i class="fa fa-calendar"></i>
+                    <span class="input-group-btn">
+                        <button id="{$id}_str" class="btn btn-default date-str disabled" type="button">
+                            &nbsp;
                         </button>
-                    </span-->
+                    </span>
                 </div>
             </div>
           </div>

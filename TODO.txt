@@ -24,6 +24,6 @@
 [ ] Agregar opción "repetir semana" en el horario de disponibilidad del terapeuta
 [X] Validar que no se repita el paciente en un mismo intervalo
 [ ] Agrupar terapeutas
-[-] Agregar categorias en los tratamientos y mostrarlos en el formulario de nueva cita
+[X] Agregar categorias en los tratamientos y mostrarlos en el formulario de nueva cita
 [X] !!! Mostrar disponibilidad del terapeuta en el calendario !!!!
-[ ] Modificar campo fecha para que muestre la fecha completa al lado (requiere ajax)
+[X] Modificar campo fecha para que muestre la fecha completa al lado (requiere ajax)

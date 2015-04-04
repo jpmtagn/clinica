@@ -10,8 +10,10 @@ return array(
 
     'category' => 'Categoría',
     'categories' => 'Categorías',
-    'category_name' => 'Nombre'
+    'category_name' => 'Nombre',
+    'total_services' => 'Total servicios',
 
-    //errors
+    'no_offices_attached_to_service' => 'No hay cabinas asociadas a este tratamiento.',
+    'no_offices_select_service_first' => 'Para ver las cabinas disponibles debe seleccionar el tratamiento.'
 
 );
