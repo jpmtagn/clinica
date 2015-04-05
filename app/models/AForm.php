@@ -336,7 +336,7 @@ EOT;
                 <div class="input-group">
                     <input type="text" id="{$id}" name="{$name}" class="form-control input-calendar-{$type}" data-mask="9999-99-99" placeholder="{$label}"{$value}>
                     <span class="input-group-btn">
-                        <button id="{$id}_str" class="btn btn-default date-str disabled" type="button">
+                        <button id="{$id}_str" class="btn btn-default disabled" type="button">
                             &nbsp;
                         </button>
                     </span>
@@ -351,11 +351,11 @@ EOT;
              <div class="col-md-12">
                 <div class="input-group">
                     <input type="text" id="{$id}" name="{$name}" class="form-control input-calendar-{$type}" data-mask="9999-99-99" placeholder="{$label}"{$value}>
-                    <!--span class="input-group-btn">
-                        <button class="btn btn-primary" type="button">
-                            <i class="fa fa-calendar"></i>
+                    <span class="input-group-btn">
+                        <button id="{$id}_str" class="btn btn-default disabled" type="button">
+                            &nbsp;
                         </button>
-                    </span-->
+                    </span>
                 </div>
             </div>
           </div>

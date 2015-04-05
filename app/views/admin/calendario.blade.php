@@ -580,7 +580,7 @@ EOT;
         $modal.modal('show');
     }
 
-    /*function fn_drop_event(event) {
+    function fn_drop_event(event) {
         console.log(event);
         var $frm = $('#frm_data_move');
         //setting id
@@ -598,7 +598,7 @@ EOT;
         }
 
         $frm.submit();
-    }*/
+    }
 
     function updateCountPer(name) {
         //updates count of events per filter

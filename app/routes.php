@@ -763,6 +763,18 @@ Route::group(array('before' => 'auth'), function() {
             'uses' => 'DisponibilidadController@duplicarPost'
         ));
 
+        //duplicate week
+        Route::post('admin/disponibilidad/duplicar_semana', array(
+            'as' => 'disponibilidad_duplicate_week_post',
+            'uses' => 'DisponibilidadController@duplicarSemanaPost'
+        ));
+
+        //delete week
+        Route::post('admin/disponibilidad/eliminar', array(
+            'as' => 'disponibilidad_delete',
+            'uses' => 'DisponibilidadController@deletePost'
+        ));
+
 
         // PAGINA OPCIONES
 

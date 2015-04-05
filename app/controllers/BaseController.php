@@ -221,7 +221,7 @@ class BaseController extends Controller {
             }
         }
         $validator = Validator::make(Input::all(), $fields);
-        $data = $fields;
+        //$data = $fields;
         return ($validator->passes());
     }
 

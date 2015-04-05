@@ -112,7 +112,7 @@ Panel de Administración
         <input type="hidden" name="disponibilidad_id" id="disponibilidad_id_action" value="0">
         <input type="hidden" name="action" id="action">
         <input type="hidden" name="val" id="val">
-        <input type="hidden" name="usuario_id" id="usuario_id" value="{{ $doctor_id }}">
+        <input type="hidden" name="usuario_id" value="{{ $doctor_id }}">
         {{ Form::token() }}
     </form>
 {{ $frm->modalClose(null, null, false) }}
@@ -123,12 +123,33 @@ Panel de Administración
     <form id="frm_duplicate" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('disponibilidad_duplicate_post') }}">
         {{ $frm->date('fecha', null, Lang::get('global.date')) }}
         <input type="hidden" name="disponibilidad_id" id="disponibilidad_id_duplicate" value="0">
-        <input type="hidden" name="usuario_id" id="usuario_id" value="{{ $doctor_id }}">
+        <input type="hidden" name="usuario_id" value="{{ $doctor_id }}">
         {{ Form::token() }}
-        {{-- $frm->submit( Lang::get('global.ok') ) --}}
     </form>
 {{ $frm->modalClose() }}
 <!-- /DUPLICATE MODAL -->
+
+<!-- DUPLICATE WEEK MODAL -->
+{{ $frm->modalOpen('duplicate_week_modal', Lang::get('disponibilidad.duplicate_week_to')) }}
+    <form id="frm_duplicate_week" class="form-horizontal" role="form" method="post" autocomplete="off" action="{{ URL::route('disponibilidad_duplicate_week_post') }}">
+        {{ $frm->date('fecha', 'fecha_week', Lang::get('global.date')) }}
+        <input type="hidden" name="start" value="">
+        <input type="hidden" name="end" value="">
+        <input type="hidden" name="usuario_id" value="{{ $doctor_id }}">
+        {{ Form::token() }}
+    </form>
+{{ $frm->modalClose() }}
+<!-- /DUPLICATE WEEK MODAL -->
+
+<!-- DELETE FORM -->
+<form id="frm_delete" class="hidden" role="form" method="post" autocomplete="off" action="{{ URL::route('disponibilidad_delete') }}">
+    <input type="hidden" name="start" value="">
+    <input type="hidden" name="end" value="">
+    <input type="hidden" name="all" value="0">
+    <input type="hidden" name="usuario_id" value="{{ $doctor_id }}">
+    {{ Form::token() }}
+</form>
+<!-- /DELETE FORM -->
 
 {{ $frm->date('goto_date', null, null, 'day', 'hidden') }}
 
@@ -153,6 +174,8 @@ Panel de Administración
 <script type="text/javascript">
     var url_update_counter = "{{ URL::route('admin_citas_count_get') }}";
 
+    var $main_calendar = $('#disponible_calendar');
+
     var dis_ID;
 
     function twoDigits(num) {
@@ -165,7 +188,7 @@ Panel de Administración
 
     function gotoDate(date) {
         if (typeof date != 'undefined' && date.length) {
-            var $cal = $('#disponible_calendar');
+            var $cal = $main_calendar;
             var top = $cal.find('.fc-scroller').eq(0).scrollTop();
             $cal.fullCalendar('gotoDate', date);
             $cal.find('.fc-scroller').eq(0).scrollTop(top);
@@ -179,7 +202,7 @@ Panel de Administración
         $frm.find('#inicio').val(dateToString(start._d));
         $frm.find('#fin').val(dateToString(end._d));
         submitForm($frm, function() {
-            var $cal = $('#disponible_calendar');
+            var $cal = $main_calendar;
             $cal.fullCalendar('refetchEvents');
             $cal.fullCalendar('unselect');
         });
@@ -191,7 +214,7 @@ Panel de Administración
         $frm.find('#inicio').val(dateToString(event.start._d));
         $frm.find('#fin').val(dateToString(event.end._d));
         submitForm($frm, function() {
-            var $cal = $('#disponible_calendar');
+            var $cal = $main_calendar;
             $cal.fullCalendar('refetchEvents');
             $cal.fullCalendar('unselect');
         });
@@ -278,6 +301,24 @@ Panel de Administración
         });
     }
 
+    function duplicateWeek() {
+        var $frm = $('#frm_duplicate_week');
+        var view = $main_calendar.fullCalendar('getView');
+        var start = view.start._d;
+        var end = view.end._d;
+
+        start = start.getUTCFullYear() + '-' + twoDigits(start.getUTCMonth()+1) + '-' + twoDigits(start.getUTCDate());
+        end = end.getUTCFullYear() + '-' + twoDigits(end.getUTCMonth()+1) + '-' + twoDigits(end.getUTCDate());
+        $frm.find('input[name=start]').val( start );
+        $frm.find('input[name=end]').val( end );
+        submitForm( $frm, function($frm, data) {
+            if (data['ok'] == 1) {
+                alert(data['msg']);
+            }
+            submitFormDoneDefault($frm, data);
+        });
+    }
+
     function deleteDisponibilidad(disp_id, $btn) {
         var $frm = $('#frm_action');
         $frm.find('input[name=disponibilidad_id]').val( disp_id );
@@ -286,6 +327,26 @@ Panel de Administración
             applyState(data);
             $btn.closest('.modal').modal('hide');
             $btn.removeClass('disabled');
+        });
+    }
+
+    function deleteDisponibilidades(all) {
+        all = typeof all == 'undefined' ? false : all;
+        var $frm = $('#frm_delete');
+        var view = $main_calendar.fullCalendar('getView');
+        var start = view.start._d;
+        var end = view.end._d;
+
+        start = start.getUTCFullYear() + '-' + twoDigits(start.getUTCMonth()+1) + '-' + twoDigits(start.getUTCDate());
+        end = end.getUTCFullYear() + '-' + twoDigits(end.getUTCMonth()+1) + '-' + twoDigits(end.getUTCDate());
+
+        $frm.find('input[name=start]').val( start );
+        $frm.find('input[name=end]').val( end );
+        $frm.find('input[name=all]').val( all ? 1 : 0 );
+        submitForm( $frm, function($frm, data) {
+            if (data['ok'] == 1) {
+                $main_calendar.fullCalendar('refetchEvents');
+            }
         });
     }
 
@@ -308,12 +369,12 @@ Panel de Administración
 
         /* initialize the calendar
         -----------------------------------------------------------------*/
-        $('#disponible_calendar').fullCalendar({
+        $main_calendar.fullCalendar({
             'lang': '{{ Config::get('app.locale') }}',
             header: {
                 left: 'prev,next today',
-                center: 'title'/*,
-                right: 'month,agendaWeek,agendaDay'*/
+                center: 'title',
+                right: 'prev,next'
             },
             selectable: {{ !$read_only ? 'true' : 'false' }},
             selectHelper: {{ !$read_only ? 'true' : 'false' }},
@@ -324,6 +385,7 @@ Panel de Administración
             },
             eventStartEditable: {{ !$read_only ? 'true' : 'false' }},
             eventDurationEditable: {{ !$read_only ? 'true' : 'false' }},
+            selectOverlap: false,
             firstDay: 1,
             weekends: true,
             allDaySlot: false,
@@ -405,14 +467,43 @@ Panel de Administración
             });
         });
 
+        $('#duplicate_week_modal').find('button.modal-btn-ok').click(function() {
+            duplicateWeek();
+        });
+
         //go to date button
-        $('#disponible_calendar').find('.fc-toolbar').find('.fc-left').append($('<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right" type="button">{{ Lang::get('citas.goto') }}</button>'));
+        var buttons = '<button id="goto_date_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right calendar-btn" type="button">{{ Lang::get('citas.goto') }}</button>';
+        @if (User::canChangeDisponibilidadState())
+        buttons += '<button id="duplicate_week_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right calendar-btn" type="button">{{ Lang::get('disponibilidad.duplicate_week') }}</button>';
+        buttons += '<button id="delete_week_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right calendar-btn" type="button">{{ Lang::get('disponibilidad.delete_week') }}</button>';
+        buttons += '<button id="delete_all_btn" class="fc-button fc-state-default fc-corner-left fc-corner-right calendar-btn" type="button">{{ Lang::get('disponibilidad.delete_all') }}</button>';
+        @endif
+        $main_calendar.find('.fc-toolbar').find('.fc-left').append($(buttons));
         
         $('#goto_date_btn').click(function() {
             setTimeout(function() {
                 $('#goto_date').pickadate('picker').open();
             }, 300);
-        }).mouseenter(function() {
+        });
+
+        $('#duplicate_week_btn').click(function() {
+            var $modal = $('#duplicate_week_modal');
+            $modal.modal('show');
+        });
+
+        $('#delete_week_btn').click(function() {
+            if (confirm('{{ Lang::get('disponibilidad.confirm_delete_week') }}')) {
+                deleteDisponibilidades(false);
+            }
+        });
+
+        $('#delete_all_btn').click(function() {
+            if (confirm('{{ Lang::get('disponibilidad.confirm_delete_all') }}')) {
+                deleteDisponibilidades(true);
+            }
+        });
+
+        $('.calendar-btn').mouseenter(function() {
             $(this).addClass('fc-state-hover');
         }).mouseleave(function() {
             $(this).removeClass('fc-state-hover');

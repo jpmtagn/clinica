@@ -1,48 +1,6 @@
-select * from `usuario` where `id` = ? limit 1[1](0.8)
+select * from `usuario` where `id` = ? and `remember_token` = ? limit 1[1|3edgdazGEVGfXG4m1x6ubdyAHca99el9A3lV8LnPRjKcbIf0n42sbtdJlxE4](0.82)
 
-select count(*) as aggregate from `paciente` where `dni` = ? and `id` <> ?[17339453|0](0.78)
+select * from `usuario` where `id` = ? limit 1[3](0.74)
 
-select count(*) as aggregate from `usuario` where `id` = ?[1](0.46)
-
-select count(*) as aggregate from `paciente` where `usuario_id` = ? and `id` <> ?[1|0](0.6)
-
-insert into `paciente` (`nombre`, `apellido`, `tdni`, `dni`, `fecha_nacimiento`, `sexo`, `estado_civil`, `direccion`, `usuario_id`, `updated_at`, `created_at`) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)[alfredo|fleming|V|17339453|1985-09-15|1|0|unare iii|1|2015-03-26 23:25:09|2015-03-26 23:25:09](16.04)
-
-select `tipo_contacto_id` from `paciente_tipo_contacto` where `paciente_id` = ?[2](0.95)
-
-select * from `usuario` where `id` = ? limit 1[1](0.69)
-
-select count(*) as aggregate from `paciente` where `dni` = ? and `id` <> ?[17339453|0](0.9)
-
-select count(*) as aggregate from `usuario` where `id` = ?[1](0.63)
-
-select count(*) as aggregate from `paciente` where `usuario_id` = ? and `id` <> ?[1|0](0.83)
-
-insert into `paciente` (`nombre`, `apellido`, `tdni`, `dni`, `fecha_nacimiento`, `sexo`, `estado_civil`, `direccion`, `usuario_id`, `updated_at`, `created_at`) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)[alfredo|fleming|V|17339453|1985-09-15|1|0|unare iii|1|2015-03-26 23:31:15|2015-03-26 23:31:15](12.51)
-
-select `tipo_contacto_id` from `paciente_tipo_contacto` where `paciente_id` = ?[3](0.66)
-
-insert into `paciente_tipo_contacto` (`contacto`, `paciente_id`, `tipo_contacto_id`) values (?, ?, ?), (?, ?, ?)[04148927539|3|1|02869512239|3|1](22.08)
-
-insert into `paciente_tipo_contacto` (`contacto`, `paciente_id`, `tipo_contacto_id`) values (?, ?, ?)[afleming@mail.com|3|2](28.72)
-
-select * from `usuario` where `id` = ? limit 1[1](0.93)
-
-select count(*) as aggregate from `paciente` where `dni` = ? and `id` <> ?[17339453|3](0.76)
-
-select count(*) as aggregate from `usuario` where `id` = ?[1](0.57)
-
-select count(*) as aggregate from `paciente` where `usuario_id` = ? and `id` <> ?[1|3](1.01)
-
-select * from `paciente` where `id` = ? limit 1[3](1.02)
-
-update `paciente` set `estado_civil` = ?, `updated_at` = ? where `id` = ?[1|2015-03-26 23:32:48|3](15.28)
-
-select `tipo_contacto_id` from `paciente_tipo_contacto` where `paciente_id` = ?[3](0.65)
-
-delete from `paciente_tipo_contacto` where `paciente_id` = ? and `tipo_contacto_id` in (?, ?, ?)[3|1|1|2](16.11)
-
-insert into `paciente_tipo_contacto` (`contacto`, `paciente_id`, `tipo_contacto_id`) values (?, ?, ?), (?, ?, ?)[04148927539|3|1|02869512239|3|1](35.3)
-
-insert into `paciente_tipo_contacto` (`contacto`, `paciente_id`, `tipo_contacto_id`) values (?, ?, ?)[afleming@mail.com|3|2](14.61)
+select * from `disponibilidad` where `disponibilidad`.`usuario_id` = ? and (inicio >= ? AND fin <= ?)[3|2015-03-13|2015-03-19](0.88)
 
