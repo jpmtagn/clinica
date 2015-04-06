@@ -57,8 +57,8 @@ body .fc { /* extra precedence to overcome jqui */
 
 .fc-bgevent { /* default look for background events */
 	background: #ccc/*rgb(143, 223, 130);*/
-	opacity: .3;
-	filter: alpha(opacity=30); /* for IE */
+	opacity: .4;
+	filter: alpha(opacity=40); /* for IE */
 }
 
 .fc-nonbusiness { /* default look for non-business-hours areas */

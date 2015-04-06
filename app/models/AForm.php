@@ -315,16 +315,22 @@ EOT;
 
         $this->script .= <<<EOT
             $('#{$id}').change(function() {
-                $.ajax({
-                    type: 'GET',
-                    url: '{$url}',
-                    dataType: 'json',
-                    data: { date : $(this).val() }
-                }).done(function(data) {
-                    if (data['ok']) {
-                        $('#{$id}_str').html( data['date'] );
-                    }
-                });
+                var o = $(this);
+                if (o.val().length > 0) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{$url}',
+                        dataType: 'json',
+                        data: { date : o.val() }
+                    }).done(function(data) {
+                        if (data['ok']) {
+                            $('#{$id}_str').html( data['date'] );
+                        }
+                    });
+                }
+                else {
+                    o.parent().find('#{$id}_str').html('&nbsp');
+                }
             });
 EOT;
 
@@ -1176,6 +1182,92 @@ EOT;
                 <div id="{$id}" style="height:240px;"></div>
             </div>
         </div>
+EOT;
+    }
+
+    public static function notificationItem($item) {
+        $action = explode(' ', $item->accion);
+
+        switch (reset($action)) {
+            case 'Area':
+                $icon = 'fa-cube';
+                break;
+            case 'Cita':
+                $icon = 'fa-calendar-o';
+                break;
+            case 'Consultorio':
+                $icon = 'fa-cube';
+                break;
+            case 'Disponibilidad':
+                $icon = 'fa-calendar-o';
+                break;
+            case 'Doctor':
+                $icon = 'fa-user-md';
+                break;
+            case 'Equipo':
+                $icon = 'fa-plug';
+                break;
+            case 'Nota':
+                $icon = 'fa-comment';
+                break;
+            case 'Paciente':
+                $icon = 'fa-user';
+                break;
+            case 'Servicio':
+                $icon = 'fa-check-square-o';
+                break;
+            case 'ServicioCategoria':
+                $icon = 'fa-check-square-o';
+                break;
+            case 'User':
+                $icon = 'fa-key';
+                break;
+            default:
+                $icon = 'fa-info-circle';
+        }
+
+        switch (next($action)) {
+            case 'created':
+                $type = 'primary';
+                break;
+            case 'edited':
+                $type = 'warning';
+                break;
+            case 'deleted':
+                $type = 'danger';
+                break;
+            default:
+                $type = 'default';
+        }
+
+        $user = User::find($item->usuario_id);
+        if ($user) {
+            $user_name = $user->nombre;
+            $user = $user->paciente;
+            if ($user) {
+                $user_name = Functions::firstNameLastName($user->nombre, $user->apellido);
+            }
+        }
+        else {
+            $user_name = Lang::get('log.the_user');
+        }
+
+        $text = $user_name . ' ' . Lang::get('log.' . $item->accion);
+        $date = $item->updated_at;
+        $url = URL::route('admin_log_item', array('id' => $item->id));
+        return <<<EOT
+        <li>
+            <a class="notification" data-id="{$item->id}" href="{$url}">
+                <span class="label label-{$type}"><i class="fa {$icon}"></i></span>
+                <span class="body">
+                    <span class="message">{$text}</span>
+                    <span class="time">
+                        <i class="fa fa-clock-o"></i>
+                        <span>{$date}</span>
+                    </span>
+                </span>
+            </a>
+        </li>
 EOT;
     }
 

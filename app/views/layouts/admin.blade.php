@@ -22,6 +22,12 @@
     	$username = explode(chr(64), $user->nombre);
     	$username = $username[0] . ' &nbsp; &nbsp; <i class="fa fa-exclamation-triangle"></i> (' . Lang::get('usuarios.hint_my_account') . ')';
     }
+
+    $doctores = Doctor::getAll();
+
+    if (User::canSeeNotifications($user)) {
+        $notifications = ActionLog::latest()->get();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -100,6 +106,27 @@
 		<!-- /NAVBAR LEFT -->
 		<!-- BEGIN TOP NAVIGATION MENU -->
 		<ul class="nav navbar-nav pull-right">
+		    @if (User::canSeeNotifications($user))
+		    <!-- BEGIN NOTIFICATION DROPDOWN -->
+            <li class="dropdown" id="header-notification">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-bell"></i>
+                    <!--span class="badge">7</span-->
+                </a>
+                <ul class="dropdown-menu notification">
+                    <li class="dropdown-title">
+                        <span><i class="fa fa-bell"></i>Notificaciones</span>
+                    </li>
+                    @foreach ($notifications as $notification)
+                        {{ AForm::notificationItem($notification) }}
+                    @endforeach
+                    <li class="footer">
+                        <a href="{{ URL::route('admin_log') }}">Ver más notificaciones <i class="fa fa-arrow-circle-right"></i></a>
+                    </li>
+                </ul>
+            </li>
+            <!-- END NOTIFICATION DROPDOWN -->
+            @endif
             <!-- BEGIN USER LOGIN DROPDOWN -->
             <li class="dropdown user" id="header-user">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -128,9 +155,6 @@
 		</div>
 		<div id="teamslider">
             <ul class="team-list">
-                <?php
-                    $doctores = Doctor::getAll();
-                ?>
                 @foreach ($doctores as $doctor)
 				    {{
 				        AForm::userStatus(
@@ -357,6 +381,14 @@
                 updateDoctorsStatus();
             }
         });
+
+        @if (User::canSeeNotifications($user))
+        /*$('a.notification').click(function(e) {
+            //TODO
+            e.preventDefault();
+            return false;
+        });*/
+        @endif
     });
 
 </script>

@@ -91,8 +91,32 @@ class CitaController extends BaseController {
             return false;
         }
 
-		Session::set('input_fecha', $inputs['fecha']);
-        $service = $inputs['servicio_id'];
+        //if the doctor_id (to pick one) has not been sent then is sending just the time (ie dragging & dropping)
+        //I will then find the object so I can get the missing attributes
+        if (!Input::get('doctor_id', false)) {
+            $model = self::MODEL;
+            $item = $model::find((int)Input::get('id'));
+            if ($item) {
+                if (!User::canChangeDisponibilidadState() && $item->estado != Cita::UNCONFIRMED) {
+                    $this->setError(Lang::get('global.no_permission'));
+                    return false;
+                }
+                $fields = $item->getFillable();
+                $missing = array();
+                foreach ($fields as $field) {
+                    if (isset($inputs[$field])) continue;
+                    $missing[$field] = $item->$field;
+                }
+                Input::merge($missing);
+            }
+            else {
+                $this->setError(Lang::get('global.not_found'));
+                return false;
+            }
+        }
+
+		Session::set('input_fecha', Input::get('fecha'));
+        $service = Input::get('servicio_id');
         if ($service > 0) {
             $service = Servicio::find($service);
             $duration = $service->duracion;
@@ -100,21 +124,16 @@ class CitaController extends BaseController {
         else {
             $duration = 0;
         }
-        $start = $inputs['hora_inicio'];
-        //$end = $inputs['hora_fin'];
+        $start = Input::get('hora_inicio');
+        //$end = Input::get('hora_fin'];
 
-        if (!empty($start) && isset($inputs['doctor_id'])) {
-            $date = $inputs['fecha'];
-            $doctor_id = $inputs['doctor_id'];
-            $service_id = $inputs['servicio_id'];
-            $office_id = $inputs['consultorio_id'];
-            $patient_id = $inputs['paciente_id'];
-            $cita_id = (int)$inputs['id'];
-            //check that the End Time is greater than the Start Time
-            /*if (strtotime($start) > strtotime($end)) {
-                $this->setError(Lang::get(self::LANG_FILE . '.time_mismatch'));
-                return false;
-            }*/
+        if (!empty($start) && Input::get('doctor_id', false)) {
+            $date = Input::get('fecha');
+            $doctor_id = Input::get('doctor_id');
+            $service_id = Input::get('servicio_id');
+            $office_id = Input::get('consultorio_id');
+            $patient_id = Input::get('paciente_id');
+            $cita_id = (int)Input::get('id');
 
             $ignore_warning = Input::get('ignore_warning', false);
             $ignore_warning_all = Input::get('ignore_warning_all', false);
@@ -306,9 +325,11 @@ class CitaController extends BaseController {
         $model = self::MODEL;
         $records = new $model;
 
+        $records = $records->orderBy('hora_inicio', 'DESC')->take(100);
+
         //if the date is specified
         if (strlen($date) > 0) {
-            $records = $records::where('fecha', '=', $date);
+            $records = $records->where('fecha', '=', $date);
         }
         //if the doctor is specified
         if ($doctor_id > 0) {
@@ -326,7 +347,7 @@ class CitaController extends BaseController {
         if ($consultorio_id > 0) {
             $records = $records->where('consultorio_id', '=', $consultorio_id);
         }
-        $records = $records->orderBy('hora_inicio', 'DESC')->get();
+        $records = $records->get();
 
         return $records;
     }
@@ -750,6 +771,8 @@ EOT;
                     //if ($val < 0 || $val > count($item->state())) $val = 0;
                     if ($allowed) {
                         $item->estado = $val;
+                        $to_log = serialize($item->toArray());
+                        ActionLog::log(self::MODEL . ' changed_state', $to_log, $item->id);
                         $item->save();
                     }
                     $this->setReturn('cita_id', $cita_id);

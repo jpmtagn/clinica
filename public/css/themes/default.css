@@ -162,7 +162,8 @@
 /* Notification */
 .dropdown-menu.notification {
   border-top: 1px solid #486d93;
-  width: 270px;
+  width: 670px;
+  max-width: none !important;
 }
 .dropdown-menu.notification .label {
   color: #FFFFFF;

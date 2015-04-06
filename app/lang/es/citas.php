@@ -51,6 +51,8 @@ return array(
     'ignore_warning' => 'Ignorar esta advertencia',
     'ignore_all_warnings' => 'Ignorar todas las advertencias',
 
+    'confirm_change_state' => '¿Está seguro que quiere cambiar el estado de la cita?',
+
     //errors
     'time_mismatch' => 'El intervalo de tiempo elegido es inválido',
     'overlap_doctor' => 'El terapeuta ya tiene una cita registrada durante el intervalo seleccionado',

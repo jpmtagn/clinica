@@ -279,12 +279,22 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
         return ($user->admin || User::is(array(User::ROL_RECEPCIONIST, User::ROL_DOCTOR)));
     }
 
+    public static function canUndoCitaState($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
     public static function canSelectUnavailableOffices($user = null) {
         if ($user === null) $user = Auth::user();
         return (bool)$user->admin;
     }
 
     public static function canEditDeletePersonas($user = null) {
+        if ($user === null) $user = Auth::user();
+        return (bool)$user->admin;
+    }
+
+    public static function canSeeNotifications($user = null) {
         if ($user === null) $user = Auth::user();
         return (bool)$user->admin;
     }

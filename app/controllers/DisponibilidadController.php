@@ -162,6 +162,19 @@ EOT;
             $items = $doctor->disponibilidad()->fromDateToDate($cal_start, $cal_end)->get();
 
             if (count($items)) {
+
+                //using inverse background overlaps making the white not so white,
+                //so I instead place a full one across and then place normal bacngrounds with color white
+                if (!$editable) {
+                    $items_json[] = <<<EOT
+                        {
+                            "start": "{$cal_start} 00:00:00",
+                            "end": "{$cal_end} 00:00:00",
+                            "rendering": "background"
+                        }
+EOT;
+                }
+
                 foreach ($items as $item) {
                     $start = $item->inicio;
                     $end = $item->fin;
@@ -180,7 +193,8 @@ EOT;
                         {
                             "start": "{$start}",
                             "end": "{$end}",
-                            "rendering": "inverse-background"
+                            "rendering": "background",
+                            "backgroundColor": "#fff"
                         }
 EOT;
                     }
@@ -225,15 +239,19 @@ EOT;
                     $item->save();
                     $this->setReturn('disponibilidad_id', $disponibilidad_id);
                     $this->setReturn('state', $item->disponible);
+                    $to_log = serialize($item->toArray());
+                    ActionLog::log($model . ' changed_state', $to_log, $item->id);
                     break;
                 case 'get_state':
                     $this->setReturn('disponibilidad_id', $disponibilidad_id);
                     $this->setReturn('state', $item->disponible);
                     break;
                 case 'delete':
+                    $to_log = serialize($item->toArray());
                     $item->delete();
                     $this->setReturn('disponibilidad_id', $disponibilidad_id);
                     $this->setReturn('state', '-1');
+                    ActionLog::log($model . ' deleted', $to_log, $disponibilidad_id);
             }
         }
         return $this->returnJson();
@@ -251,6 +269,8 @@ EOT;
             if ($date_start < $end_date) {
                 $new_items = array();
                 $next_date = strtotime('+1 week', $date_start);
+                $n_items = 0;
+                $times = 0;
                 while ($next_date <= $end_date) {
                     $new_item = array(
                         'inicio' => date('Y-m-d H:i:s', $next_date),
@@ -260,11 +280,23 @@ EOT;
                         'fijo'  => $item->fijo
                     );
                     $new_items[] = $new_item;
+                    $n_items++;
+                    if ($n_items == 10) {
+                        Disponibilidad::insert($new_items);
+                        $times += count($new_items);
+                        $new_items = array();
+                        $n_items = 0;
+                    }
                     $next_date = strtotime('+1 week', $next_date);
                 }
-                $times = count($new_items);
-                if ($times) {
+                $n_items = count($new_items);
+                if ($n_items) {
                     Disponibilidad::insert($new_items);
+                    $times += count($new_items);
+                }
+                if ($times || $n_items) {
+                    $to_log = serialize(array_merge($item->toArray(), array('hasta' => $fecha)));
+                    ActionLog::log(self::MODEL . ' duplicated', $to_log, $item->id);
                 }
                 return $times;
             }
@@ -320,6 +352,7 @@ EOT;
 
                 foreach ($items as $item) {
                     $times = $this->duplicar($item, $fecha);
+                    if ($times === false) break;
                 }
             }
 
@@ -348,9 +381,13 @@ EOT;
             $all = Input::get('all', false);
 
             if (!$all) {
+                $to_log = serialize(array('desde' => $cal_start, 'hasta' => $cal_end));
+                ActionLog::log(self::MODEL . ' deleted', $to_log);
                 Disponibilidad::where('usuario_id', '=', Input::get('usuario_id'))->fromDateToDate($cal_start, $cal_end)->delete();
             }
             else {
+                $to_log = serialize(array('todo' => 1));
+                ActionLog::log(self::MODEL . ' deleted', $to_log);
                 Disponibilidad::where('usuario_id', '=', Input::get('usuario_id'))->delete();
             }
             return $this->setSuccess( Lang::get('disponibilidad.' . ($all ? 'deleted_all_msg' : 'deleted_week_msg')) );

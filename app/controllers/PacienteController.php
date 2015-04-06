@@ -14,7 +14,7 @@ class PacienteController extends BaseController {
 
     const LANG_FILE = 'pacientes';
 
-    const TITLE_FIELD = 'nombre';
+    const TITLE_FIELD = 'dni';
 
     /** Navegacion **/
 

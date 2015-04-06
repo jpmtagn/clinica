@@ -182,6 +182,16 @@ Route::group(array('before' => 'auth'), function() {
         'uses' => 'UserController@paginaAdminDoctorCitasPrint'
     ));
 
+    Route::get('admin/log', array(
+        'as' => 'admin_log',
+        'uses' => 'LogController@paginaAdmin'
+    ));
+
+    Route::get('admin/log_item/{id}', array(
+        'as' => 'admin_log_item',
+        'uses' => 'LogController@paginaAdminItem'
+    ));
+
     Route::get('admin/opciones', array(
         'as' => 'admin_config',
         'uses' => 'OpcionController@paginaAdminOpciones'
@@ -232,6 +242,11 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('admin/equipo/total', array(
         'as' => 'admin_equipo_count_get',
         'uses' => 'EquipoController@totalGet'
+    ));
+
+    Route::get('admin/log/total', array(
+        'as' => 'admin_log_count_get',
+        'uses' => 'LogController@totalGet'
     ));
 
     //select searchs
@@ -773,6 +788,21 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('admin/disponibilidad/eliminar', array(
             'as' => 'disponibilidad_delete',
             'uses' => 'DisponibilidadController@deletePost'
+        ));
+
+
+        // PAGINA EQUIPOS
+
+        //buscar
+        Route::get('admin/log/buscar', array(
+            'as' => 'admin_log_buscar_get',
+            'uses' => 'LogController@buscarGetAlt'
+        ));
+
+        //info
+        Route::get('admin/log/info', array(
+            'as' => 'admin_log_info_get',
+            'uses' => 'LogController@infoGet'
         ));
 
 

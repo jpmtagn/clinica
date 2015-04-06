@@ -243,8 +243,10 @@ class BaseController extends Controller {
                 $item->$rel_model()->delete(); // ???
             }
         }
+        $to_log = serialize($item->toArray());
         $item->delete();
-        //$model::destroy($id);
+        //logging
+        ActionLog::log($model . ' deleted', $to_log, $id);
     }
 
     /**
@@ -418,6 +420,9 @@ class BaseController extends Controller {
             if ($created) {
                 $this->setReturn('created_id', $created->id);
                 $this->setSuccess(Lang::get('global.saved_msg'), false);
+                //logging
+                $to_log = serialize($created->toArray());
+                ActionLog::log($model . ' created', $to_log, $created->id);
                 return $created;
             }
             $this->setError(Lang::get('global.unable_perform_action'));
@@ -455,8 +460,11 @@ class BaseController extends Controller {
                             $item->$field = 0;
                         }
                     }
+                    $to_log = serialize($item->toArray());
                     $item->save();
                     $this->setSuccess( Lang::get('global.saved_msg'), false );
+                    //logging
+                    ActionLog::log($model . ' edited', $to_log, $item->id);
                     return $item;
                 }
                 else {

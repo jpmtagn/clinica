@@ -11,6 +11,7 @@ Calendario
 {{ HTML::style('js/pickadate/themes/default.date.css') }}
 {{ HTML::style('js/pickadate/themes/default.time.css') }}
 {{ HTML::style('js/fullcalendar/fullcalendar.min.css') }}
+{{ HTML::style('js/gritter/css/jquery.gritter.css') }}
 <style type="text/css">
     body {
         overflow: hidden;
@@ -508,6 +509,7 @@ EOT;
     {{ HTML::script('js/pickadate/translations/' . Config::get('app.locale') . '.js') }}
     {{ HTML::script('js/fullcalendar/lang/' . Config::get('app.locale') . '.js') }}
 <?php endif; ?>
+{{ HTML::script('js/gritter/js/jquery.gritter.min.js') }}
 {{ HTML::script('js/panel.js') }}
 <script type="text/javascript">
     var url_update_counter = "{{ URL::route('admin_citas_count_get') }}";
@@ -554,8 +556,7 @@ EOT;
     }
 
     function hideNewEventPlaceHolder() {
-        var $cal = $main_calendar;
-        $cal.fullCalendar( 'removeEvents', 0);
+        $main_calendar.fullCalendar( 'removeEvents', 0);
         $('a.stateundefined').remove();
 
     }
@@ -597,7 +598,17 @@ EOT;
             setTimePicker($frm.find('#hora_fin_edit'), null);
         }
 
-        $frm.submit();
+        submitForm($frm, function($frm, data) {
+            if (data['ok'] != 1) {
+                //alert(data['err']);
+                $.gritter.add({
+                	title: 'Advertencia',
+                	text: data['err'],
+                    image: '{{ URL::asset('img/noti_error.png') }}'
+                });
+                $main_calendar.fullCalendar('refetchEvents');
+            }
+        });
     }
 
     function updateCountPer(name) {
@@ -925,20 +936,31 @@ EOT;
     }
 
     function showState(state) {
-        var $btns = $('#states').find('button');
+        var $states = $('#states');
+        var $btns = $states.find('button');
         $btns.removeClass('active btn-primary btn-danger btn-success btn-warning').addClass('btn-default');
         var $btn = $('#state' + state);
         if ($btn.length) {
-            $btn.removeClass('btn-default').addClass('active btn-' + $btn.attr('attr-type'));
+            $btn.removeClass('btn-default disabled').addClass('active btn-' + $btn.attr('attr-type'));
         }
+        @if (!User::canUndoCitaState())
         //disable edit if state equal done (1), confirmed (2) or cancelled (3)
         var $btn_edit = $('#edit_cita');
-        if (state != 0) {
+        if (state != {{ Cita::UNCONFIRMED }}) {
             $btn_edit.addClass('disabled');
         }
         else {
             $btn_edit.removeClass('disabled');
         }
+        if (state == {{ Cita::DONE }} || state == {{ Cita::CANCELLED }}) {
+            $btns.not('#state' + state).addClass('disabled');
+        }
+        else {
+            @if (User::canConfirmOrCancelCita())
+            $btns.removeClass('disabled');
+            @endif
+        }
+        @endif
     }
 
     function setState(cita_id, state) {
@@ -1332,12 +1354,13 @@ EOT;
 
         $('#states').find('button').click(function() {
             var $btn = $(this);
-            if (!$btn.hasClass('active')) {
-                setState(cita_ID, $btn.attr('attr-state_id'));
+            var state = $btn.attr('attr-state_id');
+            if (state == {{ Cita::DONE }} || state == {{ Cita::CANCELLED }}) {
+                if (!confirm('{{ Lang::get('citas.confirm_change_state') }}')) {
+                    return false;
+                }
             }
-            else {
-                setState(cita_ID, 0);
-            }
+            setState(cita_ID, state);
         });
 
         /*$('#dni').blur(function() {
