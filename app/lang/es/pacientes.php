@@ -19,7 +19,7 @@ return array(
     'address' => 'Dirección',
     'phone' => 'Teléfonos',
     'email' => 'Correo',
-    'user' => 'Usuario',
+    'user' => 'Asignar usuario',
     'relatives' => 'Parientes',
     'add_relative' => 'Agregar Pariente',
     'add_new_relative' => 'Agregar nuevo registro',

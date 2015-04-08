@@ -25,7 +25,7 @@ class EquipoController extends BaseController {
     public function paginaAdmin() {
         if (Auth::user()->admin) {
             //$model = self::MODEL;
-            $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre');
+            $servicios = Functions::arrayIt(Servicio::get(), 'id', 'nombre', 'descripcion');
             $total = $this->getTotalItems();
             return View::make('admin.equipos')->with(
                 array(
@@ -55,9 +55,7 @@ class EquipoController extends BaseController {
     public function editarRelational($item) {
         //SERVICIOS
         $items = isset($_POST['servicios']) ? array_map('intval', Input::get('servicios')) : false;
-        if ($items) {
-            $item->servicios()->sync( $items );
-        }
+        $item->servicios()->sync( $items ? $items : array() );
         return true; //needs to return true to output json
     }
 

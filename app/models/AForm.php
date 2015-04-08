@@ -793,6 +793,14 @@ EOT;
 EOT;
                     }
                 }
+                elseif ($badge_field != null) {
+                    if ($badge_match != null) {
+                        $output .= '&nbsp;<span class="badge">' . call_user_func($badge_match, $result->$badge_field) . '</span>';
+                    }
+                    else {
+                        $output .= '&nbsp;<span class="badge">' . $result->$badge_field . '</span>';
+                    }
+                }
                 if ($field2 != null) {
                     if (is_array($field2)) {
                         foreach ($field2 as $f) {
@@ -810,9 +818,12 @@ EOT;
                     }
                     else {
                         $row2 = $result->$field2;
-                        $output.= <<<EOT
-                            <br><b>{$row2}</b>
-EOT;
+                        if ($field2 == 'descripcion') {
+                            $output .= '<br><span class="text-muted">' . $row2 . '</span></b>';
+                        }
+                        else {
+                            $output .= '<br><b>' . $row2 . '</b>';
+                        }
                     }
                 }
                 $output.= '</a>';

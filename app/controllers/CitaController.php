@@ -620,6 +620,7 @@ EOT;
         if ($service) {
             $equipment = $service->equipos;
             if ($equipment) $equipment = $equipment->lists('nombre');
+            $desc = $service->descripcion;
         }
         else {
             $equipment = false;
@@ -631,7 +632,7 @@ EOT;
             $equipment = '';
         }
         $this->setReturn('service_name_inf', $service ? (ucfirst($service->nombre) . $equipment) : Lang::get('global.not_found'));
-        $this->setReturn('duration_inf', $service ? Functions::minToHours($service->duracion) : '0');
+        $this->setReturn('duration_inf', $service ? Functions::minToHours($service->duracion) : '');
         //send back data
         $this->setReturn('duration', $service ? $service->duracion : '0');
         $this->setReturn('servicio_id', $service_id);

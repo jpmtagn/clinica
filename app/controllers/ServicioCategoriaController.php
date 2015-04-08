@@ -85,17 +85,21 @@ class ServicioCategoriaController extends BaseController {
     public function getServices() {
         $id = (int)Input::get('category_id');
         $html = '';
-        if ($id > 0) {
-            $items = DB::table('servicios_equipos')->where('categoria_id', '=', $id)->get();
+        //if ($id > 0) {
+            $items = DB::table('servicios_equipos');
+            if ($id > 0) $items = $items->where('categoria_id', '=', $id);
+            $items = $items->get();
             if ($items) {
                 foreach ($items as $item) {
                     $nombre = $item->nombre . ($item->equipos ? (' - ' . $item->equipos) : '');
+                    $desc = $item->descripcion ? (' <span class="text-muted show-on-hover"> (' . $item->descripcion . ')</span>') : '';
+                    $duracion = '<span class="badge pull-right">' . Functions::minToHours($item->duracion) . '</span>';
                     $html.= <<<EOT
-                <a class="list-group-item search-result" data-id="{$item->id}">{$nombre}</a>
+                <a class="list-group-item search-result" data-id="{$item->id}">{$nombre}{$duracion}{$desc}</a>
 EOT;
                 }
             }
-        }
+        //}
         $this->setReturn('html', $html);
         return $this->returnJson();
     }

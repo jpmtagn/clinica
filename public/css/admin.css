@@ -9192,3 +9192,12 @@ h4.flash i.fa-exclamation-triangle {
 .today-header {
     background-color: #f6f6c8;
 }
+
+
+.list-group-item .show-on-hover {
+    display: none;
+}
+
+.list-group-item:hover .show-on-hover {
+    display: inline-block;
+}

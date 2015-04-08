@@ -367,6 +367,9 @@ EOT;
                         <a class="service-category-index" attr-id="{{ $cat->id }}" href="#">{{ $cat->nombre }}</a>
                     </li>
                 @endforeach
+                    <li>
+                        <a class="service-category-index" attr-id="0" href="#"><i>{{ Lang::get('servicio.all_categories') }}</i></a>
+                    </li>
                 </ul>
             </nav>
         </form>

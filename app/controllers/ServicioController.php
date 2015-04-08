@@ -79,9 +79,7 @@ class ServicioController extends BaseController {
     public function editarRelational($item) {
         //CONSULTORIOS
         $items = isset($_POST['consultorios']) ? array_map('intval', Input::get('consultorios')) : false;
-        if ($items) {
-            $item->consultorios()->sync( $items );
-        }
+        $item->consultorios()->sync( $items ? $items : array() );
         return true; //needs to return true to output json
     }
 
@@ -138,7 +136,7 @@ class ServicioController extends BaseController {
      * @return string
      */
     public function buscarReturnHtml($records, $search_fields) {
-        return AForm::searchResults($records, 'nombre');
+        return AForm::searchResults($records, 'nombre', 'descripcion', null, 'duracion', 'Functions::minToHours');
     }
 
 

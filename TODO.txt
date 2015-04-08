@@ -27,3 +27,7 @@
 [X] Agregar categorias en los tratamientos y mostrarlos en el formulario de nueva cita
 [X] !!! Mostrar disponibilidad del terapeuta en el calendario !!!!
 [X] Modificar campo fecha para que muestre la fecha completa al lado (requiere ajax)
+[X] Mostrar descripciones en los tratamientos
+[X] Revisar por que no elimina el ultimo registro en la relacion muchos a muchos
+[X] Agregar categoria todos en el formulario de nuevo evento
+[ ] Crear relacion y validacion de servicios con doctores
