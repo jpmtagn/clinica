@@ -5882,6 +5882,7 @@ TimeGrid.mixin({
         var service_id = event.service_id;
         var office_id = event.office_id;
         var state = event.state_id;
+        var user = event.user;
         var atention = event.atention == 1 ? '&nbsp;<i class="fa fa-exclamation-triangle"></i>' : '';
 		var comment = event.comment;
 		var has_comment = (typeof comment == 'string' && comment.length);
@@ -5953,6 +5954,7 @@ TimeGrid.mixin({
 					'<div class="fc-resizer"/>' :
 					''
 					) +
+                '<span class="by_user">' + user + '</span>' +
 			'</a>';
 	},
 

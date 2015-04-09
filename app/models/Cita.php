@@ -18,7 +18,8 @@ class Cita extends Eloquent {
         'doctor_id',
         'paciente_id',
         'servicio_id',
-        'consultorio_id'
+        'consultorio_id',
+        'usuario_id'
     );
 
     protected $table = 'cita';
@@ -55,6 +56,7 @@ class Cita extends Eloquent {
      * @return array
      */
     public static function getValidationRules($field = null, $ignore_id = 0) {
+        if (isset($_POST['doctor_id'])) $ignore_id = 0;
         $rules = array(
             'id'                    => 'integer|min:0',
             'fecha'                 => 'required|date_format:Y-m-d',
@@ -152,13 +154,13 @@ class Cita extends Eloquent {
     }
 
     public function scopeBetween($query, $val1, $val2) {
-        return $query->where(function ($query) use ($val1, $val2) { //TODO: check that this is working (!)
-            /*return */$query->where(function ($query) use ($val1, $val2) {
-                $query->where('hora_inicio', '>=', $val1)
-                    ->where('hora_inicio', '<=', $val2);
+        return $query->where(function ($query) use ($val1, $val2) {
+            $query->where(function ($query) use ($val1, $val2) {
+                $query->where('hora_inicio', '>', $val1)
+                    ->where('hora_inicio', '<', $val2);
             })->orWhere(function ($query) use ($val1, $val2) {
-                $query->where('hora_fin', '>=', $val1)
-                    ->where('hora_fin', '<=', $val2);
+                $query->where('hora_fin', '>', $val1)
+                    ->where('hora_fin', '<', $val2);
             });
         });
     }

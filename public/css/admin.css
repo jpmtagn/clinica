@@ -9092,6 +9092,8 @@ a.fc-event.event-faded {
     left: 0 !important;
     margin-right: 0 !important;
     transition: .5s left, .5s margin-right;
+
+    right: 0 !important;
 }
 
 .status-icon {
@@ -9137,6 +9139,12 @@ a.fc-event {
 
 a.fc-event:hover {
     z-index: 999 !important;
+
+    left: 0 !important;
+    margin-right: 0 !important;
+    transition: .5s left, .5s margin-right;
+
+    right: 0 !important;
 }
 
 #main_calendar a.fc-helper, #main_calendar a.fc-event.stateundefined {
@@ -9200,4 +9208,17 @@ h4.flash i.fa-exclamation-triangle {
 
 .list-group-item:hover .show-on-hover {
     display: inline-block;
+}
+
+.fc-event .by_user {
+    font-size: 10px;
+    font-style: italic;
+    position: absolute;
+    right: 4px;
+    bottom: 2px;
+    display: none;
+}
+
+.fc-agendaDay-view .fc-event .by_user:not(.stateundefined), .fc-event.wide .by_user, .fc-event:hover:not(.stateundefined) .by_user {
+    display: block;
 }

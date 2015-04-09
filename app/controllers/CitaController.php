@@ -91,9 +91,12 @@ class CitaController extends BaseController {
             return false;
         }
 
+        //will log the current user id with the record
+        Input::merge(array('usuario_id' => Auth::user()->id));
+
         //if the doctor_id (to pick one) has not been sent then is sending just the time (ie dragging & dropping)
         //I will then find the object so I can get the missing attributes
-        if (!Input::get('doctor_id', false)) {
+        if (!isset($_POST['doctor_id'])) {
             $model = self::MODEL;
             $item = $model::find((int)Input::get('id'));
             if ($item) {
@@ -186,6 +189,7 @@ class CitaController extends BaseController {
                 if (!($ignore_warning && $warning_key == 3)) {
                     $office_in_use = 0;
                     foreach ($overlapping as $o) {
+                        if ($cita_id == $o->id) continue; //not going to validate against itself
                         if ($o->consultorio_id == $office_id) {
                             $office_in_use++;
                         }
@@ -548,6 +552,17 @@ EOT;
 			$comment = $cita->nota;
 			$comment = $comment ? Functions::nl2br(htmlentities($comment->contenido)) : '';
 
+            $user = $cita->usuario_id > 0 ? User::find($cita->usuario_id) : '';
+            if ($user) {
+                $user_data = $user->paciente;
+                if ($user_data) {
+                    $user = Functions::firstNameLastName($user_data->nombre, $user_data->apellido, true);
+                }
+                else {
+                    $user = $user->nombre;
+                }
+            }
+
             $citas_json[] = <<<EOT
             {
                 "id": "{$cita->id}",
@@ -561,7 +576,8 @@ EOT;
                 "office_id": "{$cita->consultorio_id}",
                 "state_id": "{$cita->estado}",
                 "atention": "{$atention}",
-				"comment": "{$comment}"
+				"comment": "{$comment}",
+				"user": "{$user}"
             }
 EOT;
         }

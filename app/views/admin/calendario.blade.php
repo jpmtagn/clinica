@@ -128,7 +128,7 @@ Calendario
                                     @else
                                         <img class="avatar-thumb" src="{{ URL::asset('img/avatars/s/default.jpg') }}" alt="">
                                     @endif
-                                    {{ Functions::firstNameLastName($doctor->nombre, '') }}
+                                    {{ Functions::firstNameLastName($doctor->nombre, $doctor->apellido, true) }}
                                     <span class="badge hidden">0</span>
                                 </a>
                             @endforeach
@@ -182,7 +182,7 @@ Calendario
         <div class="list-group">
             <!-- date & time -->
             <a href="#" class="list-group-item" data-toggle="modal" data-target="#new_event_date_time_modal">
-                <div class="row form-item">
+                <div class="row form-item datetime">
                     <div class="col-sm-2 col-xs-2">
                         <div class="status-icon" id="icon_time">
                             <i class="fa fa-4x fa-clock-o"></i>
@@ -760,6 +760,7 @@ EOT;
             $cal.fullCalendar('unselect');*/
             $cal.fullCalendar( 'refetchEvents' );
             resetIgnoreWarningCheckboxes();
+            clearForm();
         }
         else {
             var $ignore_options = $('#warning_ignore_options');
@@ -851,7 +852,12 @@ EOT;
                         if ($e.find('input.' + name + '_id').val() == $o.attr('attr-id')) {
                             $e.removeClass('event-faded');
                             if ($actives.length == 1) {
-                                $e.addClass('wide');
+                                if (name != 'state') {
+                                    $e.addClass('wide');
+                                }
+                                else {
+                                    $e.removeClass('wide');
+                                }
                             }
                             else {
                                 $e.removeClass('wide');
@@ -1127,6 +1133,16 @@ EOT;
             console.log(data); //failed
         });
     }*/
+
+
+    function clearForm() {
+        var $frm = $('#frm_data_new_event');
+        $frm.find('h4').not('#cita_date_time').html('(Seleccione)');
+        $frm.find('.form-item').not('.datetime').find('p').html('');
+        $frm.find('.form-item').not('.datetime').find('input').val('');
+        $frm.find('#cita_doctor_avatar').attr('src', '{{ URL::asset('img/avatars/s/default.jpg') }}');
+        $frm.find('.status-icon').removeClass('bad');
+    }
 
 
     var $main_calendar = $('#main_calendar');
@@ -1486,6 +1502,11 @@ EOT;
             var view = $main_calendar.fullCalendar('getView').name;
             var $a = $(this);
             var id = parseInt($a.attr('attr-id')) || 0;
+
+            if (!$a.hasClass('active')) {
+                clearForm();
+            }
+
             $a.toggleClass('active').siblings().removeClass('active');
 
             if (view == 'agendaWeek' || view == 'agendaDay') {

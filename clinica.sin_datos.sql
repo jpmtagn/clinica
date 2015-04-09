@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 08, 2015 at 05:19 AM
+-- Generation Time: Apr 09, 2015 at 07:03 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -33,14 +33,6 @@ CREATE TABLE IF NOT EXISTS `area` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
---
--- Dumping data for table `area`
---
-
-INSERT INTO `area` (`id`, `nombre`, `descripcion`) VALUES
-(1, 'Estética', ''),
-(2, 'Wellness', '');
-
 -- --------------------------------------------------------
 
 --
@@ -51,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `categoria_servicio` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 
@@ -69,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `cita` (
   `paciente_id` int(10) unsigned NOT NULL,
   `servicio_id` int(11) NOT NULL,
   `consultorio_id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`,`paciente_id`,`servicio_id`,`consultorio_id`),
@@ -76,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `cita` (
   KEY `fk_cita_paciente1_idx` (`paciente_id`),
   KEY `fk_cita_servicio1_idx` (`servicio_id`),
   KEY `fk_cita_consultorio1_idx` (`consultorio_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=28 ;
 
 -- --------------------------------------------------------
 
@@ -110,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `consultorio` (
   `area_id` int(11) NOT NULL,
   PRIMARY KEY (`id`,`area_id`),
   KEY `fk_consultorio_area1_idx` (`area_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
 
 -- --------------------------------------------------------
 
@@ -140,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `disponibilidad` (
   `fijo` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `fk_disponibilidad_usuario1_idx` (`usuario_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=734 ;
 
 -- --------------------------------------------------------
 
@@ -170,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `equipo` (
   `inamovible` tinyint(1) NOT NULL DEFAULT '0',
   `serial` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -200,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=481 ;
 
 -- --------------------------------------------------------
 
@@ -216,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `nota` (
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_nota_cita1_idx` (`cita_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -241,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `paciente` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `dni_UNIQUE` (`dni`),
   KEY `fk_paciente_usuario1_idx` (`usuario_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=26 ;
 
 -- --------------------------------------------------------
 
@@ -255,9 +248,8 @@ CREATE TABLE IF NOT EXISTS `paciente_tipo_contacto` (
   `tipo_contacto_id` int(10) unsigned NOT NULL,
   `contacto` varchar(80) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_paciente_tipo_contacto_tipo_contacto1_idx` (`tipo_contacto_id`),
-  KEY `fk_paciente_tipo_contacto_paciente1` (`paciente_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  KEY `fk_paciente_tipo_contacto_tipo_contacto1_idx` (`tipo_contacto_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=34 ;
 
 -- --------------------------------------------------------
 
@@ -278,6 +270,32 @@ CREATE TABLE IF NOT EXISTS `paciente_tipo_pariente` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `paquete`
+--
+
+CREATE TABLE IF NOT EXISTS `paquete` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(45) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `paquete_servicio`
+--
+
+CREATE TABLE IF NOT EXISTS `paquete_servicio` (
+  `paquete_id` int(11) NOT NULL,
+  `servicio_id` int(11) NOT NULL,
+  PRIMARY KEY (`paquete_id`,`servicio_id`),
+  KEY `fk_paquete_servicio_servicio1_idx` (`servicio_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rol`
 --
 
@@ -287,15 +305,6 @@ CREATE TABLE IF NOT EXISTS `rol` (
   `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Dumping data for table `rol`
---
-
-INSERT INTO `rol` (`id`, `nombre`, `descripcion`) VALUES
-(1, 'doctor', NULL),
-(2, 'recepcionista', NULL),
-(3, 'paciente', NULL);
 
 -- --------------------------------------------------------
 
@@ -309,9 +318,10 @@ CREATE TABLE IF NOT EXISTS `servicio` (
   `descripcion` varchar(255) DEFAULT NULL,
   `duracion` int(10) unsigned DEFAULT NULL,
   `categoria_servicio_id` int(11) DEFAULT NULL,
+  `anidable` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `fk_servicio_categoria_servicio1_idx` (`categoria_servicio_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=112 ;
 
 -- --------------------------------------------------------
 
@@ -329,6 +339,20 @@ CREATE TABLE IF NOT EXISTS `servicios_equipos` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `servicio_usuario`
+--
+
+CREATE TABLE IF NOT EXISTS `servicio_usuario` (
+  `servicio_id` int(11) NOT NULL,
+  `usuario_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`servicio_id`,`usuario_id`),
+  KEY `fk_servicio_usuario_servicio1_idx` (`servicio_id`),
+  KEY `fk_servicio_usuario_usuario1_idx` (`usuario_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tipo_contacto`
 --
 
@@ -337,14 +361,6 @@ CREATE TABLE IF NOT EXISTS `tipo_contacto` (
   `tipo` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Dumping data for table `tipo_contacto`
---
-
-INSERT INTO `tipo_contacto` (`id`, `tipo`) VALUES
-(1, 'phone'),
-(2, 'email');
 
 -- --------------------------------------------------------
 
@@ -379,14 +395,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `created_at` datetime DEFAULT NULL COMMENT 'Fecha de registro (auto)',
   `updated_at` datetime DEFAULT NULL COMMENT 'Fecha de actualización de datos (auto)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Dumping data for table `usuario`
---
-
-INSERT INTO `usuario` (`id`, `nombre`, `password`, `contrasena_tmp`, `activo`, `admin`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '$2y$10$SPk9qASck2p7d87YGfLY1eNcJNUUzASa/gvjiIz/wdPqbg7zNgVsi', NULL, 1, 1, 'a5HI6FerRZ4uJGCODKuT3CILdmHtg5KnXuXywrO8r4i1B0JIOA1y9qZDOAlt', '2014-09-07 15:41:41', '2015-04-05 23:07:35');
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
 
 -- --------------------------------------------------------
 
@@ -402,6 +411,30 @@ CREATE TABLE IF NOT EXISTS `usuario_rol` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
+
+--
+-- Dumping data for table `rol`
+--
+
+INSERT INTO `rol` (`id`, `nombre`, `descripcion`) VALUES
+(1, 'doctor', NULL),
+(2, 'recepcionista', NULL),
+(3, 'paciente', NULL);
+
+--
+-- Dumping data for table `tipo_contacto`
+--
+
+INSERT INTO `tipo_contacto` (`id`, `tipo`) VALUES
+(1, 'phone'),
+(2, 'email');
+
+--
+-- Dumping data for table `usuario`
+--
+
+INSERT INTO `usuario` (`id`, `nombre`, `password`, `contrasena_tmp`, `activo`, `admin`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'admin', '$2y$10$SPk9qASck2p7d87YGfLY1eNcJNUUzASa/gvjiIz/wdPqbg7zNgVsi', NULL, 1, 1, 'a5HI6FerRZ4uJGCODKuT3CILdmHtg5KnXuXywrO8r4i1B0JIOA1y9qZDOAlt', '2014-09-07 15:41:41', '2015-04-05 23:07:35');
 
 --
 -- Structure for view `citas`
@@ -494,10 +527,24 @@ ALTER TABLE `paciente_tipo_pariente`
   ADD CONSTRAINT `fk_paciente_has_tipo_pariente_tipo_pariente1` FOREIGN KEY (`tipo_pariente_id`) REFERENCES `tipo_pariente` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
+-- Constraints for table `paquete_servicio`
+--
+ALTER TABLE `paquete_servicio`
+  ADD CONSTRAINT `fk_paquete_servicio_paquete1` FOREIGN KEY (`paquete_id`) REFERENCES `paquete` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_paquete_servicio_servicio1` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `servicio`
 --
 ALTER TABLE `servicio`
   ADD CONSTRAINT `fk_servicio_categoria_servicio1` FOREIGN KEY (`categoria_servicio_id`) REFERENCES `categoria_servicio` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Constraints for table `servicio_usuario`
+--
+ALTER TABLE `servicio_usuario`
+  ADD CONSTRAINT `fk_servicio_usuario_servicio1` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_servicio_usuario_usuario1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `usuario_rol`

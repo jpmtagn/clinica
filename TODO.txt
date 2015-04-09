@@ -31,3 +31,6 @@
 [X] Revisar por que no elimina el ultimo registro en la relacion muchos a muchos
 [X] Agregar categoria todos en el formulario de nuevo evento
 [ ] Crear relacion y validacion de servicios con doctores
+[X] Mostrar usuario que registro el evento en el calendario
+[X] Mostrar la inicial del apellido en el filtro de terapeutas
+[X] Limpiar el formulario de nuevo evento despues de guardar o seleccionar otro terapeuta

@@ -30,7 +30,7 @@ Panel de Administración
             </ul>
             <!-- /BREADCRUMBS -->
             <!-- HEAD -->
-            {{ $frm->header(Lang::get('log.title_plural'), $total, 'fa-file-text-o') }}
+            {{ $frm->header(Lang::get('log.title_plural'), $total, 'fa-file-text-o', false) }}
             <!-- /HEAD -->
         </div>
     </div>

@@ -947,9 +947,9 @@ EOT;
     }
 
 
-    public function header($title, $total, $icon) {
+    public function header($title, $total, $icon, $show_add_new = true) {
         $registros_lbl = Functions::singlePlural('registro', 'registros', $total);
-        return <<<EOT
+        $output = <<<EOT
         <div class="row">
             <div class="col-sm-4">
                 <div class="clearfix">
@@ -969,6 +969,8 @@ EOT;
                                 <div class="title">{$registros_lbl}</div>
                             </div>
                             <div class="pull-left hidden-xs">
+EOT;
+        if ($show_add_new) $output .= <<<EOT
                                 <button type="button" class="btn-add-new btn btn-primary btn-lg btn-custom">
                                     <span class="visible-sm" title="Agregar nuevo">
                                         <i class="fa fa-plus"></i>
@@ -978,6 +980,8 @@ EOT;
                                         Agregar nuevo
                                     </span>
                                 </button>
+EOT;
+        $output .= <<<EOT
                             </div>
                             <!--span class="label label-success">
                                 26% <i class="fa fa-arrow-up"></i>
@@ -986,6 +990,8 @@ EOT;
                     </div>
                 </div>
                 <div class="text-center">
+EOT;
+        if ($show_add_new) $output .= <<<EOT
                     <button type="button" class="btn-add-new btn btn-primary btn-lg btn-custom visible-xs">
                         <i class="fa fa-plus"></i>
                         Agregar nuevo
@@ -994,6 +1000,7 @@ EOT;
             </div>
         </div>
 EOT;
+        return $output;
     }
 
     public function infoCountBox($fa_icon, $total, $label, $link) {

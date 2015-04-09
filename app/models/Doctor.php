@@ -18,7 +18,7 @@ class Doctor /*extends Paciente*/ {
         $user = Auth::user();
 
         if (User::canViewDoctorPage(null)) {
-            $items = DB::table('doctor')->get();
+            $items = DB::table('doctor')->orderBy('nombre')->get();
         }
         elseif (User::is(User::ROL_DOCTOR)) {
             $items = DB::table('doctor')->where('usuario_id', '=', $user->id)->get();

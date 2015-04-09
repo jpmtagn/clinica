@@ -376,10 +376,13 @@ class Functions {
         return $arr;
     }
 
-    public static function firstNameLastName($fname, $lname) {
+    public static function firstNameLastName($fname, $lname, $initial_lname = false) {
         $fname = explode(' ', $fname);
-        $lname = explode(' ', $lname);
-        return ucfirst(mb_strtolower(reset($fname))) . ' ' . ucfirst(mb_strtolower(reset($lname)));
+        $lname = $initial_lname ? substr($lname, 0, 1) : explode(' ', $lname);
+        if (!$initial_lname && strtolower($lname[0]) == 'de') {
+            return ucfirst(mb_strtolower(reset($fname))) . ' ' . ($initial_lname ? strtoupper($lname) : ('de ' . ucfirst(mb_strtolower(next($lname)))));
+        }
+        return ucfirst(mb_strtolower(reset($fname))) . ' ' . ($initial_lname ? strtoupper($lname) : ucfirst(mb_strtolower(reset($lname))));
     }
 
     public static function remainingTime($date_str, $type = null) {
